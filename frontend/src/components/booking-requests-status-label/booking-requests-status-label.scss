@@ -1,0 +1,53 @@
+.booking-requests-table-status-label {
+  display: flex !important;
+  justify-content: center;
+
+  > i {
+    margin-right: 0 !important;
+    margin-left: 1px !important;
+  }
+}
+
+@media only screen and (min-width: 992px) {
+  .booking-requests-table-status-label-responsive {
+    padding: 0.78571429em 0.8em 0.78571429em !important;
+    width: 80px;
+  }
+}
+
+@media only screen and (max-width: 991px) and (min-width: 768px) {
+  .booking-requests-table-status-label-responsive {
+    padding: 0.78571429em 0.8em 0.78571429em !important;
+    width: 80px;
+    font-size: calc(3px + 0.65em) !important;
+  }
+}
+
+@media only screen and (max-width: 767px) and (min-width: 640px) {
+  .booking-requests-table-status-label-responsive {
+    padding: 0.78571429em 0.6em 0.78571429em !important;
+    width: 65px;
+    font-size: calc(3px + 0.55em) !important;
+  }
+}
+
+@media only screen and (max-width: 639px) and (min-width: 480px) {
+  .booking-requests-table-status-label-responsive {
+    padding: 0.78571429em 0.8em 0.78571429em !important;
+    width: 60px;
+    font-size: calc(4px + 0.5em) !important;
+  }
+}
+
+@media only screen and (max-width: 479px) {
+  .booking-requests-table-status-label-responsive {
+    padding: 0.78571429em 0.6em 0.78571429em !important;
+    width: 45px;
+    font-size: calc(3px + 0.45em) !important;
+  }
+}
+
+.booking-requests-status-label-popup-content
+  .booking-requests-table-popup-button:not(:first-child) {
+  margin-top: 10px;
+}

@@ -1,0 +1,33 @@
+#event-details-view {
+  .sign-up-button-container {
+    margin-top: 1rem;
+  }
+
+  .title {
+    margin-bottom: 2rem;
+  }
+
+  .categories {
+    margin: 2rem 0;
+    display: flex;
+    flex-direction: row;
+  }
+
+  .categories-label {
+    margin-right: 0.5rem;
+    white-space: nowrap;
+  }
+
+  .description {
+    white-space: pre-wrap;
+  }
+
+  a {
+    color: #f96332;
+    opacity: 0.85;
+  }
+
+  a:hover {
+    opacity: 1;
+  }
+}

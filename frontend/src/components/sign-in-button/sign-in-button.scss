@@ -1,0 +1,12 @@
+#sign-in-button {
+  width: 40%;
+  margin: 0;
+  color: white;
+  background: transparent;
+  border: solid 1px white;
+
+  &:hover {
+    color: #2185d0;
+    border-color: #2185d0;
+  }
+}

@@ -1,0 +1,11 @@
+#events-qr-code-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  .subtitle {
+    margin: 0 0 2rem 0;
+    text-align: center;
+  }
+}

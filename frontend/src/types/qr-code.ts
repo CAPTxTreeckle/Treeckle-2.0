@@ -1,0 +1,4 @@
+export enum QrCodeType {
+  EVENT_ATTENDANCE = "EVENT_ATTENDANCE",
+  SHARE_EVENT = "SHARE_EVENT",
+}

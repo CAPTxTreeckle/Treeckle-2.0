@@ -1,0 +1,160 @@
+#home-page {
+  background-color: white;
+  color: black;
+
+  h1 {
+    font-weight: 300;
+    font-size: 2.25rem;
+  }
+
+  h2 {
+    font-weight: 300;
+  }
+
+  p {
+    font-size: 1.15rem;
+  }
+
+  .ui.vertical.segment {
+    padding: 6rem 0 8rem 0;
+    text-align: center;
+  }
+
+  .title {
+    margin-bottom: 4rem;
+  }
+
+  .home-banner {
+    background-color: #111111;
+    color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-image: url("../../../assets/utown-day.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 40vw;
+    min-height: 35rem;
+    text-align: center;
+
+    &:before {
+      content: "";
+      background: #111111;
+      width: 100%;
+      height: 40vw;
+      min-height: 35rem;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      position: absolute;
+      opacity: 0.25;
+    }
+
+    &:after {
+      background: linear-gradient(135deg, #2c4a66 0%, #111111 74%);
+      z-index: 2;
+      content: "";
+      width: 100%;
+      height: 40vw;
+      min-height: 35rem;
+      left: 0;
+      top: 0;
+      position: absolute;
+      opacity: 0.6;
+    }
+  }
+
+  .scale.header-container.visible.transition {
+    display: flex;
+    width: 100%;
+  }
+
+  .header-container {
+    height: 100%;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+
+    .logo {
+      width: 20%;
+      min-width: 9rem;
+    }
+
+    .main-title {
+      color: white;
+      font-size: 5.5vw;
+      margin: 0;
+    }
+
+    .subtitle {
+      font-size: 2vw;
+    }
+  }
+
+  .home-video-container {
+    transform: translateX(50%) translateY(50%);
+    bottom: 50%;
+    right: 50%;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+
+    video {
+      background: #111111;
+      height: 40vw;
+      min-height: 35rem;
+      width: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .home-highlights {
+    .icon {
+      font-size: 6rem;
+      line-height: 1;
+      vertical-align: middle;
+    }
+  }
+
+  .home-mission {
+    color: rgba(255, 255, 255, 0.85);
+    background-attachment: fixed;
+    background-image: linear-gradient(
+        transparentize(#8e1d25, 0.75),
+        transparentize(#8e1d25, 0.75)
+      ),
+      url("../../../assets/utown-day.jpg");
+    background-position: bottom;
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index: 1;
+
+    .mission {
+      z-index: 3;
+    }
+  }
+
+  .home-footer {
+    .ui.divider {
+      border-bottom-color: rgba(255, 255, 255, 0.7);
+    }
+
+    .email-link {
+      color: #5ac6e7;
+    }
+  }
+
+  .scroll-to-top-button {
+    margin: 0;
+    position: fixed;
+    bottom: 8%;
+    right: 6%;
+    z-index: 5;
+    box-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.4),
+      0px 6px 10px 0px rgba(0, 0, 0, 0.28), 0px 1px 18px 0px rgba(0, 0, 0, 0.24);
+  }
+}

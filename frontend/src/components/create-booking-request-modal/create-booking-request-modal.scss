@@ -1,0 +1,20 @@
+.create-booking-request-modal-header {
+  border-bottom: none !important;
+}
+
+.create-booking-request-modal-content {
+  padding: 3em 1.5em !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.create-booking-request-progress-bar {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  border-radius: 0 !important;
+
+  > div {
+    border-radius: 0 !important;
+  }
+}

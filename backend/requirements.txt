@@ -1,0 +1,12 @@
+Django==3.1
+djangorestframework==3.11.1
+djangorestframework-simplejwt==4.4.0
+gunicorn==20.0.4
+fastjsonschema==2.14.5
+imagekitio==2.2.4
+psycopg2-binary==2.8.5
+PyJWT==1.7.1
+python-dateutil==2.8.1
+python-dotenv==0.14.0
+urllib3==1.25.10
+django-mailgun==0.9.1

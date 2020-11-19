@@ -1,0 +1,10 @@
+.text-link {
+  color: white !important;
+  text-decoration: underline !important;
+  font-weight: bold;
+  opacity: 0.85;
+
+  &:hover {
+    opacity: 1;
+  }
+}

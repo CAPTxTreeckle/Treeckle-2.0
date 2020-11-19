@@ -1,0 +1,17 @@
+#profile-page {
+  color: black;
+
+  .avatar-image {
+    width: 100%;
+    height: auto;
+  }
+
+  .meta-info {
+    font-weight: normal;
+    margin-bottom: 2rem;
+  }
+
+  .capitalise {
+    text-transform: capitalize;
+  }
+}

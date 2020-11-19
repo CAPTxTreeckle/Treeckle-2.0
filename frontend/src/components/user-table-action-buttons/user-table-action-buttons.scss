@@ -1,0 +1,15 @@
+.user-table-action-button {
+  padding: 0.78571429em 1.2em 0.78571429em !important;
+}
+
+.user-table-button-icon {
+  margin: 0 !important;
+}
+
+.change-role-container {
+  text-align: center;
+
+  button:not(:first-of-type) {
+    margin-top: 10px;
+  }
+}

@@ -1,0 +1,9 @@
+.time-form-field-input {
+  > label {
+    float: left;
+  }
+
+  > div[role="alert"] {
+    display: inline-block !important;
+  }
+}

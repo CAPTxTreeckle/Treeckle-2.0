@@ -1,0 +1,64 @@
+import React, { useContext, useEffect } from "react";
+import { Label } from "semantic-ui-react";
+import { EventSubscriptionsContext } from "../../context-providers";
+import { SubscribeActionType } from "../../types/events";
+import EventSubscriptionLabel from "../event-subscription-label";
+import PlaceholderWrapper from "../placeholder-wrapper";
+
+function EventSubscriptionsSelector() {
+  const {
+    isLoadingEventCategories,
+    subscribedCategories,
+    notSubscribedCategories,
+    getSubscriptions,
+  } = useContext(EventSubscriptionsContext);
+
+  useEffect(() => {
+    getSubscriptions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <>
+      <h2>Available Categories</h2>
+      <PlaceholderWrapper
+        isLoading={isLoadingEventCategories}
+        loadingMessage="Retrieving available categories"
+        defaultMessage="There are no available categories"
+        showDefaultMessage={notSubscribedCategories.length === 0}
+      >
+        <Label.Group>
+          {notSubscribedCategories.map((category: string) => (
+            <EventSubscriptionLabel
+              key={category}
+              category={category}
+              color="blue"
+              actionType={SubscribeActionType.SUBSCRIBE}
+            />
+          ))}
+        </Label.Group>
+      </PlaceholderWrapper>
+
+      <h2>Subscribed Categories</h2>
+      <PlaceholderWrapper
+        isLoading={isLoadingEventCategories}
+        loadingMessage="Retrieving subscribed categories"
+        defaultMessage="You have not subscribed to any category"
+        showDefaultMessage={subscribedCategories.length === 0}
+      >
+        <Label.Group>
+          {subscribedCategories.map((category: string) => (
+            <EventSubscriptionLabel
+              key={category}
+              category={category}
+              color="purple"
+              actionType={SubscribeActionType.UNSUBSCRIBE}
+            />
+          ))}
+        </Label.Group>
+      </PlaceholderWrapper>
+    </>
+  );
+}
+
+export default EventSubscriptionsSelector;
