@@ -75,7 +75,7 @@ function parseEventData(eventData: EventData): EventViewProps {
     id,
     signUpCount,
     signUpStatus,
-    organiser,
+    organizer,
   } = eventData;
 
   const eventFormProps: EventFormProps = {
@@ -97,7 +97,7 @@ function parseEventData(eventData: EventData): EventViewProps {
     id,
     createdAt: new Date(createdAt),
     updatedAt: new Date(updatedAt),
-    organiser,
+    organizer,
     signUpCount,
     signUpStatus,
     eventFormProps,

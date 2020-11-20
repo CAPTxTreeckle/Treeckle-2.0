@@ -1,0 +1,7 @@
+ACCESS = "access"
+ID = "id"
+NAME = "name"
+EMAIL = "email"
+ORGANIZATION = "organization"
+REFRESH = "refresh"
+ROLE = "role"

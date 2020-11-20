@@ -38,7 +38,7 @@ import DateTimeFormField from "../date-time-form-field";
 
 const schema = yup.object().shape({
   [EVENT_TITLE]: yup.string().trim().required("Please enter an event title"),
-  [ORGANISED_BY]: yup.string().trim().required("Please enter an organiser"),
+  [ORGANISED_BY]: yup.string().trim().required("Please enter an organizer"),
   [VENUE_NAME]: yup.string().trim().notRequired(),
   [CATEGORIES]: yup.array(yup.string().trim().required()).notRequired(),
   [ESTIMATED_CAPACITY]: yup

@@ -7,7 +7,7 @@ export type User = {
   name?: string;
   email?: string;
   role?: Role;
-  organisation?: string;
+  organization?: string;
   accessToken?: string;
   refreshToken?: string;
   profilePic?: string;
@@ -43,7 +43,7 @@ function UserProvider({ children }: Props) {
         name: user?.name,
         email: user?.email,
         role: user?.role,
-        organisation: user?.organisation,
+        organization: user?.organization,
         accessToken: user?.accessToken,
         refreshToken: user?.refreshToken,
         profilePic: user?.profilePic,

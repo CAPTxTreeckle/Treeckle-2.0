@@ -34,7 +34,7 @@ export type EventPostData = {
 export type EventPutData = EventPostData;
 
 type EventMetaData = BaseData & {
-  organiser: UserData;
+  organizer: UserData;
   signUpCount: number;
   signUpStatus: SignUpStatus | null;
 };

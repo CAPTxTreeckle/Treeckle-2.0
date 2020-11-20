@@ -21,17 +21,15 @@ function OpenIdPage() {
   }, [history]);
 
   useEffect(() => {
-    const nusnetId = query.get("openid.sreg.nickname");
+    const userId = query.get("openid.sreg.nickname");
     const email = query.get("openid.sreg.email");
     const name = query.get("openid.sreg.fullname");
-    if (!nusnetId || !email || !name) {
+    if (!userId || !email || !name) {
       handleFailure();
       return;
     }
-    const emailSections = email.split("@");
-    emailSections[0] = nusnetId;
-    const nusnetEmail = emailSections.join("@");
-    authenticate({ email: nusnetEmail, name, nusnetId });
+
+    authenticate({ email, name, userId });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [history, setUser, handleFailure, authenticate]);
 

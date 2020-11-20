@@ -34,13 +34,13 @@ export function parseStringToInt(s?: string): number | null {
 }
 
 export function parseUserToUserData(user: User) {
-  const { id, name, email, role, organisation } = user ?? {};
+  const { id, name, email, role, organization } = user ?? {};
 
   if (
-    [id, name, email, role, organisation].some((value) => value === undefined)
+    [id, name, email, role, organization].some((value) => value === undefined)
   ) {
     return undefined;
   }
 
-  return { id, name, email, role, organisation } as UserData;
+  return { id, name, email, role, organization } as UserData;
 }

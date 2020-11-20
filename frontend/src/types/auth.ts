@@ -1,13 +1,12 @@
 import { UserData } from "./users";
 
-export type AuthenticationData = {
-  user: UserData;
-  accessToken: string;
-  refreshToken: string;
+export type AuthenticationData = UserData & {
+  access: string;
+  refresh: string;
 };
 
-export type NusnetAuthenticationData = {
+export type OpenIdAuthenticationData = {
   email: string;
   name: string;
-  nusnetId: string;
+  userId: string;
 };

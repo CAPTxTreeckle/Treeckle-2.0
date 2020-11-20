@@ -10,12 +10,12 @@ import { parseUserToUserData } from "../../utils/parser";
 type Props = EventViewProps;
 
 function EventView(props: Props) {
-  const { organiser } = props;
+  const { organizer } = props;
   const user = useContext(UserContext);
   const isValidEventOrganiser = useMemo(
     () =>
-      isEqual(organiser, parseUserToUserData(user)) || user.role === Role.ADMIN,
-    [organiser, user],
+      isEqual(organizer, parseUserToUserData(user)) || user.role === Role.ADMIN,
+    [organizer, user],
   );
 
   return (

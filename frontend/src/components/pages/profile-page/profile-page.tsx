@@ -5,7 +5,7 @@ import { UserContext } from "../../../context-providers";
 import "./profile-page.scss";
 
 function ProfilePage() {
-  const { name, email, organisation, role } = useContext(UserContext);
+  const { name, email, organization, role } = useContext(UserContext);
 
   return (
     <Segment id="profile-page" raised padded="very">
@@ -28,7 +28,7 @@ function ProfilePage() {
               <strong>Email:</strong> {email}
             </p>
             <p>
-              <strong>Organisation:</strong> {organisation}
+              <strong>Organization:</strong> {organization}
             </p>
             <p>
               <strong>Role:</strong>{" "}

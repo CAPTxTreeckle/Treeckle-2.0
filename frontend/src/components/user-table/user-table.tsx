@@ -161,7 +161,7 @@ function UserTable() {
       loadingMessage="Retrieving all users..."
       inverted
       showDefaultMessage={users.length === 0}
-      defaultMessage="There are no users in your organisation."
+      defaultMessage="There are no users in your organization."
     >
       <Input
         fluid

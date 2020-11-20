@@ -9,5 +9,5 @@ export type UserData = {
   email: string;
   name: string;
   role: Role;
-  organisation: string;
+  organization: string;
 };

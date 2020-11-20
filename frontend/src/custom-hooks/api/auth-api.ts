@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from "axios";
 import { useHistory } from "react-router-dom";
 import { HOME_PATH, OPEN_ID_PATH } from "../../routes";
-import { AuthenticationData, NusnetAuthenticationData } from "../../types/auth";
+import { AuthenticationData, OpenIdAuthenticationData } from "../../types/auth";
 import { UserContext } from "../../context-providers";
 import { User } from "../../context-providers/user-provider";
 
@@ -17,11 +17,15 @@ function syncUserContext(
   setUser: (user: User | null) => void,
   data: AuthenticationData,
 ) {
-  const { accessToken, refreshToken, user } = data;
+  const { access, refresh, id, name, email, role,  organization} = data;
   setUser({
-    accessToken,
-    refreshToken,
-    ...user,
+    accessToken: access,
+    refreshToken: refresh,
+    id,
+    name,
+    email,
+    role,
+    organization
   });
 }
 
@@ -45,9 +49,9 @@ export function useAxiosWithTokenRefresh<T>(
   );
   const [, tokenRefresh] = useAxios<AuthenticationData>(
     {
-      url: "/login/token",
+      url: "/gateway/refresh",
       method: "post",
-      headers: { authorization: `${refreshToken}` },
+      data: { refresh: refreshToken },
     },
     { manual: true },
   );
@@ -76,7 +80,7 @@ export function useAxiosWithTokenRefresh<T>(
           const response = await apiCall(
             {
               ...(config ?? {}),
-              headers: { authorization: `${data.accessToken}` },
+              headers: { authorization: `${data.access}` },
             },
             options,
           );
@@ -109,7 +113,7 @@ export function useGoogleAuth() {
   const { setUser } = useContext(UserContext);
   const [{ loading }, login] = useAxios<AuthenticationData>(
     {
-      url: "/login/gmail",
+      url: "/gateway/gmail",
       method: "post",
     },
     { manual: true },
@@ -122,8 +126,8 @@ export function useGoogleAuth() {
       response: GoogleLoginResponse | GoogleLoginResponseOffline,
     ) => {
       try {
-        const { tokenId: idToken } = response as GoogleLoginResponse;
-        const { data } = await login({ data: { idToken } });
+        const { tokenId } = response as GoogleLoginResponse;
+        const { data } = await login({ data: { tokenId } });
         console.log("POST /login/gmail success:", data);
         syncUserContext(setUser, data);
         toast.success("Signed in successfully.");
@@ -146,7 +150,7 @@ export function useOpenIdAuth() {
   const history = useHistory();
   const [, login] = useAxios<AuthenticationData>(
     {
-      url: "/login/nusnet",
+      url: "/gateway/openid",
       method: "post",
     },
     { manual: true },
@@ -167,15 +171,15 @@ export function useOpenIdAuth() {
   }, []);
 
   const authenticate = useCallback(
-    async (nusnetData: NusnetAuthenticationData) => {
+    async (openIdData: OpenIdAuthenticationData) => {
       try {
-        const { data } = await login({ data: nusnetData });
-        console.log("POST /login/nusnet success:", data);
+        const { data } = await login({ data: openIdData });
+        console.log("POST /login/openid success:", data);
         syncUserContext(setUser, data);
         toast.success("Signed in successfully.");
       } catch (error) {
-        console.log("POST /login/nusnet error:", error, error?.response);
-        toast.error("Invalid user.");
+        console.log("POST /login/openid error:", error, error?.response);
+        toast.error(error?.response?.data?.detail ?? "An unknown error has occurred.");
         history.push(HOME_PATH);
       }
     },
