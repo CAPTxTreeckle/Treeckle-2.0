@@ -1,5 +1,4 @@
 from django.utils.translation import gettext_lazy as _
-from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework import serializers, exceptions
 
@@ -8,7 +7,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.settings import api_settings
 
 from users.models import User, ThirdPartyAuthenticator
-from users.logic import user_to_json
+from users.logic import user_to_json, get_user
 from treeckle.common.constants import REFRESH
 from .logic import get_gmail_user, authenticate_user, get_authenticated_data
 
@@ -19,7 +18,7 @@ class BaseAuthenticationSerializer(serializers.Serializer):
     def raiseInvalidUser(self):
         authenticationFailedException = exceptions.AuthenticationFailed(
             self.error_messages["invalid_user"],
-            "invalid_user",
+            code="invalid_user",
         )
         raise authenticationFailedException
 
@@ -85,8 +84,8 @@ class AccessTokenRefreshSerializer(
         user_id = RefreshToken(tokens[REFRESH]).get(key=api_settings.USER_ID_CLAIM)
 
         try:
-            user = User.objects.get(id=user_id)
-        except ObjectDoesNotExist:
+            user = get_user(id=user_id)
+        except User.DoesNotExist:
             self.raiseInvalidUser()
 
         data = user_to_json(user=user)

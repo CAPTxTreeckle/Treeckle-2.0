@@ -1,13 +1,12 @@
 from typing import Optional
 import requests
 
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction, IntegrityError
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from users.models import User, UserInvite, ThirdPartyAuthenticator
-from users.logic import user_to_json
+from users.logic import user_to_json, get_user, get_user_invite
 from treeckle.common.constants import REFRESH, ACCESS
 
 
@@ -31,14 +30,17 @@ def get_gmail_user(token_id: str) -> User:
 def authenticate_user(temp_user: User) -> Optional[User]:
     ## check if an invite exists
     try:
-        user_invite = UserInvite.objects.get(email=temp_user.email)
-    except ObjectDoesNotExist:
+        user_invite = get_user_invite(email=temp_user.email)
+    except UserInvite.DoesNotExist:
         user_invite = None
 
     ## check if is existing user
     try:
-        existing_user = User.objects.get(email=temp_user.email)
-    except ObjectDoesNotExist:
+        existing_user = get_user(
+            email=temp_user.email,
+            third_party_id=temp_user.third_party_id,
+        )
+    except User.DoesNotExist:
         existing_user = None
 
     if user_invite is None:
