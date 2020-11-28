@@ -1,8 +1,9 @@
-from typing import List, Sequence, Tuple, Any
+from typing import Sequence, Iterable, Tuple
 
 from django.db.models.query import QuerySet
 
 from treeckle.common.constants import ID, NAME, EMAIL, ORGANIZATION, ROLE
+from email_service.logic import send_user_invite_emails
 from .models import User, UserInvite, Organization
 
 
@@ -41,7 +42,7 @@ def get_user_invites(**kwargs) -> QuerySet[UserInvite]:
     return UserInvite.objects.select_related("organization").filter(**kwargs)
 
 
-def get_valid_invitations(invitations: dict) -> List[Tuple[str, str]]:
+def get_valid_invitations(invitations: dict) -> Sequence[Tuple[str, str]]:
     existing_user_emails = User.objects.values_list("email", flat=True)
     existing_user_invite_emails = UserInvite.objects.values_list("email", flat=True)
 
@@ -57,18 +58,22 @@ def get_valid_invitations(invitations: dict) -> List[Tuple[str, str]]:
 
 
 def create_user_invites(
-    valid_invitations: Tuple[str, str], organization: Organization
-) -> List[UserInvite]:
-    new_user_invites = [
+    valid_invitations: Iterable[Tuple[str, str]], organization: Organization
+) -> Sequence[UserInvite]:
+    user_invites_to_be_created = (
         UserInvite(organization=organization, email=email, role=role)
         for email, role in valid_invitations
-    ]
-    UserInvite.objects.bulk_create(new_user_invites)
+    )
+    new_user_invites = UserInvite.objects.bulk_create(
+        user_invites_to_be_created, ignore_conflicts=True
+    )
+
+    send_user_invite_emails(new_user_invites)
 
     return new_user_invites
 
 
-def update_users(user_data_dict: dict, organization: Organization) -> List[User]:
+def update_users(user_data_dict: dict, organization: Organization) -> Sequence[User]:
     user_ids_to_be_updated = user_data_dict.keys()
     users_to_be_updated = [
         user
@@ -88,19 +93,21 @@ def update_users(user_data_dict: dict, organization: Organization) -> List[User]
 
 
 def delete_user_invites(
-    emails_to_be_deleted: List[str], organization: Organization
+    emails_to_be_deleted: Iterable[str], organization: Organization
 ) -> None:
     get_user_invites(email__in=emails_to_be_deleted, organization=organization).delete()
 
 
-def delete_users(emails_to_be_deleted: List[str], organization: Organization) -> None:
+def delete_users(
+    emails_to_be_deleted: Iterable[str], organization: Organization
+) -> None:
     get_users(email__in=emails_to_be_deleted, organization=organization).delete()
 
 
 def sanitize_and_convert_data_list_to_dict(
-    data_list: List[dict],
-    key_name: Any,
-    fields: Sequence[str],
+    data_list: Iterable[dict],
+    key_name: str,
+    fields: Iterable[str],
 ) -> dict:
     fields_set = set(fields)
 

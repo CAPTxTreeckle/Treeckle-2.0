@@ -44,6 +44,7 @@ class UserInviteView(APIView):
 
         ## shape: [{email: <email>, role: <role>}]
         invitations = serializer.validated_data["invitations"]
+
         ## shape: [(email, role)]
         valid_invitations = get_valid_invitations(invitations)
         new_user_invites = create_user_invites(
@@ -85,7 +86,7 @@ class UserView(APIView):
         ## shape: [{id, name, email, role}]
         user_data_list = serializer.validated_data["users"]
 
-        ## shape: {id: {name, email, role}}
+        ## shape: {id: {name: , email: , role: }}
         user_data_dict = {
             user_data["id"]: {
                 field: field_value

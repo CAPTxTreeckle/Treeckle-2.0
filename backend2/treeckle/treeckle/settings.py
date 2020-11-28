@@ -42,10 +42,21 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.sites",
     "django.contrib.flatpages",
+    "anymail",
     "treeckle",
+    "email_service",
     "authentication",
     "users",
 ]
+
+ANYMAIL = {
+    "MAILGUN_API_KEY": os.getenv("MAILGUN_API_KEY"),
+    "MAILGUN_SENDER_DOMAIN": os.getenv("MAILGUN_SERVER_NAME"),
+}
+
+EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
+DEFAULT_FROM_EMAIL = "no-reply@treeckle.com"
+SERVER_EMAIL = "backend-server@treeckle.com"
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -65,7 +76,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=14),
     "ROTATE_REFRESH_TOKENS": True,
 }
@@ -157,7 +168,3 @@ USE_TZ = True
 # To serve django admin css when in production
 STATIC_URL = "/api/static/"
 STATIC_ROOT = "static"
-
-EMAIL_BACKEND = "django_mailgun.MailgunBackend"
-MAILGUN_ACCESS_KEY = os.getenv("MAILGUN_API_KEY")
-MAILGUN_SERVER_NAME = os.getenv("MAILGUN_SERVER_NAME")

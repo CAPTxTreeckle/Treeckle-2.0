@@ -10,6 +10,7 @@ class UserInviteSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserInvite
         fields = ("email", "role")
+        extra_kwargs = {"email": {"validators": []}}
 
 
 class PostUserInviteSerializer(serializers.Serializer):
