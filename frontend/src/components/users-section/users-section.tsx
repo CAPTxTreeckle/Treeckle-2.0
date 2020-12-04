@@ -5,22 +5,26 @@ import DeleteButton from "../delete-button";
 import PlaceholderWrapper from "../placeholder-wrapper";
 import SearchBar from "../search-bar";
 import DefaultHeaderRenderer from "../default-header-renderer";
-import "./user-invites-section.scss";
+import "./users-section.scss";
 import {
-  useDeleteUserInvites,
-  useGetAllUserInvites,
+  useDeleteExistingUsers,
+  useGetAllExistingUsers,
 } from "../../custom-hooks/api";
 import { useVirtualizedTableState } from "../../custom-hooks";
 
-const UserInvitesTableStateOptions = {
-  defaultSortBy: "email",
+const UsersTableStateOptions = {
+  defaultSortBy: "role",
   searchIndex: "id",
-  searchKeys: ["email", "role"],
+  searchKeys: ["name", "email", "role"],
 };
 
-function UserInvitesSection() {
-  const { userInvites, isLoading, getAllUserInvites } = useGetAllUserInvites();
-  const { deleteUserInvites } = useDeleteUserInvites();
+function UsersSection() {
+  const {
+    existingUsers,
+    isLoading,
+    getAllExistingUsers,
+  } = useGetAllExistingUsers();
+  const { deleteExistingUsers } = useDeleteExistingUsers();
   const {
     processedData: processedUserInvites,
     sortBy,
@@ -28,21 +32,21 @@ function UserInvitesSection() {
     setSortParams,
     searchValue,
     onSearchValueChange,
-  } = useVirtualizedTableState(userInvites, UserInvitesTableStateOptions);
+  } = useVirtualizedTableState(existingUsers, UsersTableStateOptions);
   const tableRef = useRef<Table>(null);
 
   useEffect(() => {
-    getAllUserInvites();
+    getAllExistingUsers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <>
       <h1>
-        New Pending Users{" "}
+        Existing Users{" "}
         <Popup
           content="Refresh"
-          trigger={<Icon name="refresh" link onClick={getAllUserInvites} />}
+          trigger={<Icon name="refresh" link onClick={getAllExistingUsers} />}
           position="top center"
           on="hover"
         />
@@ -54,7 +58,10 @@ function UserInvitesSection() {
         fluid
       />
 
-      <Segment className="virtualized-table-wrapper user-invites-table" raised>
+      <Segment
+        className="virtualized-table-wrapper existing-users-table"
+        raised
+      >
         <AutoSizer onResize={() => tableRef.current?.recomputeRowHeights()}>
           {({ width, height }) => (
             <Table
@@ -69,32 +76,33 @@ function UserInvitesSection() {
               noRowsRenderer={() => (
                 <PlaceholderWrapper
                   showDefaultMessage
-                  defaultMessage="No new pending users"
+                  defaultMessage="No existing users"
                   placeholder
                   isLoading={isLoading}
-                  loadingMessage="Retrieving new pending users"
+                  loadingMessage="Retrieving existing users"
                 />
               )}
               sortBy={sortBy}
               sortDirection={sortDirection}
               sort={setSortParams}
             >
-              <Column dataKey="email" label="Email" width={width * 0.55} />
-              <Column dataKey="role" label="Role" width={width * 0.25} />
+              <Column dataKey="name" label="Name" width={width * 0.25} />
+              <Column dataKey="email" label="Email" width={width * 0.35} />
+              <Column dataKey="role" label="Role" width={width * 0.15} />
               <Column
                 dataKey="email"
                 label="Actions"
                 headerClassName="center-text"
                 className="center-text"
-                width={width * 0.2}
+                width={width * 0.25}
                 disableSort={true}
                 headerRenderer={DefaultHeaderRenderer}
                 cellRenderer={({ cellData }) => (
                   <DeleteButton
-                    deleteTitle={`Delete Pending User`}
-                    deleteDescription={`Are you sure you want to delete pending user (${cellData})?`}
+                    deleteTitle={`Delete Existing User`}
+                    deleteDescription={`Are you sure you want to delete existing user (${cellData})?`}
                     onDelete={() =>
-                      deleteUserInvites([cellData], getAllUserInvites)
+                      deleteExistingUsers([cellData], getAllExistingUsers)
                     }
                   />
                 )}
@@ -107,4 +115,4 @@ function UserInvitesSection() {
   );
 }
 
-export default UserInvitesSection;
+export default UsersSection;

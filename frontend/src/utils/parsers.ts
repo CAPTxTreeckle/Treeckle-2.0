@@ -44,3 +44,10 @@ export function parseUserToUserData(user: User) {
 
   return { id, name, email, role, organization } as UserData;
 }
+
+export function parseToTitleCase(str: string) {
+  return str.replace(
+    /\w\S*/g,
+    (txt) => txt.charAt(0) + txt.substr(1).toLowerCase(),
+  );
+}

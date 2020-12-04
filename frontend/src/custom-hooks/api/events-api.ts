@@ -17,7 +17,7 @@ import {
   SubscriptionData,
   SubscribeAction,
 } from "../../types/events";
-import { parseStringToInt } from "../../utils/parser";
+import { parseStringToInt } from "../../utils/parsers";
 import { defaultArray } from "./default";
 
 function parseEventFormProps(

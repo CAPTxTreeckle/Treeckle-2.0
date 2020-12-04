@@ -3,7 +3,7 @@ import { Controller, useFormContext } from "react-hook-form";
 import { DropdownProps, Form } from "semantic-ui-react";
 import get from "lodash.get";
 import { useOptionsState } from "../../custom-hooks";
-import { sanitiseArray } from "../../utils/parser";
+import { sanitiseArray } from "../../utils/parsers";
 
 type Props = {
   className?: string;

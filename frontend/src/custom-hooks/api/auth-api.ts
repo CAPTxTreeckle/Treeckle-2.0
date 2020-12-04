@@ -84,7 +84,7 @@ export function useAxiosWithTokenRefresh<T>(
           const response = await apiCall(
             {
               ...(config ?? {}),
-              headers: { authorization: `${data.access}` },
+              headers: { authorization: `Bearer ${data.access}` },
             },
             options,
           );

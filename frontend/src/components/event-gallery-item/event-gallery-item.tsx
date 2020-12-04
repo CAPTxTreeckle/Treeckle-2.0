@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Card, Icon, Image } from "semantic-ui-react";
 import defaultEventPoster from "../../assets/default-event-poster.png";
-import { displayDatetime } from "../../utils/parser";
+import { displayDatetime } from "../../utils/parsers";
 import "./event-gallery-item.scss";
 import EventSignUpButton from "../event-sign-up-button";
 import { SingleEventContext } from "../../context-providers";

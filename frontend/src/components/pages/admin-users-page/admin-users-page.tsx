@@ -1,12 +1,12 @@
 import React from "react";
 import UserInvitesSection from "../../user-invites-section";
+import UsersSection from "../../users-section";
 
 function AdminUsersPage() {
   return (
     <>
       <UserInvitesSection />
-
-      <h1>User Accounts</h1>
+      <UsersSection />
     </>
   );
 }

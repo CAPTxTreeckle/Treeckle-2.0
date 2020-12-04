@@ -32,4 +32,9 @@ export {
   useUpdateSubscriptions,
 } from "./events-api";
 
-export { useGetAllUserInvites, useDeleteUserInvites } from "./users-api";
+export {
+  useGetAllUserInvites,
+  useDeleteUserInvites,
+  useGetAllExistingUsers,
+  useDeleteExistingUsers,
+} from "./users-api";
