@@ -17,8 +17,7 @@ function OpenIdPage() {
     const isCancelled = query.get("openid.mode") === "cancel";
     toast.error(isCancelled ? "Sign in cancelled." : "Invalid user.");
     history.push(HOME_PATH);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [history]);
+  }, [history, query]);
 
   useEffect(() => {
     const userId = query.get("openid.sreg.nickname");
@@ -30,8 +29,7 @@ function OpenIdPage() {
     }
 
     authenticate({ email, name, userId });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [history, setUser, handleFailure, authenticate]);
+  }, [history, setUser, handleFailure, authenticate, query]);
 
   return (
     <PlaceholderWrapper

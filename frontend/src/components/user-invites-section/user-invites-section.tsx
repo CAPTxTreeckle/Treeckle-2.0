@@ -3,15 +3,24 @@ import { Popup, Icon, Segment } from "semantic-ui-react";
 import { AutoSizer, Table, Column } from "react-virtualized";
 import DeleteButton from "../delete-button";
 import PlaceholderWrapper from "../placeholder-wrapper";
+import DefaultHeaderRenderer from "../default-header-renderer";
 import "./user-invites-section.scss";
 import {
   useDeleteUserInvites,
   useGetAllUserInvites,
 } from "../../custom-hooks/api";
+import { useUserInvitesTableState } from "../../custom-hooks";
 
 function UserInvitesSection() {
   const { userInvites, isLoading, getAllUserInvites } = useGetAllUserInvites();
   const { deleteUserInvites } = useDeleteUserInvites();
+  const {
+    tableRef,
+    sortedUserInvites,
+    sortBy,
+    sortDirection,
+    sort,
+  } = useUserInvitesTableState(userInvites);
 
   useEffect(() => {
     getAllUserInvites();
@@ -30,15 +39,16 @@ function UserInvitesSection() {
         />
       </h1>
       <Segment className="virtualized-table-wrapper user-invites-table" raised>
-        <AutoSizer>
+        <AutoSizer onResize={() => tableRef.current?.recomputeRowHeights()}>
           {({ width, height }) => (
             <Table
+              ref={tableRef}
               height={height}
               width={width}
               headerHeight={height * 0.1}
-              rowGetter={({ index }) => userInvites[index]}
+              rowGetter={({ index }) => sortedUserInvites[index]}
               rowHeight={height * 0.1}
-              rowCount={isLoading ? 0 : userInvites.length}
+              rowCount={isLoading ? 0 : sortedUserInvites.length}
               overscanRowCount={20}
               noRowsRenderer={() => (
                 <PlaceholderWrapper
@@ -49,6 +59,9 @@ function UserInvitesSection() {
                   loadingMessage="Retrieving new pending users"
                 />
               )}
+              sortBy={sortBy}
+              sortDirection={sortDirection}
+              sort={sort}
             >
               <Column dataKey="email" label="Email" width={width * 0.55} />
               <Column dataKey="role" label="Role" width={width * 0.25} />
@@ -58,6 +71,8 @@ function UserInvitesSection() {
                 headerClassName="center-text"
                 className="center-text"
                 width={width * 0.2}
+                disableSort={true}
+                headerRenderer={DefaultHeaderRenderer}
                 cellRenderer={({ cellData }) => (
                   <DeleteButton
                     deleteTitle={`Delete Pending User`}

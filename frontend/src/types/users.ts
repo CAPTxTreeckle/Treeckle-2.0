@@ -15,6 +15,3 @@ export type UserInviteData = BaseData & {
 export type UserData = UserInviteData & {
   name: string;
 };
-
-export type UserInfo = UserData;
-export type UserInviteInfo = UserInviteData;
