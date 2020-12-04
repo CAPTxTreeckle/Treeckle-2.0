@@ -45,4 +45,3 @@ export function useScrollToTop(
 
   return [showScroll, scrollToTop];
 }
-

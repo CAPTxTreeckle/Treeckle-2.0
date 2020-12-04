@@ -17,7 +17,7 @@ function DesktopAdminTab() {
       active={pathname.startsWith("/admin")}
       text="Admin"
       as={MenuItem}
-      //icon={<Label content={0} color="red" />}
+      icon={<Label content={0} color="red" />}
       floating
     >
       <Dropdown.Menu>
@@ -39,12 +39,12 @@ function DesktopAdminTab() {
           active={pathname.startsWith(ADMIN_USERS_PATH)}
           text="Users"
         />
-        {/*<Dropdown.Item
+        <Dropdown.Item
           as={Link}
           to={ADMIN_SETTINGS_PATH}
           active={pathname.startsWith(ADMIN_SETTINGS_PATH)}
           text="Settings"
-        />*/}
+        />
       </Dropdown.Menu>
     </Dropdown>
   );

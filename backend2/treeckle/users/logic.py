@@ -2,7 +2,16 @@ from typing import Sequence, Iterable, Tuple
 
 from django.db.models.query import QuerySet
 
-from treeckle.common.constants import ID, NAME, EMAIL, ORGANIZATION, ROLE
+from treeckle.common.constants import (
+    ID,
+    NAME,
+    EMAIL,
+    ORGANIZATION,
+    ROLE,
+    CREATED_AT,
+    UPDATED_AT,
+)
+from treeckle.common.parsers import parse_datetime_to_ms_timestamp
 from email_service.logic import send_user_invite_emails
 from .models import User, UserInvite, Organization
 
@@ -14,6 +23,8 @@ def user_to_json(user: User) -> dict:
         EMAIL: user.email,
         ORGANIZATION: user.organization.name,
         ROLE: user.role,
+        CREATED_AT: parse_datetime_to_ms_timestamp(user.created_at),
+        UPDATED_AT: parse_datetime_to_ms_timestamp(user.updated_at),
     }
 
 
@@ -23,6 +34,8 @@ def user_invite_to_json(user_invite: UserInvite) -> dict:
         EMAIL: user_invite.email,
         ROLE: user_invite.role,
         ORGANIZATION: user_invite.organization.name,
+        CREATED_AT: parse_datetime_to_ms_timestamp(user_invite.created_at),
+        UPDATED_AT: parse_datetime_to_ms_timestamp(user_invite.updated_at),
     }
 
 
@@ -94,14 +107,30 @@ def update_users(user_data_dict: dict, organization: Organization) -> Sequence[U
 
 def delete_user_invites(
     emails_to_be_deleted: Iterable[str], organization: Organization
-) -> None:
-    get_user_invites(email__in=emails_to_be_deleted, organization=organization).delete()
+) -> Sequence[str]:
+    user_invites_to_be_deleted = get_user_invites(
+        email__in=emails_to_be_deleted,
+        organization=organization,
+    )
+
+    deleted_emails = [user_invite.email for user_invite in user_invites_to_be_deleted]
+    user_invites_to_be_deleted.delete()
+
+    return deleted_emails
 
 
 def delete_users(
     emails_to_be_deleted: Iterable[str], organization: Organization
-) -> None:
-    get_users(email__in=emails_to_be_deleted, organization=organization).delete()
+) -> Sequence[str]:
+    users_to_be_deleted = get_users(
+        email__in=emails_to_be_deleted,
+        organization=organization,
+    )
+
+    deleted_emails = [user.email for user in users_to_be_deleted]
+    users_to_be_deleted.delete()
+
+    return deleted_emails
 
 
 def sanitize_and_convert_data_list_to_dict(

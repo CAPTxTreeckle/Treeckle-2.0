@@ -36,7 +36,7 @@ function MobileNavigationBar({ children }: Props) {
         <DashboardTab onTabClick={onTabClick} />
         <BookingsTab onTabClick={onTabClick} />
         <EventsTab onTabClick={onTabClick} />
-        <RoleRestrictedWrapper roles={[Role.ADMIN]}>
+        <RoleRestrictedWrapper roles={[Role.Admin]}>
           <MobileAdminTab onTabClick={onTabClick} />
         </RoleRestrictedWrapper>
       </Sidebar>

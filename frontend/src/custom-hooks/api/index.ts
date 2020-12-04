@@ -31,3 +31,5 @@ export {
   useGetSubscriptions,
   useUpdateSubscriptions,
 } from "./events-api";
+
+export { useGetAllUserInvites, useDeleteUserInvites } from "./users-api";

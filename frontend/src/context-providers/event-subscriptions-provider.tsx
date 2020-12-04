@@ -22,21 +22,21 @@ type EventSubscriptionsContextType = {
   notSubscribedCategories: string[];
 };
 
-export const EventSubscriptionsContext = React.createContext<
-  EventSubscriptionsContextType
->({
-  subscribedEvents: [],
-  getSubscriptions: () => {
-    throw new Error("getSubcriptions not defined");
+export const EventSubscriptionsContext = React.createContext<EventSubscriptionsContextType>(
+  {
+    subscribedEvents: [],
+    getSubscriptions: () => {
+      throw new Error("getSubcriptions not defined");
+    },
+    updateSubscriptions: () => {
+      throw new Error("updateSubscriptions not defined");
+    },
+    isLoadingSubscribedEvents: false,
+    isLoadingEventCategories: false,
+    subscribedCategories: [],
+    notSubscribedCategories: [],
   },
-  updateSubscriptions: () => {
-    throw new Error("updateSubscriptions not defined");
-  },
-  isLoadingSubscribedEvents: false,
-  isLoadingEventCategories: false,
-  subscribedCategories: [],
-  notSubscribedCategories: [],
-});
+);
 
 type Props = {
   children: React.ReactNode;

@@ -12,7 +12,7 @@ function VenueGalleryItem({ venue, onClickVenue }: Props) {
   const { venueName } = venueFormProps;
   return (
     <div
-      className="animation-wrapper hover-bob hover-pointing"
+      className="flex-display hover-bob hover-pointing"
       onClick={onClickVenue && (() => onClickVenue(venue))}
     >
       <Card raised>

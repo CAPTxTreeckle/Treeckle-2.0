@@ -47,7 +47,7 @@ function EventEditableGalleryItem(props: Props) {
       ]}
       offsetRatio={{ heightRatio: -2 }}
     >
-      <div className="animation-wrapper hover-bob hover-pointing">
+      <div className="flex-display hover-bob hover-pointing">
         <SingleEventProvider eventViewProps={props}>
           <EventGalleryItem />
         </SingleEventProvider>

@@ -5,7 +5,7 @@ import { UserContext } from "../context-providers/user-provider";
 import { Role } from "../types/users";
 
 function RoleRestrictedRoute(props: RouteProps & { roles: Role[] }) {
-  const { role = Role.RESIDENT } = useContext(UserContext);
+  const { role = Role.Resident } = useContext(UserContext);
   const { roles } = props;
 
   return roles.includes(role) ? (

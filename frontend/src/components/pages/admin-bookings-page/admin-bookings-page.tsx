@@ -1,30 +1,7 @@
-import React, { useContext } from "react";
-import { AllBookingRequestsContext } from "../../../context-providers";
-import BookingRequestsTable from "../../bookings-requests-table";
+import React from "react";
 
 function AdminBookingsPage() {
-  const { bookingRequests, isLoading, getBookingRequests } = useContext(
-    AllBookingRequestsContext,
-  );
-
-  React.useEffect(() => {
-    (async () => {
-      await getBookingRequests();
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  return (
-    <div>
-      <h1>Booking Requests</h1>
-      <BookingRequestsTable
-        bookingRequests={bookingRequests}
-        isLoadingRequests={isLoading}
-        getBookingRequests={getBookingRequests}
-        isAdminTable
-      />
-    </div>
-  );
+  return <h1>This is the admin bookings page</h1>;
 }
 
 export default AdminBookingsPage;

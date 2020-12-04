@@ -37,7 +37,7 @@ function VenueFormGalleryItem({ id, venueFormProps }: Props) {
       ]}
       offsetRatio={{ heightRatio: -2 }}
     >
-      <div className="animation-wrapper hover-bob hover-pointing">
+      <div className="flex-display hover-bob hover-pointing">
         <VenueBookingForm venueFormProps={venueFormProps} readOnly />
       </div>
     </PopUpActionsWrapper>

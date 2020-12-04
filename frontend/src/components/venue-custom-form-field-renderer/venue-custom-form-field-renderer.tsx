@@ -1,7 +1,7 @@
 import React from "react";
 import { FieldType, VenueCustomFormFieldProps } from "../../types/venues";
 import FormField from "../form-field";
-import RadioFormFieldManualRegister from "../radio-form-field-manual-register";
+import RadioFormField from "../radio-form-field";
 import TextAreaFormField from "../text-area-form-field";
 
 type Props = VenueCustomFormFieldProps & {
@@ -58,7 +58,7 @@ function VenueCustomFormFieldRenderer({
         );
       case FieldType.BOOLEAN:
         return (
-          <RadioFormFieldManualRegister
+          <RadioFormField
             label={fieldLabel}
             inputName={inputName}
             type="checkbox"

@@ -1,13 +1,20 @@
+import { BaseData } from "./base";
+
 export enum Role {
-  ADMIN = "ADMIN",
-  ORGANIZER = "ORGANIZER",
-  RESIDENT = "RESIDENT",
+  Admin = "Admin",
+  Organizer = "Organizer",
+  Resident = "Resident",
 }
 
-export type UserData = {
-  id: number;
+export type UserInviteData = BaseData & {
   email: string;
-  name: string;
   role: Role;
   organization: string;
 };
+
+export type UserData = UserInviteData & {
+  name: string;
+};
+
+export type UserInfo = UserData;
+export type UserInviteInfo = UserInviteData;

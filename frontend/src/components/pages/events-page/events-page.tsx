@@ -74,7 +74,7 @@ function EventsPage() {
   }, [match]);
 
   const panes = useMemo(() => {
-    if (role && [Role.ORGANIZER, Role.ADMIN].includes(role)) {
+    if (role && [Role.Organizer, Role.Admin].includes(role)) {
       return residentPanes.concat(organiserPanes);
     }
     return residentPanes;
@@ -101,7 +101,7 @@ function EventsPage() {
 
   return (
     <>
-      <RoleRestrictedWrapper roles={[Role.ORGANIZER, Role.ADMIN]}>
+      <RoleRestrictedWrapper roles={[Role.Organizer, Role.Admin]}>
         <Button
           animated="vertical"
           fluid

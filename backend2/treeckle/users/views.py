@@ -23,7 +23,7 @@ from .serializers import (
 
 # Create your views here.
 class UserInviteView(APIView):
-    @check_access([Role.ADMIN])
+    @check_access([Role.Admin])
     def get(self, request, requester: User):
         same_organization_user_invites = get_user_invites(
             organization=requester.organization
@@ -36,7 +36,7 @@ class UserInviteView(APIView):
 
         return Response(data, status=status.HTTP_200_OK)
 
-    @check_access([Role.ADMIN])
+    @check_access([Role.Admin])
     def post(self, request, requester: User):
         serializer = PostUserInviteSerializer(data=request.data)
 
@@ -56,20 +56,23 @@ class UserInviteView(APIView):
 
         return Response(data, status=status.HTTP_200_OK)
 
-    @check_access([Role.ADMIN])
+    @check_access([Role.Admin])
     def delete(self, request, requester: User):
         serializer = EmailListSerializer(data=request.data)
 
         serializer.is_valid(raise_exception=True)
 
         emails_to_be_deleted = serializer.validated_data["emails"]
-        delete_user_invites(emails_to_be_deleted, organization=requester.organization)
+        deleted_emails = delete_user_invites(
+            emails_to_be_deleted,
+            organization=requester.organization,
+        )
 
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(deleted_emails, status=status.HTTP_200_OK)
 
 
 class UserView(APIView):
-    @check_access([Role.ADMIN])
+    @check_access([Role.Admin])
     def get(self, request, requester: User):
         same_organization_users = get_users(organization=requester.organization)
 
@@ -77,7 +80,7 @@ class UserView(APIView):
 
         return Response(data, status=status.HTTP_200_OK)
 
-    @check_access([Role.ADMIN])
+    @check_access([Role.Admin])
     def patch(self, request, requester: User):
         serializer = PatchUserSerializer(data=request.data)
 
@@ -112,7 +115,7 @@ class UserView(APIView):
 
         return Response(data, status=status.HTTP_200_OK)
 
-    @check_access([Role.ADMIN])
+    @check_access([Role.Admin])
     def delete(self, request, requester: User):
         serializer = EmailListSerializer(data=request.data)
 
@@ -127,6 +130,9 @@ class UserView(APIView):
             ## self not in emails_to_be_deleted
             pass
 
-        delete_users(emails_to_be_deleted, organization=requester.organization)
+        deleted_emails = delete_users(
+            emails_to_be_deleted,
+            organization=requester.organization,
+        )
 
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(deleted_emails, status=status.HTTP_200_OK)

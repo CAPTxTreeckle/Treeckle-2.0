@@ -47,14 +47,9 @@ import {
   ADMIN_VENUES_CREATION_PATH,
   ADMIN_VENUES_EDIT_PATH,
 } from "./index";
-import {
-  AllBookingRequestsProvider,
-  UserContext,
-  VenuesProvider,
-} from "../context-providers";
+import { UserContext, VenuesProvider } from "../context-providers";
 import RoleRestrictedRoute from "./role-restricted-route";
 import { Role } from "../types/users";
-import OwnBookingRequestsProvider from "../context-providers/own-booking-requests-provider";
 
 function Routes() {
   const { accessToken } = useContext(UserContext);
@@ -85,9 +80,7 @@ function Routes() {
             </Route>
 
             <Route path={BOOKINGS_PATH} exact strict>
-              <OwnBookingRequestsProvider>
-                <BookingsPage />
-              </OwnBookingRequestsProvider>
+              <BookingsPage />
             </Route>
 
             <Route path={PROFILE_PATH} exact strict>
@@ -108,7 +101,7 @@ function Routes() {
             </Route>
 
             <RoleRestrictedRoute
-              roles={[Role.ORGANIZER, Role.ADMIN]}
+              roles={[Role.Organizer, Role.Admin]}
               path={EVENTS_OWN_PATH}
               exact
               strict
@@ -117,7 +110,7 @@ function Routes() {
             </RoleRestrictedRoute>
 
             <RoleRestrictedRoute
-              roles={[Role.ORGANIZER, Role.ADMIN]}
+              roles={[Role.Organizer, Role.Admin]}
               path={EVENTS_CREATION_PATH}
               exact
               strict
@@ -130,7 +123,7 @@ function Routes() {
             </Route>
 
             <RoleRestrictedRoute
-              roles={[Role.ORGANIZER, Role.ADMIN]}
+              roles={[Role.Organizer, Role.Admin]}
               path={EVENTS_EDIT_PATH}
               exact
               strict
@@ -139,7 +132,7 @@ function Routes() {
             </RoleRestrictedRoute>
 
             <RoleRestrictedRoute
-              roles={[Role.ORGANIZER, Role.ADMIN]}
+              roles={[Role.Organizer, Role.Admin]}
               path={EVENTS_QR_CODE_PATH}
               exact
               strict
@@ -148,18 +141,16 @@ function Routes() {
             </RoleRestrictedRoute>
 
             <RoleRestrictedRoute
-              roles={[Role.ADMIN]}
+              roles={[Role.Admin]}
               path={ADMIN_BOOKINGS_PATH}
               exact
               strict
             >
-              <AllBookingRequestsProvider>
-                <AdminBookingsPage />
-              </AllBookingRequestsProvider>
+              <AdminBookingsPage />
             </RoleRestrictedRoute>
 
             <RoleRestrictedRoute
-              roles={[Role.ADMIN]}
+              roles={[Role.Admin]}
               path={ADMIN_VENUES_PATH}
               exact
               strict
@@ -170,7 +161,7 @@ function Routes() {
             </RoleRestrictedRoute>
 
             <RoleRestrictedRoute
-              roles={[Role.ADMIN]}
+              roles={[Role.Admin]}
               path={ADMIN_VENUES_CREATION_PATH}
               exact
               strict
@@ -179,7 +170,7 @@ function Routes() {
             </RoleRestrictedRoute>
 
             <RoleRestrictedRoute
-              roles={[Role.ADMIN]}
+              roles={[Role.Admin]}
               path={ADMIN_VENUES_EDIT_PATH}
               exact
               strict
@@ -188,7 +179,7 @@ function Routes() {
             </RoleRestrictedRoute>
 
             <RoleRestrictedRoute
-              roles={[Role.ADMIN]}
+              roles={[Role.Admin]}
               path={ADMIN_USERS_PATH}
               exact
               strict
@@ -197,7 +188,7 @@ function Routes() {
             </RoleRestrictedRoute>
 
             <RoleRestrictedRoute
-              roles={[Role.ADMIN]}
+              roles={[Role.Admin]}
               path={ADMIN_SETTINGS_PATH}
               exact
               strict

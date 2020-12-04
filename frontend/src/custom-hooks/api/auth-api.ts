@@ -1,5 +1,6 @@
 import { useCallback, useContext, useState } from "react";
 import useAxios, { Options, RefetchOptions, ResponseValues } from "axios-hooks";
+import { StatusCodes } from "http-status-codes";
 import {
   GoogleLoginResponse,
   GoogleLoginResponseOffline,
@@ -17,7 +18,7 @@ function syncUserContext(
   setUser: (user: User | null) => void,
   data: AuthenticationData,
 ) {
-  const { access, refresh, id, name, email, role,  organization} = data;
+  const { access, refresh, id, name, email, role, organization } = data;
   setUser({
     accessToken: access,
     refreshToken: refresh,
@@ -25,7 +26,7 @@ function syncUserContext(
     name,
     email,
     role,
-    organization
+    organization,
   });
 }
 
@@ -33,14 +34,17 @@ export function useAxiosWithTokenRefresh<T>(
   config: AxiosRequestConfig,
   options?: Options,
 ): [
-  ResponseValues<T>,
+  ResponseValues<T, Error>,
   (config?: AxiosRequestConfig, options?: RefetchOptions) => AxiosPromise<T>,
 ] {
   const { accessToken, refreshToken, setUser } = useContext(UserContext);
   const [responseValues, apiCall] = useAxios<T>(
     {
       ...config,
-      headers: { ...(config?.headers ?? {}), authorization: `${accessToken}` },
+      headers: {
+        ...(config?.headers ?? {}),
+        authorization: `Bearer ${accessToken}`,
+      },
     },
     {
       ...(options ?? {}),
@@ -90,7 +94,11 @@ export function useAxiosWithTokenRefresh<T>(
         } catch (error) {
           attemptedTokenRefresh &&
             console.log("Error after token refresh:", error, error?.response);
-          if (error?.response?.status >= 401) {
+          if (
+            [StatusCodes.UNAUTHORIZED, StatusCodes.FORBIDDEN].some(
+              (statusCode) => error?.response?.status === statusCode,
+            )
+          ) {
             // kick user out
             setUser(null);
             toast.error(
@@ -128,11 +136,11 @@ export function useGoogleAuth() {
       try {
         const { tokenId } = response as GoogleLoginResponse;
         const { data } = await login({ data: { tokenId } });
-        console.log("POST /login/gmail success:", data);
+        console.log("POST /gateway/gmail success:", data);
         syncUserContext(setUser, data);
         toast.success("Signed in successfully.");
       } catch (error) {
-        console.log("POST /login/gmail error:", error, error?.response);
+        console.log("POST /gateway/gmail error:", error, error?.response);
         toast.error("Invalid user.");
       }
     },
@@ -174,12 +182,14 @@ export function useOpenIdAuth() {
     async (openIdData: OpenIdAuthenticationData) => {
       try {
         const { data } = await login({ data: openIdData });
-        console.log("POST /login/openid success:", data);
+        console.log("POST /gateway/openid success:", data);
         syncUserContext(setUser, data);
         toast.success("Signed in successfully.");
       } catch (error) {
-        console.log("POST /login/openid error:", error, error?.response);
-        toast.error(error?.response?.data?.detail ?? "An unknown error has occurred.");
+        console.log("POST /gateway/openid error:", error, error?.response);
+        toast.error(
+          error?.response?.data?.detail ?? "An unknown error has occurred.",
+        );
         history.push(HOME_PATH);
       }
     },

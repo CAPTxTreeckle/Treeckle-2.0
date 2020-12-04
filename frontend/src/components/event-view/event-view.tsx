@@ -14,7 +14,7 @@ function EventView(props: Props) {
   const user = useContext(UserContext);
   const isValidEventOrganiser = useMemo(
     () =>
-      isEqual(organizer, parseUserToUserData(user)) || user.role === Role.ADMIN,
+      isEqual(organizer, parseUserToUserData(user)) || user.role === Role.Admin,
     [organizer, user],
   );
 

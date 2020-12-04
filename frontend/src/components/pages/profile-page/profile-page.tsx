@@ -32,7 +32,7 @@ function ProfilePage() {
             </p>
             <p>
               <strong>Role:</strong>{" "}
-              <text className="capitalise">{role?.toLowerCase()}</text>
+              <text className="capitalise">{role?.toLowerCase() ?? role}</text>
             </p>
           </h4>
         </Grid.Column>

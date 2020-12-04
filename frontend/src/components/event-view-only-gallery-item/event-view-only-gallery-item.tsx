@@ -17,7 +17,7 @@ function EventViewOnlyGalleryItem(props: Props) {
 
   return (
     <div
-      className="animation-wrapper hover-bob hover-pointing"
+      className="flex-display hover-bob hover-pointing"
       onClick={onClickEvent}
     >
       <SingleEventProvider eventViewProps={props}>

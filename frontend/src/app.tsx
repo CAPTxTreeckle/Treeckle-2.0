@@ -6,6 +6,8 @@ import { UserProvider, ResponsiveProvider } from "./context-providers";
 import Routes from "./routes";
 import "semantic-ui-css/semantic.min.css";
 import "react-toastify/dist/ReactToastify.min.css";
+import "react-virtualized/styles.css";
+import "./animations.scss";
 import "./app.scss";
 
 toast.configure({
