@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useMemo } from "react";
-import { Button, ButtonProps } from "semantic-ui-react";
+import { Button } from "semantic-ui-react";
 import { SingleEventContext } from "../../context-providers";
 import { SignUpActionType, SignUpStatus } from "../../types/events";
 import PopUpActionsWrapper from "../pop-up-actions-wrapper";
@@ -33,31 +33,33 @@ function SignUpStatusButton({ userId, signUpStatus }: Props) {
     [updateSignUpsForEvent, userId],
   );
 
-  const attendButtonProps: ButtonProps = useMemo(
-    () => ({ key: 0, content: "Attend", color: "teal", onClick: onAttend }),
+  const attendButton = useMemo(
+    () => <Button key={0} content="Attend" color="teal" onClick={onAttend} />,
     [onAttend],
   );
 
-  const approveButtonProps: ButtonProps = useMemo(
-    () => ({ key: 0, content: "Approve", color: "green", onClick: onApprove }),
+  const approveButton = useMemo(
+    () => (
+      <Button key={0} content="Approve" color="green" onClick={onApprove} />
+    ),
     [onApprove],
   );
 
-  const rejectButtonProps: ButtonProps = useMemo(
-    () => ({ key: 1, content: "Reject", color: "red", onClick: onReject }),
+  const rejectButton = useMemo(
+    () => <Button key={1} content="Reject" color="red" onClick={onReject} />,
     [onReject],
   );
 
-  const actions = useMemo(() => {
+  const actionButtons = useMemo(() => {
     switch (signUpStatus) {
       case SignUpStatus.PENDING:
-        return [approveButtonProps, rejectButtonProps];
+        return [approveButton, rejectButton];
       case SignUpStatus.CONFIRMED:
-        return [attendButtonProps, rejectButtonProps];
+        return [attendButton, rejectButton];
       default:
-        return [rejectButtonProps];
+        return [rejectButton];
     }
-  }, [signUpStatus, rejectButtonProps, approveButtonProps, attendButtonProps]);
+  }, [signUpStatus, rejectButton, approveButton, attendButton]);
 
   const statusButton = useMemo(() => {
     switch (signUpStatus) {
@@ -73,7 +75,7 @@ function SignUpStatusButton({ userId, signUpStatus }: Props) {
   }, [signUpStatus, isLoading]);
 
   return (
-    <PopUpActionsWrapper vertical actions={actions}>
+    <PopUpActionsWrapper vertical actionButtons={actionButtons}>
       {statusButton}
     </PopUpActionsWrapper>
   );

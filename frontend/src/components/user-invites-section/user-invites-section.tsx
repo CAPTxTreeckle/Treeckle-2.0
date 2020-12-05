@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { Popup, Icon, Segment } from "semantic-ui-react";
+import { Popup, Icon, Segment, Button } from "semantic-ui-react";
 import { AutoSizer, Table, Column } from "react-virtualized";
 import DeleteButton from "../delete-button";
 import PlaceholderWrapper from "../placeholder-wrapper";
@@ -11,16 +11,18 @@ import {
   useGetAllUserInvites,
 } from "../../custom-hooks/api";
 import { useVirtualizedTableState } from "../../custom-hooks";
+import PopUpActionsWrapper from "../pop-up-actions-wrapper";
+import { DeleteModalProvider } from "../../context-providers";
 
 const UserInvitesTableStateOptions = {
-  defaultSortBy: "email",
+  defaultSortBy: "role",
   searchIndex: "id",
   searchKeys: ["email", "role"],
 };
 
 function UserInvitesSection() {
   const { userInvites, isLoading, getAllUserInvites } = useGetAllUserInvites();
-  const { deleteUserInvites } = useDeleteUserInvites();
+  const { deleteUserInvites, isLoading: isDeleting } = useDeleteUserInvites();
   const {
     processedData: processedUserInvites,
     sortBy,
@@ -90,13 +92,18 @@ function UserInvitesSection() {
                 disableSort={true}
                 headerRenderer={DefaultHeaderRenderer}
                 cellRenderer={({ cellData }) => (
-                  <DeleteButton
-                    deleteTitle={`Delete Pending User`}
-                    deleteDescription={`Are you sure you want to delete pending user (${cellData})?`}
+                  <DeleteModalProvider
+                    isDeleting={isDeleting}
                     onDelete={() =>
                       deleteUserInvites([cellData], getAllUserInvites)
                     }
-                  />
+                    deleteTitle="Delete Pending User"
+                    deleteDescription={`Are you sure you want to delete pending user (${cellData})?`}
+                  >
+                    <PopUpActionsWrapper actionButtons={[<DeleteButton />]}>
+                      <Button icon="ellipsis horizontal" compact />
+                    </PopUpActionsWrapper>
+                  </DeleteModalProvider>
                 )}
               />
             </Table>

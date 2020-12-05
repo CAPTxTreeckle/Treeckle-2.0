@@ -1,7 +1,6 @@
 import React from "react";
 import {
   Button,
-  ButtonProps,
   Popup,
   StrictButtonGroupProps,
   StrictPopupProps,
@@ -9,7 +8,7 @@ import {
 
 type Props = {
   children: React.ReactNode;
-  actions: ButtonProps[];
+  actionButtons: JSX.Element[];
   offsetRatio?: { widthRatio?: number; heightRatio?: number };
   vertical?: boolean;
   popUpPosition?: StrictPopupProps["position"];
@@ -17,7 +16,7 @@ type Props = {
 
 function PopUpActionsWrapper({
   children,
-  actions,
+  actionButtons,
   offsetRatio: { widthRatio = 0, heightRatio = 0 } = {
     heightRatio: 0,
     widthRatio: 0,
@@ -37,13 +36,15 @@ function PopUpActionsWrapper({
         width * widthRatio,
         height * heightRatio,
       ]}
+      popper={{ style: { zIndex: 500 } }}
     >
       <Button.Group
         fluid
-        widths={actions.length as StrictButtonGroupProps["widths"]}
+        widths={actionButtons.length as StrictButtonGroupProps["widths"]}
         vertical={vertical}
-        buttons={actions}
-      />
+      >
+        {actionButtons}
+      </Button.Group>
     </Popup>
   );
 }

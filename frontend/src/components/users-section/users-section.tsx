@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { Popup, Icon, Segment } from "semantic-ui-react";
+import { Popup, Icon, Segment, Button } from "semantic-ui-react";
 import { AutoSizer, Table, Column } from "react-virtualized";
 import DeleteButton from "../delete-button";
 import PlaceholderWrapper from "../placeholder-wrapper";
@@ -11,6 +11,8 @@ import {
   useGetAllExistingUsers,
 } from "../../custom-hooks/api";
 import { useVirtualizedTableState } from "../../custom-hooks";
+import { DeleteModalProvider } from "../../context-providers";
+import PopUpActionsWrapper from "../pop-up-actions-wrapper";
 
 const UsersTableStateOptions = {
   defaultSortBy: "role",
@@ -24,7 +26,10 @@ function UsersSection() {
     isLoading,
     getAllExistingUsers,
   } = useGetAllExistingUsers();
-  const { deleteExistingUsers } = useDeleteExistingUsers();
+  const {
+    deleteExistingUsers,
+    isLoading: isDeleting,
+  } = useDeleteExistingUsers();
   const {
     processedData: processedUserInvites,
     sortBy,
@@ -98,13 +103,18 @@ function UsersSection() {
                 disableSort={true}
                 headerRenderer={DefaultHeaderRenderer}
                 cellRenderer={({ cellData }) => (
-                  <DeleteButton
-                    deleteTitle={`Delete Existing User`}
-                    deleteDescription={`Are you sure you want to delete existing user (${cellData})?`}
+                  <DeleteModalProvider
+                    isDeleting={isDeleting}
                     onDelete={() =>
                       deleteExistingUsers([cellData], getAllExistingUsers)
                     }
-                  />
+                    deleteTitle="Delete Existing User"
+                    deleteDescription={`Are you sure you want to delete existing user (${cellData})?`}
+                  >
+                    <PopUpActionsWrapper actionButtons={[<DeleteButton />]}>
+                      <Button icon="ellipsis horizontal" compact />
+                    </PopUpActionsWrapper>
+                  </DeleteModalProvider>
                 )}
               />
             </Table>

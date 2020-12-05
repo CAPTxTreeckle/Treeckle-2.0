@@ -1,5 +1,6 @@
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useContext, useMemo } from "react";
 import { useHistory } from "react-router-dom";
+import { Button } from "semantic-ui-react";
 import { OwnEventsContext, SingleEventProvider } from "../../context-providers";
 import { useDeleteEvent } from "../../custom-hooks/api";
 import { EVENTS_EDIT_PATH, EVENTS_SINGLE_VIEW_PATH } from "../../routes";
@@ -32,19 +33,24 @@ function EventEditableGalleryItem(props: Props) {
     [history, id],
   );
 
+  const actionButtons = useMemo(
+    () => [
+      <Button key={0} content="View" onClick={onView} color="blue" />,
+      <Button key={1} content="Edit" onClick={onEdit} color="black" />,
+      <Button
+        key={2}
+        content="Delete"
+        onClick={onDelete}
+        color="red"
+        loading={isLoading}
+      />,
+    ],
+    [isLoading, onDelete, onView, onEdit],
+  );
+
   return (
     <PopUpActionsWrapper
-      actions={[
-        { key: 0, content: "View", onClick: onView, color: "blue" },
-        { key: 1, content: "Edit", onClick: onEdit, color: "black" },
-        {
-          key: 2,
-          content: "Delete",
-          onClick: onDelete,
-          color: "red",
-          loading: isLoading,
-        },
-      ]}
+      actionButtons={actionButtons}
       offsetRatio={{ heightRatio: -2 }}
     >
       <div className="flex-display hover-bob hover-pointing">
