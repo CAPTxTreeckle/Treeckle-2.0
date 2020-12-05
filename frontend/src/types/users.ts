@@ -15,3 +15,15 @@ export type UserInviteData = BaseData & {
 export type UserData = UserInviteData & {
   name: string;
 };
+
+export type UserInvitePatchData = {
+  id: number;
+  role?: Role;
+};
+
+export type UserPatchData = {
+  id: number;
+  name?: string;
+  email?: string;
+  role?: Role;
+};

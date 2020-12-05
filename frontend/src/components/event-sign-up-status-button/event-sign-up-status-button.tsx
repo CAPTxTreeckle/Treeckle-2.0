@@ -40,13 +40,13 @@ function SignUpStatusButton({ userId, signUpStatus }: Props) {
 
   const approveButton = useMemo(
     () => (
-      <Button key={0} content="Approve" color="green" onClick={onApprove} />
+      <Button key={1} content="Approve" color="green" onClick={onApprove} />
     ),
     [onApprove],
   );
 
   const rejectButton = useMemo(
-    () => <Button key={1} content="Reject" color="red" onClick={onReject} />,
+    () => <Button key={2} content="Reject" color="red" onClick={onReject} />,
     [onReject],
   );
 

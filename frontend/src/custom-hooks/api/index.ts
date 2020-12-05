@@ -34,7 +34,9 @@ export {
 
 export {
   useGetAllUserInvites,
+  useUpdateUserInvites,
   useDeleteUserInvites,
   useGetAllExistingUsers,
+  useUpdateExistingUsers,
   useDeleteExistingUsers,
 } from "./users-api";

@@ -1,18 +1,32 @@
-import React, { useEffect, useRef } from "react";
-import { Popup, Icon, Segment, Button } from "semantic-ui-react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Popup, Icon, Segment } from "semantic-ui-react";
 import { AutoSizer, Table, Column } from "react-virtualized";
-import DeleteButton from "../delete-button";
 import PlaceholderWrapper from "../placeholder-wrapper";
 import SearchBar from "../search-bar";
-import DefaultHeaderRenderer from "../default-header-renderer";
+import { useVirtualizedTableState } from "../../custom-hooks";
+import UsersTableActionsCellRenderer from "../users-table-actions-cell-renderer";
+import { UserData, UserPatchData } from "../../types/users";
 import "./users-section.scss";
 import {
-  useDeleteExistingUsers,
   useGetAllExistingUsers,
+  useUpdateExistingUsers,
 } from "../../custom-hooks/api";
-import { useVirtualizedTableState } from "../../custom-hooks";
-import { DeleteModalProvider } from "../../context-providers";
-import PopUpActionsWrapper from "../pop-up-actions-wrapper";
+
+type UsersSectionContextType = {
+  getAllExistingUsers: () => Promise<UserData[]>;
+  updateExistingUsers: (users: UserPatchData[]) => Promise<UserData[]>;
+};
+
+export const UsersSectionContext = React.createContext<UsersSectionContextType>(
+  {
+    getAllExistingUsers: () => {
+      throw new Error("getAllExistingUsers not defined");
+    },
+    updateExistingUsers: () => {
+      throw new Error("updateExistingUsers not defined");
+    },
+  },
+);
 
 const UsersTableStateOptions = {
   defaultSortBy: "role",
@@ -23,13 +37,34 @@ const UsersTableStateOptions = {
 function UsersSection() {
   const {
     existingUsers,
-    isLoading,
-    getAllExistingUsers,
+    getAllExistingUsers: _getAllExistingUsers,
   } = useGetAllExistingUsers();
   const {
-    deleteExistingUsers,
-    isLoading: isDeleting,
-  } = useDeleteExistingUsers();
+    updateExistingUsers: _updateExistingUsers,
+  } = useUpdateExistingUsers();
+
+  const tableRef = useRef<Table>(null);
+  const [isLoading, setLoading] = useState(false);
+
+  const getAllExistingUsers = useCallback(async () => {
+    setLoading(true);
+    const existingUsers = await _getAllExistingUsers();
+    setLoading(false);
+    return existingUsers;
+  }, [_getAllExistingUsers]);
+
+  const updateExistingUsers = useCallback(
+    async (users: UserPatchData[]) => {
+      return await _updateExistingUsers(users, _getAllExistingUsers);
+    },
+    [_updateExistingUsers, _getAllExistingUsers],
+  );
+
+  useEffect(() => {
+    getAllExistingUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const {
     processedData: processedUserInvites,
     sortBy,
@@ -38,15 +73,14 @@ function UsersSection() {
     searchValue,
     onSearchValueChange,
   } = useVirtualizedTableState(existingUsers, UsersTableStateOptions);
-  const tableRef = useRef<Table>(null);
-
-  useEffect(() => {
-    getAllExistingUsers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
-    <>
+    <UsersSectionContext.Provider
+      value={{
+        getAllExistingUsers,
+        updateExistingUsers,
+      }}
+    >
       <h1>
         Existing Users{" "}
         <Popup
@@ -92,36 +126,25 @@ function UsersSection() {
               sort={setSortParams}
             >
               <Column dataKey="name" label="Name" width={width * 0.25} />
-              <Column dataKey="email" label="Email" width={width * 0.35} />
-              <Column dataKey="role" label="Role" width={width * 0.15} />
+              <Column dataKey="email" label="Email" width={width * 0.4} />
+              <Column dataKey="role" label="Role" width={width * 0.2} />
               <Column
-                dataKey="email"
+                dataKey="id"
                 label="Actions"
                 headerClassName="center-text"
                 className="center-text"
-                width={width * 0.25}
+                width={width * 0.15}
                 disableSort={true}
-                headerRenderer={DefaultHeaderRenderer}
+                cellDataGetter={({ rowData }) => rowData}
                 cellRenderer={({ cellData }) => (
-                  <DeleteModalProvider
-                    isDeleting={isDeleting}
-                    onDelete={() =>
-                      deleteExistingUsers([cellData], getAllExistingUsers)
-                    }
-                    deleteTitle="Delete Existing User"
-                    deleteDescription={`Are you sure you want to delete existing user (${cellData})?`}
-                  >
-                    <PopUpActionsWrapper actionButtons={[<DeleteButton />]}>
-                      <Button icon="ellipsis horizontal" compact />
-                    </PopUpActionsWrapper>
-                  </DeleteModalProvider>
+                  <UsersTableActionsCellRenderer cellData={cellData} />
                 )}
               />
             </Table>
           )}
         </AutoSizer>
       </Segment>
-    </>
+    </UsersSectionContext.Provider>
   );
 }
 

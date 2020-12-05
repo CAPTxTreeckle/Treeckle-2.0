@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import {
   Button,
+  Divider,
   Popup,
   StrictButtonGroupProps,
   StrictPopupProps,
@@ -12,7 +13,22 @@ type Props = {
   offsetRatio?: { widthRatio?: number; heightRatio?: number };
   vertical?: boolean;
   popUpPosition?: StrictPopupProps["position"];
+  inverted?: boolean;
 };
+
+type PopUpActionsWrapperContextType = {
+  extraContent: React.ReactNode;
+  setExtraContent: (extraContent: React.ReactNode) => void;
+  closePopUp: () => void;
+};
+
+export const PopUpActionsWrapperContext = React.createContext<PopUpActionsWrapperContextType>(
+  {
+    extraContent: null,
+    setExtraContent: () => new Error("setExtraContent not defined"),
+    closePopUp: () => new Error("setPopUpOpen not defined"),
+  },
+);
 
 function PopUpActionsWrapper({
   children,
@@ -23,29 +39,52 @@ function PopUpActionsWrapper({
   },
   vertical = false,
   popUpPosition = "top center",
+  inverted = false,
 }: Props) {
+  const [isPopUpOpen, setPopUpOpen] = useState(false);
+  const [extraContent, setExtraContent] = useState<React.ReactNode>(null);
+
+  const closePopUp = useCallback(() => {
+    setExtraContent(null);
+    setPopUpOpen(false);
+  }, []);
+
   return (
-    <Popup
-      trigger={children}
-      position={popUpPosition}
-      hoverable
-      on={["click"]}
-      hideOnScroll
-      size="huge"
-      offset={({ popper: { width, height } }) => [
-        width * widthRatio,
-        height * heightRatio,
-      ]}
-      popper={{ style: { zIndex: 500 } }}
+    <PopUpActionsWrapperContext.Provider
+      value={{ extraContent, setExtraContent, closePopUp }}
     >
-      <Button.Group
-        fluid
-        widths={actionButtons.length as StrictButtonGroupProps["widths"]}
-        vertical={vertical}
+      <Popup
+        inverted={inverted}
+        trigger={children}
+        position={popUpPosition}
+        on={["click"]}
+        hideOnScroll
+        size="huge"
+        offset={({ popper: { width, height } }) => [
+          width * widthRatio,
+          height * heightRatio,
+        ]}
+        popperDependencies={[extraContent]}
+        onClose={closePopUp}
+        onOpen={() => setPopUpOpen(true)}
+        open={isPopUpOpen}
       >
-        {actionButtons}
-      </Button.Group>
-    </Popup>
+        {extraContent && (
+          <>
+            {extraContent}
+            <Divider />
+          </>
+        )}
+
+        <Button.Group
+          fluid
+          widths={actionButtons.length as StrictButtonGroupProps["widths"]}
+          vertical={vertical}
+        >
+          {actionButtons}
+        </Button.Group>
+      </Popup>
+    </PopUpActionsWrapperContext.Provider>
   );
 }
 

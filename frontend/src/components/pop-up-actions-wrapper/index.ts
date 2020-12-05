@@ -1,1 +1,1 @@
-export { default } from "./pop-up-actions-wrapper";
+export { default, PopUpActionsWrapperContext } from "./pop-up-actions-wrapper";

@@ -1,18 +1,16 @@
-import React, { useEffect, useRef } from "react";
-import { Popup, Icon, Segment, Button } from "semantic-ui-react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Popup, Icon, Segment } from "semantic-ui-react";
 import { AutoSizer, Table, Column } from "react-virtualized";
-import DeleteButton from "../delete-button";
 import PlaceholderWrapper from "../placeholder-wrapper";
 import SearchBar from "../search-bar";
-import DefaultHeaderRenderer from "../default-header-renderer";
-import "./user-invites-section.scss";
 import {
-  useDeleteUserInvites,
   useGetAllUserInvites,
+  useUpdateUserInvites,
 } from "../../custom-hooks/api";
 import { useVirtualizedTableState } from "../../custom-hooks";
-import PopUpActionsWrapper from "../pop-up-actions-wrapper";
-import { DeleteModalProvider } from "../../context-providers";
+import { UserInvitePatchData } from "../../types/users";
+import UserInvitesTableActionsCellRenderer from "../user-invites-table-actions-cell-renderer";
+import "./user-invites-section.scss";
 
 const UserInvitesTableStateOptions = {
   defaultSortBy: "role",
@@ -21,8 +19,34 @@ const UserInvitesTableStateOptions = {
 };
 
 function UserInvitesSection() {
-  const { userInvites, isLoading, getAllUserInvites } = useGetAllUserInvites();
-  const { deleteUserInvites, isLoading: isDeleting } = useDeleteUserInvites();
+  const {
+    userInvites,
+    getAllUserInvites: _getAllUserInvites,
+  } = useGetAllUserInvites();
+  const { updateUserInvites: _updateUserInvites } = useUpdateUserInvites();
+
+  const tableRef = useRef<Table>(null);
+  const [isLoading, setLoading] = useState(false);
+
+  const getAllUserInvites = useCallback(async () => {
+    setLoading(true);
+    const userInvites = await _getAllUserInvites();
+    setLoading(false);
+    return userInvites;
+  }, [_getAllUserInvites]);
+
+  const updateUserInvites = useCallback(
+    async (users: UserInvitePatchData[]) => {
+      return await _updateUserInvites(users, _getAllUserInvites);
+    },
+    [_updateUserInvites, _getAllUserInvites],
+  );
+
+  useEffect(() => {
+    getAllUserInvites();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const {
     processedData: processedUserInvites,
     sortBy,
@@ -31,12 +55,6 @@ function UserInvitesSection() {
     searchValue,
     onSearchValueChange,
   } = useVirtualizedTableState(userInvites, UserInvitesTableStateOptions);
-  const tableRef = useRef<Table>(null);
-
-  useEffect(() => {
-    getAllUserInvites();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <>
@@ -81,29 +99,22 @@ function UserInvitesSection() {
               sortDirection={sortDirection}
               sort={setSortParams}
             >
-              <Column dataKey="email" label="Email" width={width * 0.55} />
-              <Column dataKey="role" label="Role" width={width * 0.25} />
+              <Column dataKey="email" label="Email" width={width * 0.65} />
+              <Column dataKey="role" label="Role" width={width * 0.2} />
               <Column
-                dataKey="email"
+                dataKey="id"
                 label="Actions"
                 headerClassName="center-text"
                 className="center-text"
-                width={width * 0.2}
+                width={width * 0.15}
                 disableSort={true}
-                headerRenderer={DefaultHeaderRenderer}
+                cellDataGetter={({ rowData }) => rowData}
                 cellRenderer={({ cellData }) => (
-                  <DeleteModalProvider
-                    isDeleting={isDeleting}
-                    onDelete={() =>
-                      deleteUserInvites([cellData], getAllUserInvites)
-                    }
-                    deleteTitle="Delete Pending User"
-                    deleteDescription={`Are you sure you want to delete pending user (${cellData})?`}
-                  >
-                    <PopUpActionsWrapper actionButtons={[<DeleteButton />]}>
-                      <Button icon="ellipsis horizontal" compact />
-                    </PopUpActionsWrapper>
-                  </DeleteModalProvider>
+                  <UserInvitesTableActionsCellRenderer
+                    cellData={cellData}
+                    getAllUserInvites={getAllUserInvites}
+                    updateUserInvites={updateUserInvites}
+                  />
                 )}
               />
             </Table>

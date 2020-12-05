@@ -370,8 +370,8 @@ export function useSignUpForEvent() {
           url: `/events/${id}/self_sign_up`,
         });
         console.log(`POST /events/${id}/self_sign_up success:`, signUpData);
-        const { status } = signUpData;
         await onSuccess?.();
+        const { status } = signUpData;
         toast.success(
           status === SignUpStatus.PENDING
             ? "You have requested to sign up for the event."

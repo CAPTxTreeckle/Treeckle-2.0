@@ -12,7 +12,6 @@ function DeleteButton() {
       trigger={
         <Button
           color="red"
-          compact
           icon="trash alternate"
           onClick={() => setModalOpen(true)}
         />

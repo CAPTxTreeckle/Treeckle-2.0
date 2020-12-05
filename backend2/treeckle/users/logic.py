@@ -86,6 +86,32 @@ def create_user_invites(
     return new_user_invites
 
 
+def update_user_invites(
+    user_invite_data_dict: dict, organization: Organization
+) -> Sequence[UserInvite]:
+    user_invite_ids_to_be_updated = user_invite_data_dict.keys()
+    user_invites_to_be_updated = [
+        user_invite
+        for user_invite in get_user_invites(
+            id__in=user_invite_ids_to_be_updated,
+            organization=organization,
+        )
+    ]
+
+    ## https://pypi.org/project/django-update-from-dict/
+    for user_invite in user_invites_to_be_updated:
+        user_invite.update_from_dict(
+            user_invite_data_dict[user_invite.id], commit=False
+        )
+
+    UserInvite.objects.bulk_update(
+        user_invites_to_be_updated,
+        fields=["role"],
+    )
+
+    return user_invites_to_be_updated
+
+
 def update_users(user_data_dict: dict, organization: Organization) -> Sequence[User]:
     user_ids_to_be_updated = user_data_dict.keys()
     users_to_be_updated = [
@@ -100,7 +126,7 @@ def update_users(user_data_dict: dict, organization: Organization) -> Sequence[U
     for user in users_to_be_updated:
         user.update_from_dict(user_data_dict[user.id], commit=False)
 
-    User.objects.bulk_update(users_to_be_updated, fields=("name", "email", "role"))
+    User.objects.bulk_update(users_to_be_updated, fields=["name", "email", "role"])
 
     return users_to_be_updated
 

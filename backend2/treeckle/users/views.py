@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from treeckle.common.generators import generate_error_message
 from .logic import (
     get_user_invites,
     get_users,
@@ -9,6 +10,7 @@ from .logic import (
     user_to_json,
     get_valid_invitations,
     create_user_invites,
+    update_user_invites,
     update_users,
     delete_user_invites,
     delete_users,
@@ -19,6 +21,7 @@ from .serializers import (
     PostUserInviteSerializer,
     EmailListSerializer,
     PatchUserSerializer,
+    PatchUserInviteSerializer,
 )
 
 # Create your views here.
@@ -57,6 +60,42 @@ class UserInviteView(APIView):
         return Response(data, status=status.HTTP_200_OK)
 
     @check_access([Role.Admin])
+    def patch(self, request, requester: User):
+        serializer = PatchUserInviteSerializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+
+        ## shape: [{id, role}]
+        user_invite_data_list = serializer.validated_data["users"]
+
+        ## shape: {id: {role: }}
+        user_invite_data_dict = {
+            user_invite_data["id"]: {
+                field: field_value
+                for field, field_value in user_invite_data.items()
+                if field != "id"
+            }
+            for user_invite_data in user_invite_data_list
+        }
+
+        updated_user_invites = update_user_invites(
+            user_invite_data_dict,
+            organization=requester.organization,
+        )
+
+        if not updated_user_invites:
+            return Response(
+                generate_error_message("No user invites updated."),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        data = [
+            user_invite_to_json(user_invite) for user_invite in updated_user_invites
+        ]
+
+        return Response(data, status=status.HTTP_200_OK)
+
+    @check_access([Role.Admin])
     def delete(self, request, requester: User):
         serializer = EmailListSerializer(data=request.data)
 
@@ -67,6 +106,12 @@ class UserInviteView(APIView):
             emails_to_be_deleted,
             organization=requester.organization,
         )
+
+        if not deleted_emails:
+            return Response(
+                generate_error_message("No user invites deleted."),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         return Response(deleted_emails, status=status.HTTP_200_OK)
 
@@ -111,6 +156,12 @@ class UserView(APIView):
             organization=requester.organization,
         )
 
+        if not updated_users:
+            return Response(
+                generate_error_message("No users updated."),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         data = [user_to_json(user) for user in updated_users]
 
         return Response(data, status=status.HTTP_200_OK)
@@ -134,5 +185,11 @@ class UserView(APIView):
             emails_to_be_deleted,
             organization=requester.organization,
         )
+
+        if not deleted_emails:
+            return Response(
+                generate_error_message("No users deleted."),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         return Response(deleted_emails, status=status.HTTP_200_OK)

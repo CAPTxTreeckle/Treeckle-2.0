@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Header, Icon, Modal, ModalProps } from "semantic-ui-react";
+import { Button, Header, Icon, Modal } from "semantic-ui-react";
 
 type DeleteModalContextType = {
   isModalOpen: boolean;
@@ -43,6 +43,7 @@ function ModalProvider({
         onClose={() => setModalOpen(false)}
         open={isModalOpen}
         size="tiny"
+        dimmer={<Modal.Dimmer style={{ zIndex: 2000 }} />}
       >
         <Header icon>
           <Icon name="trash alternate outline" />

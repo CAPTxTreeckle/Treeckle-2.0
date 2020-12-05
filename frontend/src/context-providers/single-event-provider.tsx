@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
   useGetSingleEvent,
   useSignUpForEvent,
@@ -51,7 +45,7 @@ function SingleEventProvider({ children, eventViewProps }: Props) {
   const [willUpdateUserIds, setWillUpdateUserIds] = useState<Set<number>>(
     new Set(),
   );
-  const eventId = useMemo(() => event.id, [event.id]);
+  const eventId = event.id;
 
   useEffect(() => {
     setEvent(eventViewProps);
