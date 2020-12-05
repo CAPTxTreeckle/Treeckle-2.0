@@ -5,7 +5,7 @@ import throttle from "lodash.throttle";
 import { generateSearchEngine } from "../utils/search-utils";
 
 export default function useVirtualizedTableState(
-  data: Object[],
+  data: Record<string, unknown>[],
   {
     defaultSortBy,
     searchIndex,
@@ -16,7 +16,9 @@ export default function useVirtualizedTableState(
     searchKeys?: string[] | string[][];
   } = {},
 ) {
-  const [processedData, setProcessedData] = useState<Object[]>([]);
+  const [processedData, setProcessedData] = useState<Record<string, unknown>[]>(
+    [],
+  );
   const [sortBy, setSortBy] = useState<string | undefined>(defaultSortBy);
   const [sortDirection, setSortDirection] = useState<SortDirectionType>("ASC");
   const [searchValue, setSearchValue] = useState("");
@@ -50,7 +52,7 @@ export default function useVirtualizedTableState(
   );
 
   const filter = useCallback(
-    (data: Object[]) => {
+    (data: Record<string, unknown>[]) => {
       if (
         !activeSearchValue ||
         !searchIndex ||
@@ -61,13 +63,16 @@ export default function useVirtualizedTableState(
       }
 
       const searchEngine = generateSearchEngine(searchIndex, searchKeys, data);
-      return searchEngine.search(activeSearchValue);
+      return searchEngine.search(activeSearchValue) as Record<
+        string,
+        unknown
+      >[];
     },
     [activeSearchValue, searchIndex, searchKeys],
   );
 
   const sort = useCallback(
-    (data: Object[]) => {
+    (data: Record<string, unknown>[]) => {
       return arraySort([...data], sortBy, {
         reverse: sortDirection === "DESC",
       });

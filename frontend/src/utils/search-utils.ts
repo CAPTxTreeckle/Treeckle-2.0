@@ -3,7 +3,7 @@ import * as JsSearch from "js-search";
 export function generateSearchEngine(
   searchIndex: string | string[],
   searchKeys: string[] | string[][],
-  documents: Object[],
+  documents: Record<string, unknown>[],
 ) {
   const searchEngine = new JsSearch.Search(searchIndex);
   searchEngine.indexStrategy = new JsSearch.AllSubstringsIndexStrategy();

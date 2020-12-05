@@ -54,9 +54,8 @@ function UsersSection() {
   }, [_getAllExistingUsers]);
 
   const updateExistingUsers = useCallback(
-    async (users: UserPatchData[]) => {
-      return await _updateExistingUsers(users, _getAllExistingUsers);
-    },
+    async (users: UserPatchData[]) =>
+      _updateExistingUsers(users, _getAllExistingUsers),
     [_updateExistingUsers, _getAllExistingUsers],
   );
 
@@ -134,7 +133,7 @@ function UsersSection() {
                 headerClassName="center-text"
                 className="center-text"
                 width={width * 0.15}
-                disableSort={true}
+                disableSort
                 cellDataGetter={({ rowData }) => rowData}
                 cellRenderer={({ cellData }) => (
                   <UsersTableActionsCellRenderer cellData={cellData} />

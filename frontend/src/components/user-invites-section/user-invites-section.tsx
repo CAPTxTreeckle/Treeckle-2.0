@@ -36,9 +36,8 @@ function UserInvitesSection() {
   }, [_getAllUserInvites]);
 
   const updateUserInvites = useCallback(
-    async (users: UserInvitePatchData[]) => {
-      return await _updateUserInvites(users, _getAllUserInvites);
-    },
+    async (users: UserInvitePatchData[]) =>
+      _updateUserInvites(users, _getAllUserInvites),
     [_updateUserInvites, _getAllUserInvites],
   );
 
@@ -107,7 +106,7 @@ function UserInvitesSection() {
                 headerClassName="center-text"
                 className="center-text"
                 width={width * 0.15}
-                disableSort={true}
+                disableSort
                 cellDataGetter={({ rowData }) => rowData}
                 cellRenderer={({ cellData }) => (
                   <UserInvitesTableActionsCellRenderer
