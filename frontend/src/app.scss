@@ -89,3 +89,19 @@ body ::-webkit-scrollbar-thumb {
 .flex-display {
   display: flex !important;
 }
+
+.section-title-container {
+  display: flex;
+
+  .section-title {
+    margin-right: 0.5rem;
+  }
+
+  .section-title-action-container {
+    display: flex;
+  }
+}
+
+.black-text {
+  color: black;
+}

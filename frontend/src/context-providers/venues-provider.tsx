@@ -11,7 +11,7 @@ type VenuesContextType = {
 export const VenuesContext = React.createContext<VenuesContextType>({
   venues: [],
   getAllVenues: () => {
-    throw new Error("getAllVenues not defined");
+    throw new Error("getAllVenues not defined.");
   },
   isLoading: false,
 });

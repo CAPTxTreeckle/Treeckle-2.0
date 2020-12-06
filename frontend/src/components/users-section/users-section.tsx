@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Popup, Icon, Segment } from "semantic-ui-react";
+import { Popup, Icon, Segment, Button } from "semantic-ui-react";
 import { AutoSizer, Table, Column } from "react-virtualized";
 import PlaceholderWrapper from "../placeholder-wrapper";
 import SearchBar from "../search-bar";
@@ -11,6 +11,7 @@ import {
   useGetAllExistingUsers,
   useUpdateExistingUsers,
 } from "../../custom-hooks/api";
+import { toast } from "react-toastify";
 
 type UsersSectionContextType = {
   getAllExistingUsers: () => Promise<UserData[]>;
@@ -20,10 +21,10 @@ type UsersSectionContextType = {
 export const UsersSectionContext = React.createContext<UsersSectionContextType>(
   {
     getAllExistingUsers: () => {
-      throw new Error("getAllExistingUsers not defined");
+      throw new Error("getAllExistingUsers not defined.");
     },
     updateExistingUsers: () => {
-      throw new Error("updateExistingUsers not defined");
+      throw new Error("updateExistingUsers not defined.");
     },
   },
 );
@@ -54,8 +55,23 @@ function UsersSection() {
   }, [_getAllExistingUsers]);
 
   const updateExistingUsers = useCallback(
-    async (users: UserPatchData[]) =>
-      _updateExistingUsers(users, _getAllExistingUsers),
+    async (users: UserPatchData[]) => {
+      try {
+        const updatedExistingUsers = await _updateExistingUsers(users);
+
+        await _getAllExistingUsers();
+
+        toast.success(
+          `Existing user${
+            updatedExistingUsers.length > 1 ? "s" : ""
+          } updated successfully.`,
+        );
+
+        return updatedExistingUsers;
+      } catch (error) {
+        return [];
+      }
+    },
     [_updateExistingUsers, _getAllExistingUsers],
   );
 
@@ -80,14 +96,23 @@ function UsersSection() {
         updateExistingUsers,
       }}
     >
-      <h1>
-        Existing Users{" "}
-        <Popup
-          content="Refresh"
-          trigger={<Icon name="refresh" link onClick={getAllExistingUsers} />}
-          position="top center"
-          on="hover"
-        />
+      <h1 className="section-title-container">
+        <div className="section-title">New Pending Users</div>
+
+        <div className="section-title-action-container">
+          <Popup
+            content="Refresh"
+            trigger={
+              <Button
+                icon="refresh"
+                color="blue"
+                onClick={getAllExistingUsers}
+              />
+            }
+            position="top center"
+            on="hover"
+          />
+        </div>
       </h1>
 
       <SearchBar

@@ -24,6 +24,7 @@ import {
   EventsSingleViewPage,
   EventsEditPage,
   EventsQrCodePage,
+  AdminUsersCreationPage,
 } from "../components/pages";
 import {
   DASHBOARD_PATH,
@@ -46,6 +47,7 @@ import {
   ADMIN_VENUES_PATH,
   ADMIN_VENUES_CREATION_PATH,
   ADMIN_VENUES_EDIT_PATH,
+  ADMIN_USERS_CREATION_PATH,
 } from "./index";
 import { UserContext, VenuesProvider } from "../context-providers";
 import RoleRestrictedRoute from "./role-restricted-route";
@@ -185,6 +187,15 @@ function Routes() {
               strict
             >
               <AdminUsersPage />
+            </RoleRestrictedRoute>
+
+            <RoleRestrictedRoute
+              roles={[Role.Admin]}
+              path={ADMIN_USERS_CREATION_PATH}
+              exact
+              strict
+            >
+              <AdminUsersCreationPage />
             </RoleRestrictedRoute>
 
             <RoleRestrictedRoute

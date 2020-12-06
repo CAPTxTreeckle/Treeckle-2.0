@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useCallback, useContext } from "react";
 import { Button } from "semantic-ui-react";
 import { DeleteModalProvider } from "../../context-providers";
 import { useDeleteExistingUsers } from "../../custom-hooks/api";
@@ -7,6 +7,7 @@ import DeleteButton from "../delete-button";
 import UserRoleChangeButton from "../user-role-change-button";
 import PopUpActionsWrapper from "../pop-up-actions-wrapper";
 import { UsersSectionContext } from "../users-section";
+import { toast } from "react-toastify";
 
 type Props = {
   cellData: UserData;
@@ -18,14 +19,30 @@ function UsersTableActionsCellRenderer({ cellData }: Props) {
     UsersSectionContext,
   );
   const {
-    deleteExistingUsers,
+    deleteExistingUsers: _deleteExistingUsers,
     isLoading: isDeleting,
   } = useDeleteExistingUsers();
+
+  const onDelete = useCallback(async () => {
+    try {
+      const deletedEmails = await _deleteExistingUsers([email]);
+      getAllExistingUsers();
+
+      toast.success(
+        `Existing user${
+          deletedEmails.length > 1 ? "s" : ""
+        } deleted successfully.`,
+      );
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }, [_deleteExistingUsers, getAllExistingUsers, email]);
 
   return (
     <DeleteModalProvider
       isDeleting={isDeleting}
-      onDelete={() => deleteExistingUsers([email], getAllExistingUsers)}
+      onDelete={onDelete}
       deleteTitle="Delete Existing User"
       deleteDescription={`Are you sure you want to delete existing user (${email})?`}
     >

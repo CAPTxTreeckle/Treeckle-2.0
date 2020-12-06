@@ -26,10 +26,10 @@ export const EventSubscriptionsContext = React.createContext<EventSubscriptionsC
   {
     subscribedEvents: [],
     getSubscriptions: () => {
-      throw new Error("getSubcriptions not defined");
+      throw new Error("getSubcriptions not defined.");
     },
     updateSubscriptions: () => {
-      throw new Error("updateSubscriptions not defined");
+      throw new Error("updateSubscriptions not defined.");
     },
     isLoadingSubscribedEvents: false,
     isLoadingEventCategories: false,

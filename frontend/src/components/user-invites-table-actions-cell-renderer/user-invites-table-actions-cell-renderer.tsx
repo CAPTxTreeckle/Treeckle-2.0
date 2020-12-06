@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Button } from "semantic-ui-react";
 import { DeleteModalProvider } from "../../context-providers";
 import { useDeleteUserInvites } from "../../custom-hooks/api";
@@ -10,6 +10,7 @@ import {
 import DeleteButton from "../delete-button";
 import UserRoleChangeButton from "../user-role-change-button";
 import PopUpActionsWrapper from "../pop-up-actions-wrapper";
+import { toast } from "react-toastify";
 
 type Props = {
   cellData: UserInviteData;
@@ -25,12 +26,31 @@ function UserInvitesTableActionsCellRenderer({
   updateUserInvites,
 }: Props) {
   const { id, email, role } = cellData as UserData;
-  const { deleteUserInvites, isLoading: isDeleting } = useDeleteUserInvites();
+  const {
+    deleteUserInvites: _deleteUserInvites,
+    isLoading: isDeleting,
+  } = useDeleteUserInvites();
+
+  const onDelete = useCallback(async () => {
+    try {
+      const deletedEmails = await _deleteUserInvites([email]);
+      getAllUserInvites();
+
+      toast.success(
+        `New pending user${
+          deletedEmails.length > 1 ? "s" : ""
+        } deleted successfully.`,
+      );
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }, [_deleteUserInvites, getAllUserInvites, email]);
 
   return (
     <DeleteModalProvider
       isDeleting={isDeleting}
-      onDelete={() => deleteUserInvites([email], getAllUserInvites)}
+      onDelete={onDelete}
       deleteTitle="Delete Pending User"
       deleteDescription={`Are you sure you want to delete pending user (${email})?`}
     >

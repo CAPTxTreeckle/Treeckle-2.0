@@ -17,6 +17,7 @@ export const ADMIN_VENUES_PATH = "/admin/venues";
 export const ADMIN_VENUES_CREATION_PATH = "/admin/venues/create";
 export const ADMIN_VENUES_EDIT_PATH = "/admin/venues/:id";
 export const ADMIN_USERS_PATH = "/admin/users";
+export const ADMIN_USERS_CREATION_PATH = "/admin/users/create";
 export const ADMIN_SETTINGS_PATH = "/admin/settings";
 export const PROFILE_PATH = "/profile";
 export const OPEN_ID_PATH = "/openid";

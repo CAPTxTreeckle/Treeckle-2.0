@@ -16,6 +16,11 @@ export type UserData = UserInviteData & {
   name: string;
 };
 
+export type UserInvitePostData = {
+  email: string;
+  role: Role;
+};
+
 export type UserInvitePatchData = {
   id: number;
   role?: Role;

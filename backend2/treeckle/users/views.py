@@ -55,6 +55,12 @@ class UserInviteView(APIView):
             organization=requester.organization,
         )
 
+        if not new_user_invites:
+            return Response(
+                generate_error_message("No user invites created."),
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         data = [user_invite_to_json(user_invite) for user_invite in new_user_invites]
 
         return Response(data, status=status.HTTP_200_OK)

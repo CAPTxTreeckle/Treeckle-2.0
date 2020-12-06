@@ -25,8 +25,8 @@ type PopUpActionsWrapperContextType = {
 export const PopUpActionsWrapperContext = React.createContext<PopUpActionsWrapperContextType>(
   {
     extraContent: null,
-    setExtraContent: () => new Error("setExtraContent not defined"),
-    closePopUp: () => new Error("setPopUpOpen not defined"),
+    setExtraContent: () => new Error("setExtraContent not defined."),
+    closePopUp: () => new Error("setPopUpOpen not defined."),
   },
 );
 

@@ -11,7 +11,7 @@ type OwnEventsContextType = {
 export const OwnEventsContext = React.createContext<OwnEventsContextType>({
   ownEvents: [],
   getOwnEvents: () => {
-    throw new Error("getOwnEvents not defined");
+    throw new Error("getOwnEvents not defined.");
   },
   isLoading: false,
 });

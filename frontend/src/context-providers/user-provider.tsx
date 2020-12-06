@@ -19,7 +19,7 @@ type UserContextType = User & {
 
 export const UserContext = React.createContext<UserContextType>({
   setUser: () => {
-    throw new Error("setUser is not defined");
+    throw new Error("setUser is not defined.");
   },
 });
 

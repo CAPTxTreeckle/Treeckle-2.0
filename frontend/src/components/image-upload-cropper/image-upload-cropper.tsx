@@ -52,6 +52,9 @@ function ImageUploadCropper({ onChange, value, fixedAspectRatio }: Props) {
       <FileUploader
         onAcceptFiles={onAcceptImageFile}
         accept={["image/jpeg", "image/png", "image/gif"]}
+        maxFileSize={2000000}
+        title="Drag and drop, or click here to upload image."
+        description="Maximum accepted image size is 2MB."
       />
     );
   };

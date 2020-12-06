@@ -34,6 +34,7 @@ export {
 
 export {
   useGetAllUserInvites,
+  useCreateUserInvites,
   useUpdateUserInvites,
   useDeleteUserInvites,
   useGetAllExistingUsers,

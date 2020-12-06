@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Popup, Icon, Segment } from "semantic-ui-react";
+import { Popup, Icon, Segment, Button } from "semantic-ui-react";
 import { AutoSizer, Table, Column } from "react-virtualized";
 import PlaceholderWrapper from "../placeholder-wrapper";
 import SearchBar from "../search-bar";
@@ -11,6 +11,7 @@ import { useVirtualizedTableState } from "../../custom-hooks";
 import { UserInvitePatchData } from "../../types/users";
 import UserInvitesTableActionsCellRenderer from "../user-invites-table-actions-cell-renderer";
 import "./user-invites-section.scss";
+import { toast } from "react-toastify";
 
 const UserInvitesTableStateOptions = {
   defaultSortBy: "role",
@@ -36,8 +37,23 @@ function UserInvitesSection() {
   }, [_getAllUserInvites]);
 
   const updateUserInvites = useCallback(
-    async (users: UserInvitePatchData[]) =>
-      _updateUserInvites(users, _getAllUserInvites),
+    async (users: UserInvitePatchData[]) => {
+      try {
+        const updatedUserInvites = await _updateUserInvites(users);
+
+        await _getAllUserInvites();
+
+        toast.success(
+          `Pending new user${
+            updatedUserInvites.length > 1 ? "s" : ""
+          } updated successfully.`,
+        );
+
+        return updatedUserInvites;
+      } catch (error) {
+        return [];
+      }
+    },
     [_updateUserInvites, _getAllUserInvites],
   );
 
@@ -57,14 +73,19 @@ function UserInvitesSection() {
 
   return (
     <>
-      <h1>
-        New Pending Users{" "}
-        <Popup
-          content="Refresh"
-          trigger={<Icon name="refresh" link onClick={getAllUserInvites} />}
-          position="top center"
-          on="hover"
-        />
+      <h1 className="section-title-container">
+        <div className="section-title">New Pending Users</div>
+
+        <div className="section-title-action-container">
+          <Popup
+            content="Refresh"
+            trigger={
+              <Button icon="refresh" color="blue" onClick={getAllUserInvites} />
+            }
+            position="top center"
+            on="hover"
+          />
+        </div>
       </h1>
 
       <SearchBar

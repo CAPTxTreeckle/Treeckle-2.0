@@ -20,16 +20,16 @@ type SingleEventType = {
 
 export const SingleEventContext = React.createContext<SingleEventType>({
   getSingleEvent: () => {
-    throw new Error("getSingleEvent is not defined");
+    throw new Error("getSingleEvent is not defined.");
   },
   signUpForEvent: () => {
-    throw new Error("signUpForEvent is not defined");
+    throw new Error("signUpForEvent is not defined.");
   },
   withdrawFromEvent: () => {
-    throw new Error("withdrawFromEvent is not defined");
+    throw new Error("withdrawFromEvent is not defined.");
   },
   updateSignUpsForEvent: () => {
-    throw new Error("updateSignUpsForEvent is not defined");
+    throw new Error("updateSignUpsForEvent is not defined.");
   },
   willUpdateUserIds: new Set(),
 });

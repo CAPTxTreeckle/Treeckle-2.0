@@ -5,6 +5,7 @@ import {
   UserData,
   UserInviteData,
   UserInvitePatchData,
+  UserInvitePostData,
   UserPatchData,
 } from "../../types/users";
 import { defaultArray } from "./default";
@@ -28,11 +29,46 @@ export function useGetAllUserInvites() {
       return userInvites;
     } catch (error) {
       console.log("GET /users/invite error:", error, error?.response);
+      toast.error("An unknown error has occurred.");
       return [];
     }
   }, [apiCall]);
 
   return { userInvites, isLoading: loading, getAllUserInvites };
+}
+
+export function useCreateUserInvites() {
+  const [{ loading }, apiCall] = useAxiosWithTokenRefresh<UserInviteData[]>(
+    {
+      url: "/users/invite",
+      method: "post",
+    },
+    { manual: true },
+  );
+
+  const createUserInvites = useCallback(
+    async (invitations: UserInvitePostData[]) => {
+      try {
+        const { data: userInvites = [] } = await apiCall({
+          data: { invitations },
+        });
+        console.log("POST /users/invite success:", userInvites);
+
+        if (userInvites.length <= 0) {
+          throw new Error("No user invites created.");
+        }
+
+        return userInvites;
+      } catch (error) {
+        console.log("POST /users/invite error:", error, error?.response);
+        toast.error("An unknown error has occurred.");
+        throw error;
+      }
+    },
+    [apiCall],
+  );
+
+  return { isLoading: loading, createUserInvites };
 }
 
 export function useUpdateUserInvites() {
@@ -45,28 +81,22 @@ export function useUpdateUserInvites() {
   );
 
   const updateUserInvites = useCallback(
-    async (
-      users: UserInvitePatchData[],
-      onSuccess?: () => Promise<unknown> | unknown,
-    ) => {
+    async (users: UserInvitePatchData[]) => {
       try {
         const { data: updatedUserInvites = [] } = await apiCall({
           data: { users },
         });
         console.log("PATCH /users/invite success:", updatedUserInvites);
-        await onSuccess?.();
 
-        toast.success(
-          `Pending new user${
-            updatedUserInvites.length > 1 ? "s" : ""
-          } updated successfully.`,
-        );
+        if (updatedUserInvites.length <= 0) {
+          throw new Error("No user invites updated.");
+        }
 
         return updatedUserInvites;
       } catch (error) {
         console.log("PATCH /users/invite error:", error, error?.response);
         toast.error("An unknown error has occurred.");
-        return [];
+        throw error;
       }
     },
     [apiCall],
@@ -85,25 +115,23 @@ export function useDeleteUserInvites() {
   );
 
   const deleteUserInvites = useCallback(
-    async (emails: string[], onSuccess?: () => Promise<unknown> | unknown) => {
+    async (emails: string[]) => {
       try {
         const { data: deletedEmails = [] } = await apiCall({
           data: { emails },
         });
 
         console.log("DELETE /users/invite success:", deletedEmails);
-        onSuccess?.();
 
-        toast.success(
-          `New pending user${
-            deletedEmails.length > 1 ? "s" : ""
-          } deleted successfully.`,
-        );
-        return true;
+        if (deletedEmails.length <= 0) {
+          throw new Error("No user invites deleted.");
+        }
+
+        return deletedEmails;
       } catch (error) {
         console.log("DELETE /users/invite error:", error, error?.response);
         toast.error("An unknown error has occurred.");
-        return false;
+        throw error;
       }
     },
     [apiCall],
@@ -131,6 +159,7 @@ export function useGetAllExistingUsers() {
       return existingUsers;
     } catch (error) {
       console.log("GET /users/ error:", error, error?.response);
+      toast.error("An unknown error has occurred.");
       return [];
     }
   }, [apiCall]);
@@ -148,28 +177,22 @@ export function useUpdateExistingUsers() {
   );
 
   const updateExistingUsers = useCallback(
-    async (
-      users: UserPatchData[],
-      onSuccess?: () => Promise<unknown> | unknown,
-    ) => {
+    async (users: UserPatchData[]) => {
       try {
-        const { data: updatedUsers = [] } = await apiCall({
+        const { data: updatedExistingUsers = [] } = await apiCall({
           data: { users },
         });
-        console.log("PATCH /users/ success:", updatedUsers);
-        await onSuccess?.();
+        console.log("PATCH /users/ success:", updatedExistingUsers);
 
-        toast.success(
-          `Existing user${
-            updatedUsers.length > 1 ? "s" : ""
-          } updated successfully.`,
-        );
+        if (updatedExistingUsers.length <= 0) {
+          throw new Error("No existing users updated.");
+        }
 
-        return updatedUsers;
+        return updatedExistingUsers;
       } catch (error) {
         console.log("PATCH /users/ error:", error, error?.response);
         toast.error("An unknown error has occurred.");
-        return [];
+        throw error;
       }
     },
     [apiCall],
@@ -188,25 +211,19 @@ export function useDeleteExistingUsers() {
   );
 
   const deleteExistingUsers = useCallback(
-    async (emails: string[], onSuccess?: () => Promise<unknown> | unknown) => {
+    async (emails: string[]) => {
       try {
         const { data: deletedEmails = [] } = await apiCall({
           data: { emails },
         });
 
         console.log("DELETE /users/ success:", deletedEmails);
-        onSuccess?.();
 
-        toast.success(
-          `Existing user${
-            deletedEmails.length > 1 ? "s" : ""
-          } deleted successfully.`,
-        );
-        return true;
+        return deletedEmails;
       } catch (error) {
         console.log("DELETE /users/ error:", error, error?.response);
         toast.error("An unknown error has occurred.");
-        return false;
+        throw error;
       }
     },
     [apiCall],

@@ -9,7 +9,7 @@ type DeleteModalContextType = {
 export const DeleteModalContext = React.createContext<DeleteModalContextType>({
   isModalOpen: false,
   setModalOpen: () => {
-    throw new Error("setModalOpen not defined");
+    throw new Error("setModalOpen not defined.");
   },
 });
 
