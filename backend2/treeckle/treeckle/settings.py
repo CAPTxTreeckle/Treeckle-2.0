@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     "email_service",
     "authentication",
     "users",
+    "events",
+    "venues",
 ]
 
 if DEBUG:
