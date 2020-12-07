@@ -29,7 +29,6 @@ export function useGetAllUserInvites() {
       return userInvites;
     } catch (error) {
       console.log("GET /users/invite error:", error, error?.response);
-      toast.error("An unknown error has occurred.");
       return [];
     }
   }, [apiCall]);
@@ -159,7 +158,6 @@ export function useGetAllExistingUsers() {
       return existingUsers;
     } catch (error) {
       console.log("GET /users/ error:", error, error?.response);
-      toast.error("An unknown error has occurred.");
       return [];
     }
   }, [apiCall]);

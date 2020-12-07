@@ -30,8 +30,8 @@ function parseVenueData(venueData: VenueData): VenueViewProps {
 
   const venueViewProps: VenueViewProps = {
     id,
-    createdAt: new Date(createdAt),
-    updatedAt: new Date(updatedAt),
+    createdAt,
+    updatedAt,
     venueFormProps: JSON.parse(formData),
   };
 

@@ -1,26 +1,33 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { SortDirectionType } from "react-virtualized";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { SortDirectionType, Table } from "react-virtualized";
 import arraySort from "array-sort";
 import throttle from "lodash.throttle";
 import { generateSearchEngine } from "../utils/search-utils";
 
-export default function useVirtualizedTableState(
-  data: Record<string, unknown>[],
+export type VirtualizedTableStateOptions = {
+  defaultSortBy?: string;
+  defaultSortDirection?: SortDirectionType;
+  searchIndex?: string | string[];
+  searchKeys?: string[] | string[][];
+};
+
+export default function useVirtualizedTableState<
+  T extends Record<string, unknown>
+>(
+  data: T[],
   {
     defaultSortBy,
+    defaultSortDirection = "ASC",
     searchIndex,
     searchKeys,
-  }: {
-    defaultSortBy?: string;
-    searchIndex?: string | string[];
-    searchKeys?: string[] | string[][];
-  } = {},
+  }: VirtualizedTableStateOptions = {},
 ) {
-  const [processedData, setProcessedData] = useState<Record<string, unknown>[]>(
-    [],
-  );
+  const tableRef = useRef<Table>(null);
+  const [processedData, setProcessedData] = useState<T[]>([]);
   const [sortBy, setSortBy] = useState<string | undefined>(defaultSortBy);
-  const [sortDirection, setSortDirection] = useState<SortDirectionType>("ASC");
+  const [sortDirection, setSortDirection] = useState<SortDirectionType>(
+    defaultSortDirection,
+  );
   const [searchValue, setSearchValue] = useState("");
   const [activeSearchValue, setActiveSearchValue] = useState("");
 
@@ -52,7 +59,7 @@ export default function useVirtualizedTableState(
   );
 
   const filter = useCallback(
-    (data: Record<string, unknown>[]) => {
+    (data: T[]) => {
       if (
         !activeSearchValue ||
         !searchIndex ||
@@ -63,19 +70,18 @@ export default function useVirtualizedTableState(
       }
 
       const searchEngine = generateSearchEngine(searchIndex, searchKeys, data);
-      return searchEngine.search(activeSearchValue) as Record<
-        string,
-        unknown
-      >[];
+      return searchEngine.search(activeSearchValue) as T[];
     },
     [activeSearchValue, searchIndex, searchKeys],
   );
 
   const sort = useCallback(
-    (data: Record<string, unknown>[]) => {
-      return arraySort([...data], sortBy, {
-        reverse: sortDirection === "DESC",
-      });
+    (data: T[]) => {
+      return sortBy
+        ? arraySort([...data], sortBy, {
+            reverse: sortDirection === "DESC",
+          })
+        : data;
     },
     [sortBy, sortDirection],
   );
@@ -87,6 +93,7 @@ export default function useVirtualizedTableState(
   }, [data, filter, sort]);
 
   return {
+    tableRef,
     processedData,
     sortBy,
     sortDirection,

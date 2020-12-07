@@ -11,6 +11,7 @@ type Props = {
   icon?: React.ReactNode;
   title?: string;
   description?: string;
+  disabled?: boolean;
 };
 
 const focusedStyle = {
@@ -33,6 +34,7 @@ function FileUploader({
   icon = <Icon name="file alternate" />,
   title = "Drag and drop, or click here to upload file.",
   description,
+  disabled,
 }: Props) {
   const {
     getRootProps,
@@ -45,6 +47,7 @@ function FileUploader({
     multiple,
     onDropAccepted: onAcceptFiles,
     maxSize: maxFileSize,
+    disabled,
   });
 
   const style = useMemo(

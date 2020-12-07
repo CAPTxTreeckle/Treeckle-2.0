@@ -8,8 +8,9 @@
 }
 
 .virtualized-table-wrapper {
-  padding: 0 0.2rem 0.2rem 0 !important;
+  padding: 0 0.2rem 0.1rem 0 !important;
   overflow: hidden;
+  height: 30rem;
 
   .ReactVirtualized__Table {
     color: rgba(0, 0, 0, 0.87);
@@ -18,7 +19,7 @@
 
   .ReactVirtualized__Table__headerRow {
     background: #f9fafb;
-    text-transform: capitalize;
+    text-transform: none;
     border-bottom: 1px solid rgba(34, 36, 38, 0.15);
   }
 
@@ -100,6 +101,10 @@ body ::-webkit-scrollbar-thumb {
   .section-title-action-container {
     display: flex;
   }
+}
+
+.capitalize-text {
+  text-transform: capitalize;
 }
 
 .black-text {

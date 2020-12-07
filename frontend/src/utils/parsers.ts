@@ -20,12 +20,18 @@ export function sanitiseArray(strings: string[]): string[] {
   return Array.from(new Set(strings.map((s) => s.trim()).filter((s) => s)));
 }
 
-export function displayDatetime(datetime: Date, format?: string): string {
-  return dayjs(datetime).format(format ?? DATE_TIME_FORMAT);
+export function displayDatetime(
+  datetime: number,
+  format: string = DATE_TIME_FORMAT,
+): string {
+  return dayjs(datetime).format(format);
 }
 
-export function parseDatetime(datetimeString: string, format?: string): Date {
-  return dayjs(datetimeString, format ?? DATE_TIME_FORMAT).toDate();
+export function parseDatetime(
+  datetimeString: string,
+  format: string = DATE_TIME_FORMAT,
+): Date {
+  return dayjs(datetimeString, format).toDate();
 }
 
 export function parseStringToInt(s?: string): number | null {
@@ -36,9 +42,7 @@ export function parseStringToInt(s?: string): number | null {
 export function parseUserToUserData(user: User) {
   const { id, name, email, role, organization } = user ?? {};
 
-  if (
-    [id, name, email, role, organization].some((value) => value === undefined)
-  ) {
+  if ([id, name, email, role, organization].includes(undefined)) {
     return undefined;
   }
 

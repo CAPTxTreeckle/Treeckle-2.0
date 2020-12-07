@@ -1,10 +1,12 @@
 import { BaseData } from "./base";
 
 export enum Role {
-  Admin = "Admin",
-  Organizer = "Organizer",
-  Resident = "Resident",
+  Admin = "ADMIN",
+  Organizer = "ORGANIZER",
+  Resident = "RESIDENT",
 }
+
+export const roles = Object.values(Role);
 
 export type UserInviteData = BaseData & {
   email: string;
@@ -31,4 +33,17 @@ export type UserPatchData = {
   name?: string;
   email?: string;
   role?: Role;
+};
+
+export enum UserCreationStatus {
+  Created = "CREATED",
+  Invalid = "INVALID",
+  Duplicated = "DUPLICATED",
+  New = "NEW",
+}
+
+export type PendingCreationUser = {
+  email: string;
+  role: Role;
+  status: UserCreationStatus;
 };

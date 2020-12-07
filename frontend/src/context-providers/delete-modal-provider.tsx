@@ -16,7 +16,7 @@ export const DeleteModalContext = React.createContext<DeleteModalContextType>({
 type Props = {
   children: React.ReactNode;
   isDeleting?: boolean;
-  onDelete?: () => Promise<boolean>;
+  onDelete?: () => Promise<boolean> | boolean;
   deleteTitle?: string;
   deleteDescription?: string;
 };

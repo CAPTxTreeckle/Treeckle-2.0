@@ -1,9 +1,13 @@
 export const ALLOW_SIGN_UP = "allowSignUp";
-export const CATEGORY = "category";
 export const CATEGORIES = "categories";
-export const DATE_TIME_FORMAT = "DD/MM/YYYY h.mma";
+export const CATEGORY = "category";
+export const COMMA_NEWLINE_REGEX = /[,\n\r]/g;
 export const DATE_FORMAT = "DD/MM/YYYY";
+export const DATE_TIME_FORMAT = "DD/MM/YYYY h.mma";
 export const DESCRIPTION = "description";
+//eslint-disable-next-line no-useless-escape
+export const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+export const EMAILS = "emails";
 export const END_DATE_TIME = "endDateTime";
 export const ESTIMATED_CAPACITY = "estimatedCapacity";
 export const EVENT_TITLE = "eventTitle";
@@ -16,8 +20,9 @@ export const PLACEHOLDER_TEXT = "placeholderText";
 export const POSITIVE_NUM_REGEX = /^(\s*|[1-9]\d*)$/;
 export const PUBLISH = "publish";
 export const RECOMMENDED_CAPACITY = "recommendedCapacity";
-export const SIGN_UP_REQUIRE_APPROVAL = "signUpRequireApproval";
 export const REQUIRED_FIELD = "requiredField";
+export const ROLE = "role";
+export const SIGN_UP_REQUIRE_APPROVAL = "signUpRequireApproval";
 export const START_DATE_TIME = "startDateTime";
 export const TIME_FORMAT = "h.mma";
 export const VENUE_DETAILS_CUSTOM_FORM_FIELDS_SECTION =

@@ -74,15 +74,15 @@ const schema = yup.object().shape({
 type Props = {
   onSubmit?: (data: EventFormProps) => void;
   defaultValues?: EventFormProps;
-  submitButtonProps: { content: string; color: StrictButtonProps["color"] };
+  submitButtonProps: StrictButtonProps;
 };
 
 const defaultFormProps: EventFormProps = {
   [EVENT_TITLE]: "",
   [ORGANISED_BY]: "",
   [CATEGORIES]: [],
-  [START_DATE_TIME]: new Date(0),
-  [END_DATE_TIME]: new Date(0),
+  [START_DATE_TIME]: 0,
+  [END_DATE_TIME]: 0,
   [IMAGE]: "",
   [ALLOW_SIGN_UP]: false,
   [SIGN_UP_REQUIRE_APPROVAL]: false,
@@ -93,8 +93,8 @@ function EventDetailsForm({
   onSubmit,
   defaultValues = {
     ...defaultFormProps,
-    [START_DATE_TIME]: new Date(),
-    [END_DATE_TIME]: new Date(),
+    [START_DATE_TIME]: new Date().getTime(),
+    [END_DATE_TIME]: new Date().getTime(),
   },
   submitButtonProps,
 }: Props) {
@@ -217,9 +217,9 @@ function EventDetailsForm({
                   type="toggle"
                 />
                 <Form.Button
+                  {...submitButtonProps}
                   type="submit"
                   loading={isSubmitting}
-                  {...submitButtonProps}
                 />
               </Form.Group>
             </Grid.Column>

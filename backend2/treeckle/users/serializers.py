@@ -5,7 +5,7 @@ from .models import User, UserInvite, Role
 
 
 class PostSingleUserInviteSerializer(serializers.ModelSerializer):
-    role = serializers.ChoiceField(Role.choices, default=Role.Resident)
+    role = serializers.ChoiceField(Role.choices, default=Role.RESIDENT)
 
     class Meta:
         model = UserInvite

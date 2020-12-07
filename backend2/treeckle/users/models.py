@@ -19,9 +19,9 @@ class ThirdPartyAuthenticator(models.TextChoices):
 
 
 class Role(models.TextChoices):
-    Admin = "Admin"
-    Organizer = "Organizer"
-    Resident = "Resident"
+    ADMIN = "ADMIN"
+    ORGANIZER = "ORGANIZER"
+    RESIDENT = "RESIDENT"
 
 
 class User(TimestampedModel):
@@ -34,7 +34,7 @@ class User(TimestampedModel):
         default=ThirdPartyAuthenticator.NONE,
     )
     third_party_id = models.CharField(max_length=100, unique=True)
-    role = models.CharField(max_length=50, choices=Role.choices, default=Role.Resident)
+    role = models.CharField(max_length=50, choices=Role.choices, default=Role.RESIDENT)
 
     def __str__(self):
         return f"{self.name} ({self.organization})"
@@ -46,7 +46,7 @@ class User(TimestampedModel):
 class UserInvite(TimestampedModel):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     email = models.EmailField(unique=True)
-    role = models.CharField(max_length=50, choices=Role.choices, default=Role.Resident)
+    role = models.CharField(max_length=50, choices=Role.choices, default=Role.RESIDENT)
 
     def __str__(self):
         return f"{self.email} ({self.organization})"

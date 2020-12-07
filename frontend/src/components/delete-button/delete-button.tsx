@@ -1,19 +1,33 @@
-import React, { useContext } from "react";
-import { Button, Popup } from "semantic-ui-react";
-import { DeleteModalContext } from "../../context-providers";
+import React from "react";
+import { Popup, Button, StrictButtonProps } from "semantic-ui-react";
 
-function DeleteButton() {
-  const { setModalOpen } = useContext(DeleteModalContext);
+type Props = {
+  compact?: boolean;
+  onDelete?: () => void;
+  popUpContent?: string | null;
+  label?: string;
+  icon?: StrictButtonProps["icon"];
+};
 
+function DeleteButton({
+  compact = false,
+  onDelete,
+  popUpContent = "Delete",
+  label,
+  icon = "trash alternate",
+}: Props) {
   return (
     <Popup
-      content="Delete"
+      content={popUpContent}
       position="top center"
+      disabled={popUpContent === null}
       trigger={
         <Button
+          compact={compact}
           color="red"
-          icon="trash alternate"
-          onClick={() => setModalOpen(true)}
+          icon={icon}
+          onClick={onDelete}
+          content={label}
         />
       }
     />

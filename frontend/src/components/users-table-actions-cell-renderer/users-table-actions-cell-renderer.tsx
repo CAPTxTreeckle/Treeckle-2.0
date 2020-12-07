@@ -1,20 +1,20 @@
 import React, { useCallback, useContext } from "react";
 import { Button } from "semantic-ui-react";
+import { toast } from "react-toastify";
 import { DeleteModalProvider } from "../../context-providers";
 import { useDeleteExistingUsers } from "../../custom-hooks/api";
 import { UserData } from "../../types/users";
-import DeleteButton from "../delete-button";
+import DeleteModalButton from "../delete-modal-button";
 import UserRoleChangeButton from "../user-role-change-button";
 import PopUpActionsWrapper from "../pop-up-actions-wrapper";
 import { UsersSectionContext } from "../users-section";
-import { toast } from "react-toastify";
 
 type Props = {
-  cellData: UserData;
+  rowData: UserData;
 };
 
-function UsersTableActionsCellRenderer({ cellData }: Props) {
-  const { id, email, role } = cellData as UserData;
+function UsersTableActionsCellRenderer({ rowData }: Props) {
+  const { id, email, role } = rowData as UserData;
   const { getAllExistingUsers, updateExistingUsers } = useContext(
     UsersSectionContext,
   );
@@ -54,7 +54,7 @@ function UsersTableActionsCellRenderer({ cellData }: Props) {
             currentRole={role}
             updateUsers={updateExistingUsers}
           />,
-          <DeleteButton key={1} />,
+          <DeleteModalButton key={1} />,
         ]}
       >
         <Button icon="ellipsis horizontal" compact />

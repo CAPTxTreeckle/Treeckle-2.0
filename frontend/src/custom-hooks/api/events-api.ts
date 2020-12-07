@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import { useCallback, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -44,8 +43,8 @@ function parseEventFormProps(
     venueName: venueName ?? "",
     categories: categories ?? [],
     capacity: parseStringToInt(estimatedCapacity),
-    startDate: dayjs(startDateTime).toDate(),
-    endDate: dayjs(endDateTime).toDate(),
+    startDate: startDateTime,
+    endDate: endDateTime,
     description: description ?? "",
     image: image ?? "",
     isSignUpAllowed: allowSignUp,
@@ -84,8 +83,8 @@ function parseEventData(eventData: EventData): EventViewProps {
     venueName,
     categories,
     estimatedCapacity: capacity ? capacity.toString() : "",
-    startDateTime: new Date(startDate),
-    endDateTime: new Date(endDate),
+    startDateTime: startDate,
+    endDateTime: endDate,
     description,
     image: image ?? "",
     allowSignUp: isSignUpAllowed,
@@ -95,8 +94,8 @@ function parseEventData(eventData: EventData): EventViewProps {
 
   const eventViewProps: EventViewProps = {
     id,
-    createdAt: new Date(createdAt),
-    updatedAt: new Date(updatedAt),
+    createdAt,
+    updatedAt,
     organizer,
     signUpCount,
     signUpStatus,

@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
 import { Button } from "semantic-ui-react";
+import { toast } from "react-toastify";
 import { DeleteModalProvider } from "../../context-providers";
 import { useDeleteUserInvites } from "../../custom-hooks/api";
 import {
@@ -7,13 +8,12 @@ import {
   UserInviteData,
   UserInvitePatchData,
 } from "../../types/users";
-import DeleteButton from "../delete-button";
+import DeleteModalButton from "../delete-modal-button";
 import UserRoleChangeButton from "../user-role-change-button";
 import PopUpActionsWrapper from "../pop-up-actions-wrapper";
-import { toast } from "react-toastify";
 
 type Props = {
-  cellData: UserInviteData;
+  rowData: UserInviteData;
   getAllUserInvites: () => Promise<UserInviteData[]>;
   updateUserInvites: (
     users: UserInvitePatchData[],
@@ -21,11 +21,11 @@ type Props = {
 };
 
 function UserInvitesTableActionsCellRenderer({
-  cellData,
+  rowData,
   getAllUserInvites,
   updateUserInvites,
 }: Props) {
-  const { id, email, role } = cellData as UserData;
+  const { id, email, role } = rowData as UserData;
   const {
     deleteUserInvites: _deleteUserInvites,
     isLoading: isDeleting,
@@ -37,7 +37,7 @@ function UserInvitesTableActionsCellRenderer({
       getAllUserInvites();
 
       toast.success(
-        `New pending user${
+        `Pending registration user${
           deletedEmails.length > 1 ? "s" : ""
         } deleted successfully.`,
       );
@@ -51,8 +51,8 @@ function UserInvitesTableActionsCellRenderer({
     <DeleteModalProvider
       isDeleting={isDeleting}
       onDelete={onDelete}
-      deleteTitle="Delete Pending User"
-      deleteDescription={`Are you sure you want to delete pending user (${email})?`}
+      deleteTitle="Delete Pending Registration User"
+      deleteDescription={`Are you sure you want to delete pending registration user (${email})?`}
     >
       <PopUpActionsWrapper
         actionButtons={[
@@ -62,7 +62,7 @@ function UserInvitesTableActionsCellRenderer({
             currentRole={role}
             updateUsers={updateUserInvites}
           />,
-          <DeleteButton key={1} />,
+          <DeleteModalButton key={1} />,
         ]}
       >
         <Button icon="ellipsis horizontal" compact />

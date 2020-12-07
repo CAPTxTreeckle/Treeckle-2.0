@@ -61,7 +61,7 @@ const schema = yup.object().shape({
           [FIELD_TYPE]: yup
             .mixed<FieldType>()
             .oneOf(Object.values(FieldType))
-            .required("Please enter a field type"),
+            .required("Please choose a field type"),
           [FIELD_LABEL]: yup
             .string()
             .trim()
@@ -77,7 +77,7 @@ const schema = yup.object().shape({
 type Props = {
   onSubmit?: (data: VenueFormProps) => void;
   defaultValues?: VenueFormProps;
-  submitButtonProps: { content: string; color: StrictButtonProps["color"] };
+  submitButtonProps: StrictButtonProps;
 };
 
 const defaultFormProps: VenueFormProps = {
@@ -174,9 +174,9 @@ function VenueDetailsForm({
 
           <div className="action-button-container justify-end">
             <Form.Button
+              {...submitButtonProps}
               type="submit"
               loading={isSubmitting}
-              {...submitButtonProps}
             />
           </div>
         </Form>

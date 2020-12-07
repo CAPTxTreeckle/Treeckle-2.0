@@ -1,5 +1,5 @@
 export type BaseData = {
   id: number;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: number;
+  updatedAt: number;
 };

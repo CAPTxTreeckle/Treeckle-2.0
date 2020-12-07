@@ -22,8 +22,8 @@ export type EventPostData = {
   description: string;
   organisedBy: string;
   venueName: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: number;
+  endDate: number;
   image: string;
   isPublished: boolean;
   isSignUpAllowed: boolean;
@@ -76,8 +76,8 @@ export type EventFormProps = {
   [VENUE_NAME]?: string;
   [CATEGORIES]?: string[];
   [ESTIMATED_CAPACITY]?: string;
-  [START_DATE_TIME]: Date;
-  [END_DATE_TIME]: Date;
+  [START_DATE_TIME]: number;
+  [END_DATE_TIME]: number;
   [DESCRIPTION]?: string;
   [IMAGE]?: string;
   [ALLOW_SIGN_UP]: boolean;

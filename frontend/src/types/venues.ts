@@ -21,9 +21,7 @@ export type VenuePostData = {
 
 export type VenuePutData = VenuePostData;
 
-type VenueMetaData = BaseData;
-
-export type VenueData = VenueMetaData & VenuePostData;
+export type VenueData = BaseData & VenuePostData;
 
 export enum FieldType {
   TEXT = "text",
@@ -49,6 +47,6 @@ export type VenueFormProps = {
   [VENUE_DETAILS_CUSTOM_FORM_FIELDS_SECTION]?: VenueCustomFormFieldProps[];
 };
 
-export type VenueViewProps = VenueMetaData & {
+export type VenueViewProps = BaseData & {
   venueFormProps: VenueFormProps;
 };

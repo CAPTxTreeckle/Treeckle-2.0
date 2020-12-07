@@ -1,17 +1,17 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Popup, Icon, Segment, Button } from "semantic-ui-react";
+import React, { useCallback, useEffect, useState } from "react";
+import { Popup, Segment, Button } from "semantic-ui-react";
 import { AutoSizer, Table, Column } from "react-virtualized";
+import { toast } from "react-toastify";
 import PlaceholderWrapper from "../placeholder-wrapper";
 import SearchBar from "../search-bar";
 import { useVirtualizedTableState } from "../../custom-hooks";
 import UsersTableActionsCellRenderer from "../users-table-actions-cell-renderer";
 import { UserData, UserPatchData } from "../../types/users";
-import "./users-section.scss";
 import {
   useGetAllExistingUsers,
   useUpdateExistingUsers,
 } from "../../custom-hooks/api";
-import { toast } from "react-toastify";
+import { VirtualizedTableStateOptions } from "../../custom-hooks/use-virtualized-table-state";
 
 type UsersSectionContextType = {
   getAllExistingUsers: () => Promise<UserData[]>;
@@ -29,7 +29,7 @@ export const UsersSectionContext = React.createContext<UsersSectionContextType>(
   },
 );
 
-const UsersTableStateOptions = {
+const UsersTableStateOptions: VirtualizedTableStateOptions = {
   defaultSortBy: "role",
   searchIndex: "id",
   searchKeys: ["name", "email", "role"],
@@ -44,7 +44,6 @@ function UsersSection() {
     updateExistingUsers: _updateExistingUsers,
   } = useUpdateExistingUsers();
 
-  const tableRef = useRef<Table>(null);
   const [isLoading, setLoading] = useState(false);
 
   const getAllExistingUsers = useCallback(async () => {
@@ -81,7 +80,8 @@ function UsersSection() {
   }, []);
 
   const {
-    processedData: processedUserInvites,
+    tableRef,
+    processedData: processedUsers,
     sortBy,
     sortDirection,
     setSortParams,
@@ -97,7 +97,7 @@ function UsersSection() {
       }}
     >
       <h1 className="section-title-container">
-        <div className="section-title">New Pending Users</div>
+        <div className="section-title">Existing Users</div>
 
         <div className="section-title-action-container">
           <Popup
@@ -121,10 +121,7 @@ function UsersSection() {
         fluid
       />
 
-      <Segment
-        className="virtualized-table-wrapper existing-users-table"
-        raised
-      >
+      <Segment className="virtualized-table-wrapper" raised>
         <AutoSizer onResize={() => tableRef.current?.recomputeRowHeights()}>
           {({ width, height }) => (
             <Table
@@ -132,9 +129,9 @@ function UsersSection() {
               height={height}
               width={width}
               headerHeight={height * 0.1}
-              rowGetter={({ index }) => processedUserInvites[index]}
+              rowGetter={({ index }) => processedUsers[index]}
               rowHeight={height * 0.1}
-              rowCount={isLoading ? 0 : processedUserInvites.length}
+              rowCount={isLoading ? 0 : processedUsers.length}
               overscanRowCount={20}
               noRowsRenderer={() => (
                 <PlaceholderWrapper
@@ -151,7 +148,15 @@ function UsersSection() {
             >
               <Column dataKey="name" label="Name" width={width * 0.25} />
               <Column dataKey="email" label="Email" width={width * 0.4} />
-              <Column dataKey="role" label="Role" width={width * 0.2} />
+              <Column
+                dataKey="role"
+                label="Role"
+                width={width * 0.2}
+                cellRenderer={({ cellData }) =>
+                  cellData?.toLowerCase() ?? cellData
+                }
+                className="capitalize-text"
+              />
               <Column
                 dataKey="id"
                 label="Actions"
@@ -159,9 +164,8 @@ function UsersSection() {
                 className="center-text"
                 width={width * 0.15}
                 disableSort
-                cellDataGetter={({ rowData }) => rowData}
-                cellRenderer={({ cellData }) => (
-                  <UsersTableActionsCellRenderer cellData={cellData} />
+                cellRenderer={({ rowData }) => (
+                  <UsersTableActionsCellRenderer rowData={rowData} />
                 )}
               />
             </Table>

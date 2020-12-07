@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Popup, Icon, Segment, Button } from "semantic-ui-react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { Popup, Segment, Button } from "semantic-ui-react";
 import { AutoSizer, Table, Column } from "react-virtualized";
+import { toast } from "react-toastify";
 import PlaceholderWrapper from "../placeholder-wrapper";
 import SearchBar from "../search-bar";
 import {
@@ -8,15 +9,20 @@ import {
   useUpdateUserInvites,
 } from "../../custom-hooks/api";
 import { useVirtualizedTableState } from "../../custom-hooks";
-import { UserInvitePatchData } from "../../types/users";
+import { UserInviteData, UserInvitePatchData } from "../../types/users";
 import UserInvitesTableActionsCellRenderer from "../user-invites-table-actions-cell-renderer";
-import "./user-invites-section.scss";
-import { toast } from "react-toastify";
+import { VirtualizedTableStateOptions } from "../../custom-hooks/use-virtualized-table-state";
+import { displayDatetime } from "../../utils/parsers";
 
-const UserInvitesTableStateOptions = {
-  defaultSortBy: "role",
+const UserInvitesTableStateOptions: VirtualizedTableStateOptions = {
+  defaultSortBy: "createdAt",
+  defaultSortDirection: "DESC",
   searchIndex: "id",
-  searchKeys: ["email", "role"],
+  searchKeys: ["email", "createdAtString", "role"],
+};
+
+type UserInviteDisplayData = UserInviteData & {
+  createdAtString: string;
 };
 
 function UserInvitesSection() {
@@ -26,7 +32,6 @@ function UserInvitesSection() {
   } = useGetAllUserInvites();
   const { updateUserInvites: _updateUserInvites } = useUpdateUserInvites();
 
-  const tableRef = useRef<Table>(null);
   const [isLoading, setLoading] = useState(false);
 
   const getAllUserInvites = useCallback(async () => {
@@ -44,7 +49,7 @@ function UserInvitesSection() {
         await _getAllUserInvites();
 
         toast.success(
-          `Pending new user${
+          `Pending registration user${
             updatedUserInvites.length > 1 ? "s" : ""
           } updated successfully.`,
         );
@@ -62,19 +67,32 @@ function UserInvitesSection() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const userInviteDisplayData: UserInviteDisplayData[] = useMemo(
+    () =>
+      userInvites.map((userInvite) => ({
+        ...userInvite,
+        createdAtString: displayDatetime(userInvite.createdAt),
+      })),
+    [userInvites],
+  );
+
   const {
+    tableRef,
     processedData: processedUserInvites,
     sortBy,
     sortDirection,
     setSortParams,
     searchValue,
     onSearchValueChange,
-  } = useVirtualizedTableState(userInvites, UserInvitesTableStateOptions);
+  } = useVirtualizedTableState(
+    userInviteDisplayData,
+    UserInvitesTableStateOptions,
+  );
 
   return (
     <>
       <h1 className="section-title-container">
-        <div className="section-title">New Pending Users</div>
+        <div className="section-title">Pending Registration Users</div>
 
         <div className="section-title-action-container">
           <Popup
@@ -94,7 +112,7 @@ function UserInvitesSection() {
         fluid
       />
 
-      <Segment className="virtualized-table-wrapper user-invites-table" raised>
+      <Segment className="virtualized-table-wrapper" raised>
         <AutoSizer onResize={() => tableRef.current?.recomputeRowHeights()}>
           {({ width, height }) => (
             <Table
@@ -109,18 +127,34 @@ function UserInvitesSection() {
               noRowsRenderer={() => (
                 <PlaceholderWrapper
                   showDefaultMessage
-                  defaultMessage="No new pending users"
+                  defaultMessage="No pending registration users"
                   placeholder
                   isLoading={isLoading}
-                  loadingMessage="Retrieving new pending users"
+                  loadingMessage="Retrieving pending registration users"
                 />
               )}
               sortBy={sortBy}
               sortDirection={sortDirection}
               sort={setSortParams}
             >
-              <Column dataKey="email" label="Email" width={width * 0.65} />
-              <Column dataKey="role" label="Role" width={width * 0.2} />
+              <Column dataKey="email" label="Email" width={width * 0.4} />
+              <Column
+                dataKey="createdAt"
+                label="Created at"
+                width={width * 0.25}
+                cellRenderer={({ cellData, rowData }) =>
+                  rowData?.["createdAtString"] ?? cellData
+                }
+              />
+              <Column
+                dataKey="role"
+                label="Role"
+                width={width * 0.2}
+                cellRenderer={({ cellData }) =>
+                  cellData?.toLowerCase() ?? cellData
+                }
+                className="capitalize-text"
+              />
               <Column
                 dataKey="id"
                 label="Actions"
@@ -128,10 +162,9 @@ function UserInvitesSection() {
                 className="center-text"
                 width={width * 0.15}
                 disableSort
-                cellDataGetter={({ rowData }) => rowData}
-                cellRenderer={({ cellData }) => (
+                cellRenderer={({ rowData }) => (
                   <UserInvitesTableActionsCellRenderer
-                    cellData={cellData}
+                    rowData={rowData}
                     getAllUserInvites={getAllUserInvites}
                     updateUserInvites={updateUserInvites}
                   />

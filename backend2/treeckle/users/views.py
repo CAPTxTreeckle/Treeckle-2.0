@@ -26,7 +26,7 @@ from .serializers import (
 
 # Create your views here.
 class UserInviteView(APIView):
-    @check_access([Role.Admin])
+    @check_access([Role.ADMIN])
     def get(self, request, requester: User):
         same_organization_user_invites = get_user_invites(
             organization=requester.organization
@@ -39,7 +39,7 @@ class UserInviteView(APIView):
 
         return Response(data, status=status.HTTP_200_OK)
 
-    @check_access([Role.Admin])
+    @check_access([Role.ADMIN])
     def post(self, request, requester: User):
         serializer = PostUserInviteSerializer(data=request.data)
 
@@ -65,7 +65,7 @@ class UserInviteView(APIView):
 
         return Response(data, status=status.HTTP_200_OK)
 
-    @check_access([Role.Admin])
+    @check_access([Role.ADMIN])
     def patch(self, request, requester: User):
         serializer = PatchUserInviteSerializer(data=request.data)
 
@@ -101,7 +101,7 @@ class UserInviteView(APIView):
 
         return Response(data, status=status.HTTP_200_OK)
 
-    @check_access([Role.Admin])
+    @check_access([Role.ADMIN])
     def delete(self, request, requester: User):
         serializer = EmailListSerializer(data=request.data)
 
@@ -123,7 +123,7 @@ class UserInviteView(APIView):
 
 
 class UserView(APIView):
-    @check_access([Role.Admin])
+    @check_access([Role.ADMIN])
     def get(self, request, requester: User):
         same_organization_users = get_users(organization=requester.organization)
 
@@ -131,7 +131,7 @@ class UserView(APIView):
 
         return Response(data, status=status.HTTP_200_OK)
 
-    @check_access([Role.Admin])
+    @check_access([Role.ADMIN])
     def patch(self, request, requester: User):
         serializer = PatchUserSerializer(data=request.data)
 
@@ -172,7 +172,7 @@ class UserView(APIView):
 
         return Response(data, status=status.HTTP_200_OK)
 
-    @check_access([Role.Admin])
+    @check_access([Role.ADMIN])
     def delete(self, request, requester: User):
         serializer = EmailListSerializer(data=request.data)
 
