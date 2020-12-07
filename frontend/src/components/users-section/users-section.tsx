@@ -98,32 +98,29 @@ function UsersSection() {
         updateExistingUsers,
       }}
     >
-      <h1 className="section-title-container">
-        <div className="section-title">Existing Users</div>
-
-        <div className="section-title-action-container">
-          <Popup
-            content="Refresh"
-            trigger={
-              <Button
-                icon="refresh"
-                color="blue"
-                onClick={getAllExistingUsers}
-              />
-            }
-            position="top center"
-            on="hover"
-          />
-        </div>
-      </h1>
-
       <Segment.Group raised>
         <Segment secondary>
-          <SearchBar
-            searchValue={searchValue}
-            onSearchValueChange={onSearchValueChange}
-            fluid
-          />
+          <div className="action-container">
+            <SearchBar
+              className="flex-grow"
+              searchValue={searchValue}
+              onSearchValueChange={onSearchValueChange}
+              fluid
+            />
+            <Popup
+              content="Refresh"
+              trigger={
+                <Button
+                  className="left-space-margin"
+                  icon="refresh"
+                  color="blue"
+                  onClick={getAllExistingUsers}
+                />
+              }
+              position="top center"
+              on="hover"
+            />
+          </div>
         </Segment>
 
         <Segment className="virtualized-table-wrapper">

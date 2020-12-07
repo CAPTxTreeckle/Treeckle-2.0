@@ -1,6 +1,3 @@
-export { default } from "./routes";
-
-/*
 export const HOME_PATH = "/";
 export const DASHBOARD_PATH = "/dashboard";
 export const BOOKINGS_PATH = "/bookings";
@@ -23,4 +20,3 @@ export const ADMIN_USERS_CREATION_PATH = "/admin/users/create";
 export const ADMIN_SETTINGS_PATH = "/admin/settings";
 export const PROFILE_PATH = "/profile";
 export const OPEN_ID_PATH = "/openid";
-*/

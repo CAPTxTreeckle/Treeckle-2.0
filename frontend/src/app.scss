@@ -94,7 +94,7 @@ body ::-webkit-scrollbar-thumb {
   width: 100%;
 }
 
-.action-button-container {
+.action-container {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -156,4 +156,8 @@ body ::-webkit-scrollbar-thumb {
 
 .black-text {
   color: black;
+}
+
+.left-space-margin {
+  margin-left: 1rem !important;
 }

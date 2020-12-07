@@ -9,7 +9,7 @@ import {
 import { toast } from "react-toastify";
 import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from "axios";
 import { useHistory } from "react-router-dom";
-import { HOME_PATH, OPEN_ID_PATH } from "../../routes";
+import { HOME_PATH, OPEN_ID_PATH } from "../../routes/paths";
 import { AuthenticationData, OpenIdAuthenticationData } from "../../types/auth";
 import { UserContext } from "../../context-providers";
 import { User } from "../../context-providers/user-provider";

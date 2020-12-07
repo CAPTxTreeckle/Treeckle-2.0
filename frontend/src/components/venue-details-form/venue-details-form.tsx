@@ -172,7 +172,7 @@ function VenueDetailsForm({
 
           <Divider />
 
-          <div className="action-button-container justify-end">
+          <div className="action-container justify-end">
             <Form.Button
               {...submitButtonProps}
               type="submit"

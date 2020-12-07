@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Button, Icon } from "semantic-ui-react";
 import { useLastLocation } from "react-router-last-location";
-import { EVENTS_PATH } from "../../../routes";
+import { EVENTS_PATH } from "../../../routes/paths";
 import EventDetailsForm from "../../event-details-form";
 import { useCreateEvent } from "../../../custom-hooks/api/events-api";
 import { EventFormProps } from "../../../types/events";

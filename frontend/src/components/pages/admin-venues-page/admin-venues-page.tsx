@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button, Icon } from "semantic-ui-react";
 import { VenuesContext } from "../../../context-providers";
-import { ADMIN_VENUES_CREATION_PATH } from "../../../routes";
+import { ADMIN_VENUES_CREATION_PATH } from "../../../routes/paths";
 import PlaceholderWrapper from "../../placeholder-wrapper";
 import VenueFormGallery from "../../venue-gallery";
 

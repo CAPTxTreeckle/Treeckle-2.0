@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Button, Icon } from "semantic-ui-react";
 import { useGetSingleVenue, useUpdateVenue } from "../../../custom-hooks/api";
-import { ADMIN_VENUES_PATH } from "../../../routes";
+import { ADMIN_VENUES_PATH } from "../../../routes/paths";
 import { VenueFormProps } from "../../../types/venues";
 import PlaceholderWrapper from "../../placeholder-wrapper";
 import VenueDetailsForm from "../../venue-details-form";

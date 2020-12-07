@@ -6,7 +6,7 @@ import {
   ADMIN_USERS_PATH,
   ADMIN_SETTINGS_PATH,
   ADMIN_VENUES_PATH,
-} from "../../../routes";
+} from "../../../routes/paths";
 
 function DesktopAdminTab() {
   const location = useLocation();

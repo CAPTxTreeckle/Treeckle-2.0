@@ -48,7 +48,8 @@ import {
   ADMIN_VENUES_CREATION_PATH,
   ADMIN_VENUES_EDIT_PATH,
   ADMIN_USERS_CREATION_PATH,
-} from "./index";
+  ADMIN_USERS_PENDING_REGISTRATION_PATH,
+} from "./paths";
 import { UserContext, VenuesProvider } from "../context-providers";
 import RoleRestrictedRoute from "./role-restricted-route";
 import { Role } from "../types/users";
@@ -182,7 +183,7 @@ function Routes() {
 
             <RoleRestrictedRoute
               roles={[Role.Admin]}
-              path={ADMIN_USERS_PATH}
+              path={[ADMIN_USERS_PATH, ADMIN_USERS_PENDING_REGISTRATION_PATH]}
               exact
               strict
             >

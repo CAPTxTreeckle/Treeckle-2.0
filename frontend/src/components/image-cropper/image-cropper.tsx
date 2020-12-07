@@ -98,7 +98,7 @@ function ImageCropper({
       )}
 
       <Divider />
-      <div className="action-button-container justify-center">
+      <div className="action-container justify-center">
         {onCancel && (
           <Button
             type="button"

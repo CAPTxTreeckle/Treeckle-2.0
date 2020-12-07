@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useQuery } from "../../../custom-hooks";
 import { UserContext } from "../../../context-providers";
-import { HOME_PATH } from "../../../routes";
+import { HOME_PATH } from "../../../routes/paths";
 import { useOpenIdAuth } from "../../../custom-hooks/api";
 import PlaceholderWrapper from "../../placeholder-wrapper";
 

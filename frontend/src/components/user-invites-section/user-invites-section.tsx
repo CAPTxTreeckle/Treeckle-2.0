@@ -98,95 +98,94 @@ function UserInvitesSection() {
   );
 
   return (
-    <>
-      <h1 className="section-title-container">
-        <div className="section-title">Pending Registration Users</div>
-
-        <div className="section-title-action-container">
+    <Segment.Group raised>
+      <Segment secondary>
+        <div className="action-container">
+          <SearchBar
+            className="flex-grow"
+            searchValue={searchValue}
+            onSearchValueChange={onSearchValueChange}
+            fluid
+          />
           <Popup
             content="Refresh"
             trigger={
-              <Button icon="refresh" color="blue" onClick={getAllUserInvites} />
+              <Button
+                className="left-space-margin"
+                icon="refresh"
+                color="blue"
+                onClick={getAllUserInvites}
+              />
             }
             position="top center"
             on="hover"
           />
         </div>
-      </h1>
+      </Segment>
 
-      <Segment.Group raised>
-        <Segment secondary>
-          <SearchBar
-            searchValue={searchValue}
-            onSearchValueChange={onSearchValueChange}
-            fluid
-          />
-        </Segment>
-
-        <Segment className="virtualized-table-wrapper">
-          <AutoSizer onResize={() => tableRef.current?.recomputeRowHeights()}>
-            {({ width, height }) => (
-              <Table
-                ref={tableRef}
-                height={height}
-                width={width}
-                headerHeight={height * 0.1}
-                rowGetter={({ index }) => processedUserInvites[index]}
-                rowHeight={height * 0.1}
-                rowCount={isLoading ? 0 : processedUserInvites.length}
-                overscanRowCount={20}
-                noRowsRenderer={() => (
-                  <PlaceholderWrapper
-                    showDefaultMessage
-                    defaultMessage="No pending registration users"
-                    placeholder
-                    isLoading={isLoading}
-                    loadingMessage="Retrieving pending registration users"
+      <Segment className="virtualized-table-wrapper">
+        <AutoSizer onResize={() => tableRef.current?.recomputeRowHeights()}>
+          {({ width, height }) => (
+            <Table
+              ref={tableRef}
+              height={height}
+              width={width}
+              headerHeight={height * 0.1}
+              rowGetter={({ index }) => processedUserInvites[index]}
+              rowHeight={height * 0.1}
+              rowCount={isLoading ? 0 : processedUserInvites.length}
+              overscanRowCount={20}
+              noRowsRenderer={() => (
+                <PlaceholderWrapper
+                  showDefaultMessage
+                  defaultMessage="No pending registration users"
+                  placeholder
+                  isLoading={isLoading}
+                  loadingMessage="Retrieving pending registration users"
+                />
+              )}
+              sortBy={sortBy}
+              sortDirection={sortDirection}
+              sort={setSortParams}
+            >
+              <Column dataKey={EMAIL} label="Email" width={width * 0.4} />
+              <Column
+                dataKey={CREATED_AT}
+                label="Created at"
+                width={width * 0.25}
+                cellRenderer={({ cellData, rowData }) =>
+                  rowData?.[CREATED_AT_STRING] ?? cellData
+                }
+              />
+              <Column
+                dataKey={ROLE}
+                label="Role"
+                width={width * 0.2}
+                cellRenderer={({ cellData }) =>
+                  cellData?.toLowerCase() ?? cellData
+                }
+                className="capitalize-text"
+              />
+              <Column
+                dataKey={ID}
+                label="Actions"
+                headerClassName="center-text"
+                className="center-text"
+                width={width * 0.15}
+                disableSort
+                cellRenderer={({ rowData }) => (
+                  <UserInvitesTableActionsCellRenderer
+                    rowData={rowData}
+                    getAllUserInvites={getAllUserInvites}
+                    updateUserInvites={updateUserInvites}
                   />
                 )}
-                sortBy={sortBy}
-                sortDirection={sortDirection}
-                sort={setSortParams}
-              >
-                <Column dataKey={EMAIL} label="Email" width={width * 0.4} />
-                <Column
-                  dataKey={CREATED_AT}
-                  label="Created at"
-                  width={width * 0.25}
-                  cellRenderer={({ cellData, rowData }) =>
-                    rowData?.[CREATED_AT_STRING] ?? cellData
-                  }
-                />
-                <Column
-                  dataKey={ROLE}
-                  label="Role"
-                  width={width * 0.2}
-                  cellRenderer={({ cellData }) =>
-                    cellData?.toLowerCase() ?? cellData
-                  }
-                  className="capitalize-text"
-                />
-                <Column
-                  dataKey={ID}
-                  label="Actions"
-                  headerClassName="center-text"
-                  className="center-text"
-                  width={width * 0.15}
-                  disableSort
-                  cellRenderer={({ rowData }) => (
-                    <UserInvitesTableActionsCellRenderer
-                      rowData={rowData}
-                      getAllUserInvites={getAllUserInvites}
-                      updateUserInvites={updateUserInvites}
-                    />
-                  )}
-                />
-              </Table>
-            )}
-          </AutoSizer>
-        </Segment>
-      </Segment.Group>
-    </>
+              />
+            </Table>
+          )}
+        </AutoSizer>
+      </Segment>
+    </Segment.Group>
   );
 }
 

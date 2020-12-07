@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Dropdown, Menu, Image } from "semantic-ui-react";
 import { toast } from "react-toastify";
-import { PROFILE_PATH } from "../../../routes";
+import { PROFILE_PATH } from "../../../routes/paths";
 import defaultAvatarImage from "../../../assets/avatar.png";
 import { UserContext } from "../../../context-providers";
 import "./user-tab.scss";

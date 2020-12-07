@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 import { Button } from "semantic-ui-react";
 import { VenuesContext } from "../../context-providers";
 import { useDeleteVenue } from "../../custom-hooks/api";
-import { ADMIN_VENUES_EDIT_PATH } from "../../routes";
+import { ADMIN_VENUES_EDIT_PATH } from "../../routes/paths";
 import { VenueViewProps } from "../../types/venues";
 import PopUpActionsWrapper from "../pop-up-actions-wrapper";
 import VenueBookingForm from "../venue-booking-form";

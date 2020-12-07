@@ -2,14 +2,21 @@ import React from "react";
 import { Input, Icon } from "semantic-ui-react";
 
 type Props = {
+  className?: string;
   searchValue: string;
   onSearchValueChange: (newValue: string) => void;
   fluid?: boolean;
 };
 
-function SearchBar({ searchValue, onSearchValueChange, fluid = false }: Props) {
+function SearchBar({
+  className,
+  searchValue,
+  onSearchValueChange,
+  fluid = false,
+}: Props) {
   return (
     <Input
+      className={className}
       icon={
         searchValue ? (
           <Icon name="times" link onClick={() => onSearchValueChange("")} />

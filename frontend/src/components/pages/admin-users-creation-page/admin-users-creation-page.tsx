@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useLastLocation } from "react-router-last-location";
 import { Button, Icon } from "semantic-ui-react";
-import { ADMIN_USERS_PATH } from "../../../routes";
+import { ADMIN_USERS_PATH } from "../../../routes/paths";
 import UserCreationSection from "../../user-creation-section";
 
 function AdminUsersCreationPage() {

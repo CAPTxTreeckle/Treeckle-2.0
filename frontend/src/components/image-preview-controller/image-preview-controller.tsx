@@ -31,7 +31,7 @@ function ImagePreviewController({
       {(showBackControl || showChangeControl) && (
         <>
           <Divider />
-          <div className="action-button-container justify-center">
+          <div className="action-container justify-center">
             {showBackControl && (
               <Button
                 type="button"

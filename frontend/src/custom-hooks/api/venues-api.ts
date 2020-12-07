@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
-import { ADMIN_VENUES_PATH } from "../../routes";
+import { ADMIN_VENUES_PATH } from "../../routes/paths";
 import {
   VenueData,
   VenueFormProps,

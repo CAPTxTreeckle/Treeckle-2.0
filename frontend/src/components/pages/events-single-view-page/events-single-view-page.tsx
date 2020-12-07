@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { useLastLocation } from "react-router-last-location";
 import { Button, Icon } from "semantic-ui-react";
 import { useGetSingleEvent } from "../../../custom-hooks/api";
-import { EVENTS_PATH } from "../../../routes";
+import { EVENTS_PATH } from "../../../routes/paths";
 import EventView from "../../event-view";
 import PlaceholderWrapper from "../../placeholder-wrapper";
 

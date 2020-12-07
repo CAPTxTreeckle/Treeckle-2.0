@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Button, Icon } from "semantic-ui-react";
 import { useCreateVenue } from "../../../custom-hooks/api";
-import { ADMIN_VENUES_PATH } from "../../../routes";
+import { ADMIN_VENUES_PATH } from "../../../routes/paths";
 import VenueDetailsForm from "../../venue-details-form";
 
 function AdminVenuesCreationPage() {

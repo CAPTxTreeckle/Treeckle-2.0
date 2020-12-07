@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 import { Button } from "semantic-ui-react";
 import { OwnEventsContext, SingleEventProvider } from "../../context-providers";
 import { useDeleteEvent } from "../../custom-hooks/api";
-import { EVENTS_EDIT_PATH, EVENTS_SINGLE_VIEW_PATH } from "../../routes";
+import { EVENTS_EDIT_PATH, EVENTS_SINGLE_VIEW_PATH } from "../../routes/paths";
 import { EventViewProps } from "../../types/events";
 import EventGalleryItem from "../event-gallery-item";
 import PopUpActionsWrapper from "../pop-up-actions-wrapper";

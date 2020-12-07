@@ -7,7 +7,7 @@ import {
   UserContext,
 } from "../../../context-providers";
 import { Role } from "../../../types/users";
-import { EVENTS_CREATION_PATH, EVENTS_PATH } from "../../../routes";
+import { EVENTS_CREATION_PATH, EVENTS_PATH } from "../../../routes/paths";
 import EventsAllTabPane from "../../events-all-tab-pane";
 import EventsOwnTabPane from "../../events-own-tab-pane";
 import EventsRecommendationsTabPane from "../../events-recommendations-tab-pane";

@@ -207,7 +207,7 @@ function UserCreationTable() {
         </Segment>
 
         <Segment secondary>
-          <div className="action-button-container justify-end">
+          <div className="action-container justify-end">
             <DeleteModalProvider
               onDelete={onClearAllRows}
               deleteTitle="Clear All Pending Creation Users"
