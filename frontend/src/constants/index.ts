@@ -2,10 +2,13 @@ export const ALLOW_SIGN_UP = "allowSignUp";
 export const CATEGORIES = "categories";
 export const CATEGORY = "category";
 export const COMMA_NEWLINE_REGEX = /[,\n\r]/g;
+export const CREATED_AT = "createdAt";
+export const CREATED_AT_STRING = "createdAtString";
 export const DATE_FORMAT = "DD/MM/YYYY";
 export const DATE_TIME_FORMAT = "DD/MM/YYYY h.mma";
 export const DESCRIPTION = "description";
-//eslint-disable-next-line no-useless-escape
+export const EMAIL = "email";
+// eslint-disable-next-line no-useless-escape
 export const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 export const EMAILS = "emails";
 export const END_DATE_TIME = "endDateTime";
@@ -13,8 +16,11 @@ export const ESTIMATED_CAPACITY = "estimatedCapacity";
 export const EVENT_TITLE = "eventTitle";
 export const FIELD_LABEL = "fieldLabel";
 export const FIELD_TYPE = "fieldType";
+export const ID = "id";
 export const IMAGE = "image";
+export const NAME = "name";
 export const ORGANISED_BY = "organisedBy";
+export const ORGANIZATION = "organization";
 export const PHONE_NUM_REGEX = /^(\s*|(\+?\d{0,4})?\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{3}\)?)\s?-?\s?(\(?\d{4}\)?)?)$/;
 export const PLACEHOLDER_TEXT = "placeholderText";
 export const POSITIVE_NUM_REGEX = /^(\s*|[1-9]\d*)$/;
@@ -24,7 +30,9 @@ export const REQUIRED_FIELD = "requiredField";
 export const ROLE = "role";
 export const SIGN_UP_REQUIRE_APPROVAL = "signUpRequireApproval";
 export const START_DATE_TIME = "startDateTime";
+export const STATUS = "status";
 export const TIME_FORMAT = "h.mma";
+export const UPDATED_AT = "updatedAt";
 export const VENUE_DETAILS_CUSTOM_FORM_FIELDS_SECTION =
   "venueDetailsCustomFormFieldsSection";
 export const VENUE_IC_CONTACT_NUMBER = "venueICContactNumber";

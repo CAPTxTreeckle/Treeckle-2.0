@@ -67,14 +67,18 @@ function UserCreationCsvUploader() {
                   role,
                   status: UserCreationStatus.Invalid,
                 };
-              } else if (!EMAIL_REGEX.test(email)) {
-                return { email, role, status: UserCreationStatus.Invalid };
-              } else if (pendingCreationEmails.has(email)) {
-                return { email, role, status: UserCreationStatus.Duplicated };
-              } else {
-                pendingCreationEmails.add(email);
-                return { email, role, status: UserCreationStatus.New };
               }
+
+              if (!EMAIL_REGEX.test(email)) {
+                return { email, role, status: UserCreationStatus.Invalid };
+              }
+
+              if (pendingCreationEmails.has(email)) {
+                return { email, role, status: UserCreationStatus.Duplicated };
+              }
+
+              pendingCreationEmails.add(email);
+              return { email, role, status: UserCreationStatus.New };
             },
           );
 

@@ -1,3 +1,4 @@
+import { EMAIL, ID, NAME, ORGANIZATION, ROLE, STATUS } from "../constants";
 import { BaseData } from "./base";
 
 export enum Role {
@@ -9,30 +10,30 @@ export enum Role {
 export const roles = Object.values(Role);
 
 export type UserInviteData = BaseData & {
-  email: string;
-  role: Role;
-  organization: string;
+  [EMAIL]: string;
+  [ROLE]: Role;
+  [ORGANIZATION]: string;
 };
 
 export type UserData = UserInviteData & {
-  name: string;
+  [NAME]: string;
 };
 
 export type UserInvitePostData = {
-  email: string;
-  role: Role;
+  [EMAIL]: string;
+  [ROLE]: Role;
 };
 
 export type UserInvitePatchData = {
-  id: number;
-  role?: Role;
+  [ID]: number;
+  [ROLE]?: Role;
 };
 
 export type UserPatchData = {
-  id: number;
-  name?: string;
-  email?: string;
-  role?: Role;
+  [ID]: number;
+  [NAME]?: string;
+  [EMAIL]?: string;
+  [ROLE]?: Role;
 };
 
 export enum UserCreationStatus {
@@ -43,7 +44,7 @@ export enum UserCreationStatus {
 }
 
 export type PendingCreationUser = {
-  email: string;
-  role: Role;
-  status: UserCreationStatus;
+  [EMAIL]: string;
+  [ROLE]: Role;
+  [STATUS]: UserCreationStatus;
 };

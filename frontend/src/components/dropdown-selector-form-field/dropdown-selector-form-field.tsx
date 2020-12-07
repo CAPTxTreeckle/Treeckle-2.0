@@ -3,7 +3,7 @@ import { Controller, useFormContext } from "react-hook-form";
 import { DropdownProps, Form } from "semantic-ui-react";
 import get from "lodash.get";
 import { useOptionsState } from "../../custom-hooks";
-import { sanitiseArray } from "../../utils/parsers";
+import { sanitizeArray } from "../../utils/parsers";
 
 type Props = {
   className?: string;
@@ -65,7 +65,7 @@ function DropdownSelectorFormField({
           clearable={clearable}
           onChange={(event, data) => {
             const { value } = data;
-            const trimmedValue = sanitiseArray(
+            const trimmedValue = sanitizeArray(
               Array.isArray(value) ? (value as string[]) : [value as string],
             );
 

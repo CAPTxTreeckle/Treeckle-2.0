@@ -13,12 +13,19 @@ import { UserInviteData, UserInvitePatchData } from "../../types/users";
 import UserInvitesTableActionsCellRenderer from "../user-invites-table-actions-cell-renderer";
 import { VirtualizedTableStateOptions } from "../../custom-hooks/use-virtualized-table-state";
 import { displayDatetime } from "../../utils/parsers";
+import {
+  CREATED_AT,
+  CREATED_AT_STRING,
+  EMAIL,
+  ID,
+  ROLE,
+} from "../../constants";
 
 const UserInvitesTableStateOptions: VirtualizedTableStateOptions = {
-  defaultSortBy: "createdAt",
+  defaultSortBy: CREATED_AT,
   defaultSortDirection: "DESC",
-  searchIndex: "id",
-  searchKeys: ["email", "createdAtString", "role"],
+  searchIndex: ID,
+  searchKeys: [EMAIL, CREATED_AT_STRING, ROLE],
 };
 
 type UserInviteDisplayData = UserInviteData & {
@@ -137,17 +144,17 @@ function UserInvitesSection() {
               sortDirection={sortDirection}
               sort={setSortParams}
             >
-              <Column dataKey="email" label="Email" width={width * 0.4} />
+              <Column dataKey={EMAIL} label="Email" width={width * 0.4} />
               <Column
-                dataKey="createdAt"
+                dataKey={CREATED_AT}
                 label="Created at"
                 width={width * 0.25}
                 cellRenderer={({ cellData, rowData }) =>
-                  rowData?.["createdAtString"] ?? cellData
+                  rowData?.[CREATED_AT_STRING] ?? cellData
                 }
               />
               <Column
-                dataKey="role"
+                dataKey={ROLE}
                 label="Role"
                 width={width * 0.2}
                 cellRenderer={({ cellData }) =>
@@ -156,7 +163,7 @@ function UserInvitesSection() {
                 className="capitalize-text"
               />
               <Column
-                dataKey="id"
+                dataKey={ID}
                 label="Actions"
                 headerClassName="center-text"
                 className="center-text"

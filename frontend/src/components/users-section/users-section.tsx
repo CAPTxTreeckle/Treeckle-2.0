@@ -12,6 +12,7 @@ import {
   useUpdateExistingUsers,
 } from "../../custom-hooks/api";
 import { VirtualizedTableStateOptions } from "../../custom-hooks/use-virtualized-table-state";
+import { EMAIL, ID, NAME, ROLE } from "../../constants";
 
 type UsersSectionContextType = {
   getAllExistingUsers: () => Promise<UserData[]>;
@@ -30,9 +31,9 @@ export const UsersSectionContext = React.createContext<UsersSectionContextType>(
 );
 
 const UsersTableStateOptions: VirtualizedTableStateOptions = {
-  defaultSortBy: "role",
-  searchIndex: "id",
-  searchKeys: ["name", "email", "role"],
+  defaultSortBy: ROLE,
+  searchIndex: ID,
+  searchKeys: [NAME, EMAIL, ROLE],
 };
 
 function UsersSection() {
@@ -146,10 +147,10 @@ function UsersSection() {
               sortDirection={sortDirection}
               sort={setSortParams}
             >
-              <Column dataKey="name" label="Name" width={width * 0.25} />
-              <Column dataKey="email" label="Email" width={width * 0.4} />
+              <Column dataKey={NAME} label="Name" width={width * 0.25} />
+              <Column dataKey={EMAIL} label="Email" width={width * 0.4} />
               <Column
-                dataKey="role"
+                dataKey={ROLE}
                 label="Role"
                 width={width * 0.2}
                 cellRenderer={({ cellData }) =>
@@ -158,7 +159,7 @@ function UsersSection() {
                 className="capitalize-text"
               />
               <Column
-                dataKey="id"
+                dataKey={ID}
                 label="Actions"
                 headerClassName="center-text"
                 className="center-text"

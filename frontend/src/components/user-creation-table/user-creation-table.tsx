@@ -9,6 +9,7 @@ import SearchBar from "../search-bar";
 import { VirtualizedTableStateOptions } from "../../custom-hooks/use-virtualized-table-state";
 import DeleteModalButton from "../delete-modal-button";
 import { DeleteModalProvider } from "../../context-providers";
+import { PendingCreationUser } from "../../types/users";
 
 const UserCreationTableStateOptions: VirtualizedTableStateOptions = {
   searchIndex: "email",
@@ -30,9 +31,18 @@ function UserCreationTable() {
   );
 
   const onDeleteRow = useCallback(
-    (emailToBeDeleted: string) => {
+    ({
+      email: currentEmail,
+      role: currentRole,
+      status: currentStatus,
+    }: PendingCreationUser) => {
       const updatedPendingCreationUsers = pendingCreationUsers.filter(
-        ({ email }) => email !== emailToBeDeleted,
+        ({ email, role, status }) =>
+          !(
+            email === currentEmail &&
+            role === currentRole &&
+            status === currentStatus
+          ),
       );
       setPendingCreationUsers(updatedPendingCreationUsers);
     },
@@ -97,11 +107,8 @@ function UserCreationTable() {
                 headerClassName="center-text"
                 className="center-text"
                 width={width * 0.15}
-                cellRenderer={({ cellData }) => (
-                  <DeleteButton
-                    compact
-                    onDelete={() => onDeleteRow(cellData)}
-                  />
+                cellRenderer={({ rowData }) => (
+                  <DeleteButton compact onDelete={() => onDeleteRow(rowData)} />
                 )}
               />
             </Table>

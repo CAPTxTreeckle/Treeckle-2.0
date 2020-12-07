@@ -16,8 +16,11 @@ export function getMimeTypeFromDataUrl(dataUrl: string): string {
   return dataUrl.substring(dataUrl.indexOf(":") + 1, dataUrl.indexOf(";"));
 }
 
-export function sanitiseArray(strings: string[]): string[] {
-  return Array.from(new Set(strings.map((s) => s.trim()).filter((s) => s)));
+export function sanitizeArray(strings: string[], unique = true): string[] {
+  if (unique) {
+    return Array.from(new Set(strings.map((s) => s.trim()).filter((s) => s)));
+  }
+  return strings.map((s) => s.trim()).filter((s) => s);
 }
 
 export function displayDatetime(

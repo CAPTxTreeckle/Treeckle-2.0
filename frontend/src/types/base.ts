@@ -1,5 +1,7 @@
+import { ID, CREATED_AT, UPDATED_AT } from "../constants";
+
 export type BaseData = {
-  id: number;
-  createdAt: number;
-  updatedAt: number;
+  [ID]: number;
+  [CREATED_AT]: number;
+  [UPDATED_AT]: number;
 };

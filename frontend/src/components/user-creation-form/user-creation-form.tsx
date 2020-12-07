@@ -18,7 +18,7 @@ import {
 } from "../../constants";
 import TextAreaFormField from "../text-area-form-field";
 import DropdownSelectorFormField from "../dropdown-selector-form-field";
-import { sanitiseArray } from "../../utils/parsers";
+import { sanitizeArray } from "../../utils/parsers";
 
 type UserCreationFormProps = {
   [ROLE]: Role.Resident;
@@ -54,7 +54,7 @@ function UserCreationForm() {
       .toLowerCase()
       .split(" ");
 
-    const sanitizedWords = sanitiseArray(parsedWords);
+    const sanitizedWords = sanitizeArray(parsedWords, false);
     const pendingCreationEmails = new Set(
       pendingCreationUsers.map(({ email }) => email),
     );
@@ -63,12 +63,14 @@ function UserCreationForm() {
       (email) => {
         if (!EMAIL_REGEX.test(email)) {
           return { email, role, status: UserCreationStatus.Invalid };
-        } else if (pendingCreationEmails.has(email)) {
-          return { email, role, status: UserCreationStatus.Duplicated };
-        } else {
-          pendingCreationEmails.add(email);
-          return { email, role, status: UserCreationStatus.New };
         }
+
+        if (pendingCreationEmails.has(email)) {
+          return { email, role, status: UserCreationStatus.Duplicated };
+        }
+
+        pendingCreationEmails.add(email);
+        return { email, role, status: UserCreationStatus.New };
       },
     );
 
