@@ -7,6 +7,7 @@ type Props = {
   popUpContent?: string | null;
   label?: string;
   icon?: StrictButtonProps["icon"];
+  disabled?: boolean;
 };
 
 function DeleteButton({
@@ -15,6 +16,7 @@ function DeleteButton({
   popUpContent = "Delete",
   label,
   icon = "trash alternate",
+  disabled = false,
 }: Props) {
   return (
     <Popup
@@ -28,6 +30,7 @@ function DeleteButton({
           icon={icon}
           onClick={onDelete}
           content={label}
+          disabled={disabled}
         />
       }
     />

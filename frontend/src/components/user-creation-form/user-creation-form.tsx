@@ -3,22 +3,13 @@ import { yupResolver } from "@hookform/resolvers";
 import * as yup from "yup";
 import { FormProvider, useForm } from "react-hook-form";
 import { Form } from "semantic-ui-react";
+import { toast } from "react-toastify";
 import { UserCreationSectionContext } from "../user-creation-section";
-import {
-  PendingCreationUser,
-  Role,
-  roles,
-  UserCreationStatus,
-} from "../../types/users";
-import {
-  EMAILS,
-  ROLE,
-  EMAIL_REGEX,
-  COMMA_NEWLINE_REGEX,
-} from "../../constants";
+import { Role, roles } from "../../types/users";
+import { EMAILS, ROLE } from "../../constants";
 import TextAreaFormField from "../text-area-form-field";
 import DropdownSelectorFormField from "../dropdown-selector-form-field";
-import { sanitizeArray } from "../../utils/parsers";
+import { parseInputDataToPendingCreationUsers } from "./helper";
 
 type UserCreationFormProps = {
   [ROLE]: Role.Resident;
@@ -27,7 +18,7 @@ type UserCreationFormProps = {
 
 const schema = yup.object().shape({
   [ROLE]: yup.mixed<Role>().oneOf(roles).required("Please choose a role"),
-  [EMAILS]: yup.string().trim().required("Please enter email(s)"),
+  [EMAILS]: yup.string().trim().required("Please enter the email(s)"),
 });
 
 const defaultValues: UserCreationFormProps = {
@@ -47,39 +38,21 @@ function UserCreationForm() {
   const { handleSubmit, getValues, reset } = methods;
 
   const onSubmit = useCallback(() => {
-    const { role, emails: inputString } = getValues();
-    const parsedWords = inputString
-      .trim()
-      .replace(COMMA_NEWLINE_REGEX, " ")
-      .toLowerCase()
-      .split(" ");
+    const { role, emails: data } = getValues();
 
-    const sanitizedWords = sanitizeArray(parsedWords, false);
-    const pendingCreationEmails = new Set(
-      pendingCreationUsers.map(({ email }) => email),
+    const parsedPendingCreationUsers = parseInputDataToPendingCreationUsers(
+      data,
+      role,
+      pendingCreationUsers,
     );
 
-    const newPendingCreationUsers: PendingCreationUser[] = sanitizedWords.map(
-      (email) => {
-        if (!EMAIL_REGEX.test(email)) {
-          return { email, role, status: UserCreationStatus.Invalid };
-        }
-
-        if (pendingCreationEmails.has(email)) {
-          return { email, role, status: UserCreationStatus.Duplicated };
-        }
-
-        pendingCreationEmails.add(email);
-        return { email, role, status: UserCreationStatus.New };
-      },
-    );
-
-    const updatedPendingCreationUsers = newPendingCreationUsers.concat(
+    const updatedPendingCreationUsers = parsedPendingCreationUsers.concat(
       pendingCreationUsers,
     );
 
     setPendingCreationUsers(updatedPendingCreationUsers);
     reset({ emails: "", role });
+    toast.info("The input has been successfully parsed.");
   }, [getValues, pendingCreationUsers, setPendingCreationUsers, reset]);
 
   return (
@@ -95,13 +68,7 @@ function UserCreationForm() {
 
         <TextAreaFormField inputName={EMAILS} label="Emails" required />
 
-        <Form.Button
-          fluid
-          type="submit"
-          icon="plus"
-          content="Add"
-          color="green"
-        />
+        <Form.Button fluid type="submit" content="Parse Input" color="blue" />
       </Form>
     </FormProvider>
   );

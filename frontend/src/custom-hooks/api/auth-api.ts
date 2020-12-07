@@ -42,12 +42,12 @@ export function useAxiosWithTokenRefresh<T>(
     {
       ...config,
       headers: {
-        ...(config?.headers ?? {}),
+        ...config?.headers,
         authorization: `Bearer ${accessToken}`,
       },
     },
     {
-      ...(options ?? {}),
+      ...options,
       manual: true,
     },
   );
@@ -83,7 +83,7 @@ export function useAxiosWithTokenRefresh<T>(
 
           const response = await apiCall(
             {
-              ...(config ?? {}),
+              ...config,
               headers: { authorization: `Bearer ${data.access}` },
             },
             options,

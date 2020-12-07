@@ -52,9 +52,9 @@ function FileUploader({
 
   const style = useMemo(
     () => ({
-      ...(isFocused ? focusedStyle : {}),
-      ...(isDragAccept ? acceptStyle : {}),
-      ...(isDragReject ? rejectStyle : {}),
+      ...(isFocused && focusedStyle),
+      ...(isDragAccept && acceptStyle),
+      ...(isDragReject && rejectStyle),
     }),
     [isDragAccept, isFocused, isDragReject],
   );

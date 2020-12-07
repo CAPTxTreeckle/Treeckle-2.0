@@ -21,7 +21,7 @@ type Props = {
   deleteDescription?: string;
 };
 
-function ModalProvider({
+function DeleteModalProvider({
   children,
   isDeleting = false,
   onDelete,
@@ -78,4 +78,4 @@ function ModalProvider({
   );
 }
 
-export default ModalProvider;
+export default DeleteModalProvider;

@@ -8,9 +8,16 @@ type Props = {
   popUpContent?: string | null;
   label?: string;
   icon?: StrictButtonProps["icon"];
+  disabled?: boolean;
 };
 
-function DeleteModalButton({ compact, popUpContent, label, icon }: Props) {
+function DeleteModalButton({
+  compact,
+  popUpContent,
+  label,
+  icon,
+  disabled,
+}: Props) {
   const { setModalOpen } = useContext(DeleteModalContext);
 
   return (
@@ -20,6 +27,7 @@ function DeleteModalButton({ compact, popUpContent, label, icon }: Props) {
       popUpContent={popUpContent}
       label={label}
       icon={icon}
+      disabled={disabled}
     />
   );
 }

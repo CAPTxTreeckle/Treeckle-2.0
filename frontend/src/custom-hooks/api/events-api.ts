@@ -371,11 +371,12 @@ export function useSignUpForEvent() {
         console.log(`POST /events/${id}/self_sign_up success:`, signUpData);
         await onSuccess?.();
         const { status } = signUpData;
-        toast.success(
-          status === SignUpStatus.PENDING
-            ? "You have requested to sign up for the event."
-            : "You have successfully signed up for the event.",
-        );
+
+        if (status === SignUpStatus.PENDING) {
+          toast.info("You have requested to sign up for the event.");
+        } else {
+          toast.success("You have successfully signed up for the event.");
+        }
       } catch (error) {
         console.log(
           `POST /events/${id}/self_sign_up error:`,

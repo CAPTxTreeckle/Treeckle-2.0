@@ -1,4 +1,12 @@
-import { EMAIL, ID, NAME, ORGANIZATION, ROLE, STATUS } from "../constants";
+import {
+  EMAIL,
+  ID,
+  NAME,
+  ORGANIZATION,
+  ROLE,
+  STATUS,
+  UUID,
+} from "../constants";
 import { BaseData } from "./base";
 
 export enum Role {
@@ -37,13 +45,46 @@ export type UserPatchData = {
 };
 
 export enum UserCreationStatus {
-  Created = "CREATED",
-  Invalid = "INVALID",
-  Duplicated = "DUPLICATED",
   New = "NEW",
+  Created = "CREATED",
+  Duplicate = "DUPLICATE",
+  Invalid = "INVALID",
 }
 
+export const userCreationStatuses = Object.values(UserCreationStatus);
+
+export const UserCreationStatusDetails = new Map<
+  UserCreationStatus,
+  { description: string; classType: string }
+>([
+  [
+    UserCreationStatus.New,
+    {
+      description:
+        "Newly added user entry which has yet to be submitted for creation.",
+      classType: "",
+    },
+  ],
+  [
+    UserCreationStatus.Created,
+    { description: "Newly created user.", classType: "positive" },
+  ],
+  [
+    UserCreationStatus.Duplicate,
+    { description: "Duplicate user emails found.", classType: "warning" },
+  ],
+  [
+    UserCreationStatus.Invalid,
+    {
+      description:
+        "User has invalid details or user already exists in the system.",
+      classType: "negative",
+    },
+  ],
+]);
+
 export type PendingCreationUser = {
+  [UUID]: string;
   [EMAIL]: string;
   [ROLE]: Role;
   [STATUS]: UserCreationStatus;

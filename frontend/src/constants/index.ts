@@ -33,6 +33,7 @@ export const START_DATE_TIME = "startDateTime";
 export const STATUS = "status";
 export const TIME_FORMAT = "h.mma";
 export const UPDATED_AT = "updatedAt";
+export const UUID = "uuid";
 export const VENUE_DETAILS_CUSTOM_FORM_FIELDS_SECTION =
   "venueDetailsCustomFormFieldsSection";
 export const VENUE_IC_CONTACT_NUMBER = "venueICContactNumber";

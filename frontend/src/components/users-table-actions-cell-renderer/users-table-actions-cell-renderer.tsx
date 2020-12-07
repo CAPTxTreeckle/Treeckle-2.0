@@ -29,12 +29,13 @@ function UsersTableActionsCellRenderer({ rowData }: Props) {
       getAllExistingUsers();
 
       toast.success(
-        `Existing user${
-          deletedEmails.length > 1 ? "s" : ""
-        } deleted successfully.`,
+        deletedEmails.length > 1
+          ? "Existing users deleted successfully."
+          : "The existing user has been deleted successfully.",
       );
       return true;
     } catch (error) {
+      toast.warn("No existing users were deleted");
       return false;
     }
   }, [_deleteExistingUsers, getAllExistingUsers, email]);

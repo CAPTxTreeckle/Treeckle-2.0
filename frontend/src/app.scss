@@ -7,6 +7,38 @@
   text-align: center;
 }
 
+.Toastify__toast--warning {
+  color: black;
+
+  .Toastify__close-button--warning {
+    color: black;
+  }
+
+  .Toastify__progress-bar--warning {
+    background-color: hsla(0, 0%, 0%, 0.7);
+  }
+}
+
+.ui.message p {
+  opacity: 1;
+}
+
+@media only screen and (max-width: 767px) {
+  .ui.icon.message {
+    flex-direction: column;
+  }
+
+  .ui.message {
+    > .icon {
+      margin-right: 0;
+    }
+
+    > .icon:first-child {
+      margin-bottom: 0.6rem;
+    }
+  }
+}
+
 .virtualized-table-wrapper {
   padding: 0 0.2rem 0.1rem 0 !important;
   overflow: hidden;
@@ -33,6 +65,21 @@
 
   .ReactVirtualized__Table__rowColumn {
     white-space: pre-wrap;
+  }
+
+  .negative {
+    background-color: #fff6f6;
+    color: #9f3a38;
+  }
+
+  .positive {
+    background-color: #fcfff5;
+    color: #2c662d;
+  }
+
+  .warning {
+    background-color: #fffaf3;
+    color: #573a08;
   }
 }
 

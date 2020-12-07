@@ -62,13 +62,14 @@ function UsersSection() {
         await _getAllExistingUsers();
 
         toast.success(
-          `Existing user${
-            updatedExistingUsers.length > 1 ? "s" : ""
-          } updated successfully.`,
+          updatedExistingUsers.length > 1
+            ? "Existing users updated successfully."
+            : "The existing user has been updated successfully.",
         );
 
         return updatedExistingUsers;
       } catch (error) {
+        toast.warn("No existing users were updated.");
         return [];
       }
     },
@@ -116,63 +117,67 @@ function UsersSection() {
         </div>
       </h1>
 
-      <SearchBar
-        searchValue={searchValue}
-        onSearchValueChange={onSearchValueChange}
-        fluid
-      />
+      <Segment.Group raised>
+        <Segment secondary>
+          <SearchBar
+            searchValue={searchValue}
+            onSearchValueChange={onSearchValueChange}
+            fluid
+          />
+        </Segment>
 
-      <Segment className="virtualized-table-wrapper" raised>
-        <AutoSizer onResize={() => tableRef.current?.recomputeRowHeights()}>
-          {({ width, height }) => (
-            <Table
-              ref={tableRef}
-              height={height}
-              width={width}
-              headerHeight={height * 0.1}
-              rowGetter={({ index }) => processedUsers[index]}
-              rowHeight={height * 0.1}
-              rowCount={isLoading ? 0 : processedUsers.length}
-              overscanRowCount={20}
-              noRowsRenderer={() => (
-                <PlaceholderWrapper
-                  showDefaultMessage
-                  defaultMessage="No existing users"
-                  placeholder
-                  isLoading={isLoading}
-                  loadingMessage="Retrieving existing users"
-                />
-              )}
-              sortBy={sortBy}
-              sortDirection={sortDirection}
-              sort={setSortParams}
-            >
-              <Column dataKey={NAME} label="Name" width={width * 0.25} />
-              <Column dataKey={EMAIL} label="Email" width={width * 0.4} />
-              <Column
-                dataKey={ROLE}
-                label="Role"
-                width={width * 0.2}
-                cellRenderer={({ cellData }) =>
-                  cellData?.toLowerCase() ?? cellData
-                }
-                className="capitalize-text"
-              />
-              <Column
-                dataKey={ID}
-                label="Actions"
-                headerClassName="center-text"
-                className="center-text"
-                width={width * 0.15}
-                disableSort
-                cellRenderer={({ rowData }) => (
-                  <UsersTableActionsCellRenderer rowData={rowData} />
+        <Segment className="virtualized-table-wrapper">
+          <AutoSizer onResize={() => tableRef.current?.recomputeRowHeights()}>
+            {({ width, height }) => (
+              <Table
+                ref={tableRef}
+                height={height}
+                width={width}
+                headerHeight={height * 0.1}
+                rowGetter={({ index }) => processedUsers[index]}
+                rowHeight={height * 0.1}
+                rowCount={isLoading ? 0 : processedUsers.length}
+                overscanRowCount={20}
+                noRowsRenderer={() => (
+                  <PlaceholderWrapper
+                    showDefaultMessage
+                    defaultMessage="No existing users"
+                    placeholder
+                    isLoading={isLoading}
+                    loadingMessage="Retrieving existing users"
+                  />
                 )}
-              />
-            </Table>
-          )}
-        </AutoSizer>
-      </Segment>
+                sortBy={sortBy}
+                sortDirection={sortDirection}
+                sort={setSortParams}
+              >
+                <Column dataKey={NAME} label="Name" width={width * 0.25} />
+                <Column dataKey={EMAIL} label="Email" width={width * 0.4} />
+                <Column
+                  dataKey={ROLE}
+                  label="Role"
+                  width={width * 0.2}
+                  cellRenderer={({ cellData }) =>
+                    cellData?.toLowerCase() ?? cellData
+                  }
+                  className="capitalize-text"
+                />
+                <Column
+                  dataKey={ID}
+                  label="Actions"
+                  headerClassName="center-text"
+                  className="center-text"
+                  width={width * 0.15}
+                  disableSort
+                  cellRenderer={({ rowData }) => (
+                    <UsersTableActionsCellRenderer rowData={rowData} />
+                  )}
+                />
+              </Table>
+            )}
+          </AutoSizer>
+        </Segment>
+      </Segment.Group>
     </UsersSectionContext.Provider>
   );
 }

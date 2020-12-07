@@ -17,3 +17,7 @@ export {
   default as DeleteModalProvider,
   DeleteModalContext,
 } from "./delete-modal-provider";
+export {
+  default as GlobalModalProvider,
+  GlobalModalContext,
+} from "./global-modal-provider";

@@ -37,12 +37,14 @@ function UserInvitesTableActionsCellRenderer({
       getAllUserInvites();
 
       toast.success(
-        `Pending registration user${
-          deletedEmails.length > 1 ? "s" : ""
-        } deleted successfully.`,
+        deletedEmails.length > 1
+          ? "Pending registration users deleted successfully."
+          : "The pending registration user has been deleted successfully.",
       );
+
       return true;
     } catch (error) {
+      toast.warn("No pending registration users were deleted.");
       return false;
     }
   }, [_deleteUserInvites, getAllUserInvites, email]);

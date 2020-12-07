@@ -56,13 +56,14 @@ function UserInvitesSection() {
         await _getAllUserInvites();
 
         toast.success(
-          `Pending registration user${
-            updatedUserInvites.length > 1 ? "s" : ""
-          } updated successfully.`,
+          updatedUserInvites.length > 1
+            ? "Pending registration users updated successfully."
+            : "The pending registration user has been updated successfully.",
         );
 
         return updatedUserInvites;
       } catch (error) {
+        toast.warn("No pending registration users were updated.");
         return [];
       }
     },
@@ -113,74 +114,78 @@ function UserInvitesSection() {
         </div>
       </h1>
 
-      <SearchBar
-        searchValue={searchValue}
-        onSearchValueChange={onSearchValueChange}
-        fluid
-      />
+      <Segment.Group raised>
+        <Segment secondary>
+          <SearchBar
+            searchValue={searchValue}
+            onSearchValueChange={onSearchValueChange}
+            fluid
+          />
+        </Segment>
 
-      <Segment className="virtualized-table-wrapper" raised>
-        <AutoSizer onResize={() => tableRef.current?.recomputeRowHeights()}>
-          {({ width, height }) => (
-            <Table
-              ref={tableRef}
-              height={height}
-              width={width}
-              headerHeight={height * 0.1}
-              rowGetter={({ index }) => processedUserInvites[index]}
-              rowHeight={height * 0.1}
-              rowCount={isLoading ? 0 : processedUserInvites.length}
-              overscanRowCount={20}
-              noRowsRenderer={() => (
-                <PlaceholderWrapper
-                  showDefaultMessage
-                  defaultMessage="No pending registration users"
-                  placeholder
-                  isLoading={isLoading}
-                  loadingMessage="Retrieving pending registration users"
-                />
-              )}
-              sortBy={sortBy}
-              sortDirection={sortDirection}
-              sort={setSortParams}
-            >
-              <Column dataKey={EMAIL} label="Email" width={width * 0.4} />
-              <Column
-                dataKey={CREATED_AT}
-                label="Created at"
-                width={width * 0.25}
-                cellRenderer={({ cellData, rowData }) =>
-                  rowData?.[CREATED_AT_STRING] ?? cellData
-                }
-              />
-              <Column
-                dataKey={ROLE}
-                label="Role"
-                width={width * 0.2}
-                cellRenderer={({ cellData }) =>
-                  cellData?.toLowerCase() ?? cellData
-                }
-                className="capitalize-text"
-              />
-              <Column
-                dataKey={ID}
-                label="Actions"
-                headerClassName="center-text"
-                className="center-text"
-                width={width * 0.15}
-                disableSort
-                cellRenderer={({ rowData }) => (
-                  <UserInvitesTableActionsCellRenderer
-                    rowData={rowData}
-                    getAllUserInvites={getAllUserInvites}
-                    updateUserInvites={updateUserInvites}
+        <Segment className="virtualized-table-wrapper">
+          <AutoSizer onResize={() => tableRef.current?.recomputeRowHeights()}>
+            {({ width, height }) => (
+              <Table
+                ref={tableRef}
+                height={height}
+                width={width}
+                headerHeight={height * 0.1}
+                rowGetter={({ index }) => processedUserInvites[index]}
+                rowHeight={height * 0.1}
+                rowCount={isLoading ? 0 : processedUserInvites.length}
+                overscanRowCount={20}
+                noRowsRenderer={() => (
+                  <PlaceholderWrapper
+                    showDefaultMessage
+                    defaultMessage="No pending registration users"
+                    placeholder
+                    isLoading={isLoading}
+                    loadingMessage="Retrieving pending registration users"
                   />
                 )}
-              />
-            </Table>
-          )}
-        </AutoSizer>
-      </Segment>
+                sortBy={sortBy}
+                sortDirection={sortDirection}
+                sort={setSortParams}
+              >
+                <Column dataKey={EMAIL} label="Email" width={width * 0.4} />
+                <Column
+                  dataKey={CREATED_AT}
+                  label="Created at"
+                  width={width * 0.25}
+                  cellRenderer={({ cellData, rowData }) =>
+                    rowData?.[CREATED_AT_STRING] ?? cellData
+                  }
+                />
+                <Column
+                  dataKey={ROLE}
+                  label="Role"
+                  width={width * 0.2}
+                  cellRenderer={({ cellData }) =>
+                    cellData?.toLowerCase() ?? cellData
+                  }
+                  className="capitalize-text"
+                />
+                <Column
+                  dataKey={ID}
+                  label="Actions"
+                  headerClassName="center-text"
+                  className="center-text"
+                  width={width * 0.15}
+                  disableSort
+                  cellRenderer={({ rowData }) => (
+                    <UserInvitesTableActionsCellRenderer
+                      rowData={rowData}
+                      getAllUserInvites={getAllUserInvites}
+                      updateUserInvites={updateUserInvites}
+                    />
+                  )}
+                />
+              </Table>
+            )}
+          </AutoSizer>
+        </Segment>
+      </Segment.Group>
     </>
   );
 }

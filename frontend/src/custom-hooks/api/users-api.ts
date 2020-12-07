@@ -1,5 +1,4 @@
 import { useCallback } from "react";
-import { toast } from "react-toastify";
 import { useAxiosWithTokenRefresh } from "./auth-api";
 import {
   UserData,
@@ -60,7 +59,6 @@ export function useCreateUserInvites() {
         return userInvites;
       } catch (error) {
         console.log("POST /users/invite error:", error, error?.response);
-        toast.error("An unknown error has occurred.");
         throw error;
       }
     },
@@ -94,7 +92,6 @@ export function useUpdateUserInvites() {
         return updatedUserInvites;
       } catch (error) {
         console.log("PATCH /users/invite error:", error, error?.response);
-        toast.error("An unknown error has occurred.");
         throw error;
       }
     },
@@ -129,7 +126,6 @@ export function useDeleteUserInvites() {
         return deletedEmails;
       } catch (error) {
         console.log("DELETE /users/invite error:", error, error?.response);
-        toast.error("An unknown error has occurred.");
         throw error;
       }
     },
@@ -189,7 +185,6 @@ export function useUpdateExistingUsers() {
         return updatedExistingUsers;
       } catch (error) {
         console.log("PATCH /users/ error:", error, error?.response);
-        toast.error("An unknown error has occurred.");
         throw error;
       }
     },
@@ -220,7 +215,6 @@ export function useDeleteExistingUsers() {
         return deletedEmails;
       } catch (error) {
         console.log("DELETE /users/ error:", error, error?.response);
-        toast.error("An unknown error has occurred.");
         throw error;
       }
     },
