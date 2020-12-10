@@ -1,12 +1,13 @@
+import { ACCESS, EMAIL, NAME, REFRESH, USER_ID } from "../constants";
 import { UserData } from "./users";
 
 export type AuthenticationData = UserData & {
-  access: string;
-  refresh: string;
+  [ACCESS]: string;
+  [REFRESH]: string;
 };
 
 export type OpenIdAuthenticationData = {
-  email: string;
-  name: string;
-  userId: string;
+  [EMAIL]: string;
+  [NAME]: string;
+  [USER_ID]: string;
 };

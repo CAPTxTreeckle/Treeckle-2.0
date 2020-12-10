@@ -8,24 +8,19 @@ import { SingleEventContext } from "../../context-providers";
 
 function EventGalleryItem() {
   const { event } = useContext(SingleEventContext);
-  const {
-    image,
-    eventTitle,
-    organisedBy,
-    startDateTime,
-    endDateTime,
-    venueName,
-  } = event?.eventFormProps ?? {};
+  const { image, title, organizedBy, startDateTime, endDateTime, venueName } = {
+    ...event?.eventFormProps,
+  };
 
   return (
     <Card id="event-gallery-item" raised fluid>
       <Image src={image || defaultEventPoster} alt="Event" wrapped ui={false} />
 
       <Card.Content className="flex-no-grow">
-        {eventTitle && <Card.Header>{eventTitle}</Card.Header>}
-        {organisedBy && (
+        {title && <Card.Header>{title}</Card.Header>}
+        {organizedBy && (
           <Card.Meta>
-            <strong>Organised by:</strong> {organisedBy}
+            <strong>Organised by:</strong> {organizedBy}
           </Card.Meta>
         )}
       </Card.Content>

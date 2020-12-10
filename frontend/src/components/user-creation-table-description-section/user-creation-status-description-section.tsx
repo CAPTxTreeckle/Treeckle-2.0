@@ -25,8 +25,9 @@ function UserCreationTableDescriptionSection() {
               stackable
             >
               {userCreationStatuses.map((status) => {
-                const { description, classType } =
-                  UserCreationStatusDetails.get(status) ?? {};
+                const { description, classType } = {
+                  ...UserCreationStatusDetails.get(status),
+                };
 
                 return (
                   <Grid.Row className="status-row" key={status}>

@@ -15,8 +15,8 @@ function EventSignUpButton() {
     () => (currentUserId ? willUpdateUserIds.has(currentUserId) : false),
     [currentUserId, willUpdateUserIds],
   );
-  const { signUpCount, signUpStatus } = event ?? {};
-  const { allowSignUp } = event?.eventFormProps ?? {};
+  const { signUpCount, signUpStatus, eventFormProps } = { ...event };
+  const { isSignUpAllowed } = { ...eventFormProps };
 
   const onSignUpForEvent = useCallback(
     (e: React.MouseEvent<HTMLElement>) => {
@@ -53,7 +53,7 @@ function EventSignUpButton() {
           </Button>
         );
 
-      case SignUpStatus.PENDING:
+      case SignUpStatus.Pending:
         return (
           <Button
             as="div"
@@ -70,7 +70,7 @@ function EventSignUpButton() {
           </Button>
         );
 
-      case SignUpStatus.CONFIRMED:
+      case SignUpStatus.Confirmed:
         return (
           <Button
             as="div"
@@ -87,7 +87,7 @@ function EventSignUpButton() {
           </Button>
         );
 
-      case SignUpStatus.ATTENDED:
+      case SignUpStatus.Attended:
         return (
           <Button
             as="div"
@@ -115,7 +115,7 @@ function EventSignUpButton() {
     onWithdrawFromEvent,
   ]);
 
-  return allowSignUp || signUpStatus ? renderButton() : null;
+  return isSignUpAllowed || signUpStatus ? renderButton() : null;
 }
 
 export default EventSignUpButton;

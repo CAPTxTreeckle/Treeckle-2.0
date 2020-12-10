@@ -24,7 +24,7 @@ export type BookingRequestData = (BaseData & BookingRequestBaseData) & {
 };
 
 export enum BookingRequestStatus {
-  PENDING = "Pending",
+  Pending = "Pending",
   APPROVED = "Approved",
   REJECTED = "Rejected",
   CANCELLED = "Cancelled",

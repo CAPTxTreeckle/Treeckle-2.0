@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q, F
 
 from treeckle.common.models import TimestampedModel
 from users.models import Organization, User
@@ -10,7 +11,7 @@ class Event(TimestampedModel):
     organized_by = models.CharField(max_length=255)
     venue_name = models.CharField(max_length=255, blank=True)
     description = models.TextField(blank=True)
-    capacity = models.PositiveIntegerField(blank=True)
+    capacity = models.PositiveIntegerField(blank=True, null=True)
     start_date_time = models.DateTimeField()
     end_date_time = models.DateTimeField()
     image_url = models.URLField(blank=True)
@@ -20,6 +21,12 @@ class Event(TimestampedModel):
     is_sign_up_approval_required = models.BooleanField()
 
     class Meta:
+        constraints = [
+            models.CheckConstraint(
+                check=Q(start_date_time__lte=F("end_date_time")),
+                name="valid_start_end_date_time",
+            )
+        ]
         ordering = ["-created_at"]
 
     def __str__(self):

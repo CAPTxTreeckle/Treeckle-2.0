@@ -32,7 +32,7 @@ function QrCodeScannerButton() {
         const data = JSON.parse(dataString);
         const { type }: { type: QrCodeType } = data;
 
-        if (type === QrCodeType.EVENT_ATTENDANCE) {
+        if (type === QrCodeType.EventAttendance) {
           const { eventId }: { eventId: number } = data;
           await attendEvent(eventId);
           return;

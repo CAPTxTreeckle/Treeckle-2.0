@@ -17,7 +17,7 @@ import {
 export type VenuePostData = {
   [NAME]: string;
   [CATEGORY]: string;
-  [CAPACITY]?: string;
+  [CAPACITY]: string | null;
   [IC_NAME]: string;
   [IC_EMAIL]: string;
   [IC_CONTACT_NUMBER]: string;
@@ -26,15 +26,7 @@ export type VenuePostData = {
 
 export type VenuePutData = VenuePostData;
 
-export type VenueData = BaseData & {
-  [NAME]: string;
-  [CATEGORY]: string;
-  [CAPACITY]: string;
-  [IC_NAME]: string;
-  [IC_EMAIL]: string;
-  [IC_CONTACT_NUMBER]: string;
-  [FORM_FIELD_DATA]: VenueCustomFormFieldProps[];
-};
+export type VenueData = BaseData & VenuePostData;
 
 export enum FieldType {
   TEXT = "text",

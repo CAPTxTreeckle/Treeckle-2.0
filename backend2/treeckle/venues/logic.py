@@ -26,7 +26,7 @@ def venue_to_json(venue: Venue) -> dict:
         UPDATED_AT: parse_datetime_to_ms_timestamp(venue.updated_at),
         NAME: venue.name,
         CATEGORY: venue.category.name,
-        CAPACITY: str(venue.capacity) if venue.capacity else "",
+        CAPACITY: str(venue.capacity) if venue.capacity else None,
         IC_NAME: venue.ic_name,
         IC_EMAIL: venue.ic_email,
         IC_CONTACT_NUMBER: venue.ic_contact_number,

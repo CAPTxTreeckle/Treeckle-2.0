@@ -16,7 +16,7 @@ function EventSubscriptionLabel({ category, color, actionType }: Props) {
     if (isLoading) {
       return <Icon name="spinner" loading />;
     }
-    if (actionType === SubscribeActionType.SUBSCRIBE) {
+    if (actionType === SubscribeActionType.Subscribe) {
       return <Icon name="plus" />;
     }
     return <Icon name="cancel" />;
@@ -24,7 +24,7 @@ function EventSubscriptionLabel({ category, color, actionType }: Props) {
 
   const onClick = useCallback(async () => {
     setLoading(true);
-    await updateSubscriptions([{ action: actionType, categoryName: category }]);
+    await updateSubscriptions([{ action: actionType, category }]);
     setLoading(false);
   }, [category, updateSubscriptions, actionType]);
 

@@ -10,7 +10,7 @@ import PlaceholderWrapper from "../placeholder-wrapper";
 function EventManagementView() {
   const { event, getSingleEvent } = useContext(SingleEventContext);
   const [isLoading, setLoading] = useState(false);
-  const { signUps = [], id: eventId = 0 } = event ?? {};
+  const { signUps = [], id: eventId = 0 } = { ...event };
 
   const refreshEvent = useCallback(async () => {
     setLoading(true);
@@ -36,13 +36,13 @@ function EventManagementView() {
     let numAttended = 0;
     signUps.forEach((signUp) => {
       switch (signUp.status) {
-        case SignUpStatus.PENDING:
+        case SignUpStatus.Pending:
           numPending++;
           break;
-        case SignUpStatus.CONFIRMED:
+        case SignUpStatus.Confirmed:
           numAttending++;
           break;
-        case SignUpStatus.ATTENDED:
+        case SignUpStatus.Attended:
           numAttended++;
           break;
         default:

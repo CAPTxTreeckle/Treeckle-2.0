@@ -19,17 +19,17 @@ function SignUpStatusButton({ userId, signUpStatus }: Props) {
   ]);
 
   const onAttend = useCallback(
-    () => updateSignUpsForEvent([{ action: SignUpActionType.ATTEND, userId }]),
+    () => updateSignUpsForEvent([{ action: SignUpActionType.Attend, userId }]),
     [updateSignUpsForEvent, userId],
   );
 
   const onApprove = useCallback(
-    () => updateSignUpsForEvent([{ action: SignUpActionType.CONFIRM, userId }]),
+    () => updateSignUpsForEvent([{ action: SignUpActionType.Confirm, userId }]),
     [updateSignUpsForEvent, userId],
   );
 
   const onReject = useCallback(
-    () => updateSignUpsForEvent([{ action: SignUpActionType.REJECT, userId }]),
+    () => updateSignUpsForEvent([{ action: SignUpActionType.Reject, userId }]),
     [updateSignUpsForEvent, userId],
   );
 
@@ -52,9 +52,9 @@ function SignUpStatusButton({ userId, signUpStatus }: Props) {
 
   const actionButtons = useMemo(() => {
     switch (signUpStatus) {
-      case SignUpStatus.PENDING:
+      case SignUpStatus.Pending:
         return [approveButton, rejectButton];
-      case SignUpStatus.CONFIRMED:
+      case SignUpStatus.Confirmed:
         return [attendButton, rejectButton];
       default:
         return [rejectButton];
@@ -63,11 +63,11 @@ function SignUpStatusButton({ userId, signUpStatus }: Props) {
 
   const statusButton = useMemo(() => {
     switch (signUpStatus) {
-      case SignUpStatus.PENDING:
+      case SignUpStatus.Pending:
         return <Button content="Pending" color="orange" loading={isLoading} />;
-      case SignUpStatus.CONFIRMED:
+      case SignUpStatus.Confirmed:
         return <Button content="Attending" color="green" loading={isLoading} />;
-      case SignUpStatus.ATTENDED:
+      case SignUpStatus.Attended:
         return <Button content="Attended" color="teal" loading={isLoading} />;
       default:
         return null;

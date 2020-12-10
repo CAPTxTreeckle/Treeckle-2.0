@@ -38,7 +38,7 @@ export function parseDatetime(
 }
 
 export function parseUserToUserData(user: User) {
-  const { id, name, email, role, organization } = user ?? {};
+  const { id, name, email, role, organization } = { ...user };
 
   if ([id, name, email, role, organization].includes(undefined)) {
     return undefined;

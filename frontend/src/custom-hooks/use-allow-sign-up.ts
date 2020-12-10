@@ -1,16 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
 import { CheckboxProps } from "semantic-ui-react";
-import { SIGN_UP_REQUIRE_APPROVAL } from "../constants";
+import { IS_SIGN_UP_APPROVAL_REQUIRED } from "../constants";
 
 export default function useAllowSignUp(
-  defaultAllowSignUp: boolean,
+  defaultIsSignUpAllowed: boolean,
   setValue: (key: string, value: boolean) => void,
 ) {
-  const [allowSignUp, setAllowSignUp] = useState(defaultAllowSignUp);
+  const [isSignUpAllowed, setSignUpAllowed] = useState(defaultIsSignUpAllowed);
 
   useEffect(() => {
-    setAllowSignUp(defaultAllowSignUp);
-  }, [defaultAllowSignUp]);
+    setSignUpAllowed(defaultIsSignUpAllowed);
+  }, [defaultIsSignUpAllowed]);
 
   const onAllowSignUp = useCallback(
     (
@@ -18,12 +18,12 @@ export default function useAllowSignUp(
       { checked = false }: CheckboxProps,
     ) => {
       if (!checked) {
-        setValue(SIGN_UP_REQUIRE_APPROVAL, false);
+        setValue(IS_SIGN_UP_APPROVAL_REQUIRED, false);
       }
-      setAllowSignUp(checked);
+      setSignUpAllowed(checked);
     },
     [setValue],
   );
 
-  return { allowSignUp, onAllowSignUp };
+  return { isSignUpAllowed, onAllowSignUp };
 }

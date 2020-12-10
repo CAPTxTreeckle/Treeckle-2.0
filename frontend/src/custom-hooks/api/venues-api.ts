@@ -25,7 +25,7 @@ function parseVenueFormProps(
   const data: VenuePostData | VenuePutData = {
     name,
     category,
-    capacity: capacity || undefined,
+    capacity: capacity || null,
     icName,
     icEmail,
     icContactNumber,
@@ -56,7 +56,7 @@ function parseVenueData(venueData: VenueData): VenueViewProps {
     venueFormProps: {
       name,
       category,
-      capacity,
+      capacity: capacity ?? "",
       icName,
       icEmail,
       icContactNumber,

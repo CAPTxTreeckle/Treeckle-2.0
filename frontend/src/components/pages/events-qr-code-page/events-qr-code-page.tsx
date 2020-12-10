@@ -13,7 +13,7 @@ function EventsQrCodePage() {
   const qrCodeData = useMemo(
     () =>
       JSON.stringify({
-        type: QrCodeType.EVENT_ATTENDANCE,
+        type: QrCodeType.EventAttendance,
         eventId,
       }),
     [eventId],
@@ -34,7 +34,7 @@ function EventsQrCodePage() {
       placeholder
     >
       <div id="events-qr-code-page">
-        <h1>{event?.eventFormProps?.eventTitle}</h1>
+        <h1>{event?.eventFormProps?.title}</h1>
         <h2 className="subtitle">
           (Scan using Treeckle's in-app QR code scanner)
         </h2>

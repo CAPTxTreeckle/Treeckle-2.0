@@ -33,7 +33,7 @@ function EventSubscriptionsSelector() {
               key={category}
               category={category}
               color="blue"
-              actionType={SubscribeActionType.SUBSCRIBE}
+              actionType={SubscribeActionType.Subscribe}
             />
           ))}
         </Label.Group>
@@ -52,7 +52,7 @@ function EventSubscriptionsSelector() {
               key={category}
               category={category}
               color="purple"
-              actionType={SubscribeActionType.UNSUBSCRIBE}
+              actionType={SubscribeActionType.Unsubscribe}
             />
           ))}
         </Label.Group>

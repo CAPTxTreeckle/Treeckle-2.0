@@ -11,15 +11,15 @@ function EventDetailsView() {
   const { event } = useContext(SingleEventContext);
   const {
     image,
-    eventTitle,
-    organisedBy,
+    title,
+    organizedBy,
     categories,
     description,
-    estimatedCapacity,
+    capacity,
     startDateTime,
     endDateTime,
     venueName,
-  } = event?.eventFormProps ?? {};
+  } = { ...event?.eventFormProps };
 
   return (
     <Grid
@@ -42,19 +42,19 @@ function EventDetailsView() {
         </div>
       </Grid.Column>
       <Grid.Column width="9">
-        {eventTitle && <h1 className="title">{eventTitle}</h1>}
+        {title && <h1 className="title">{title}</h1>}
 
-        {organisedBy && (
+        {organizedBy && (
           <p>
             <Icon name="user circle" /> <strong>Organised by:</strong>{" "}
-            {organisedBy}
+            {organizedBy}
           </p>
         )}
 
-        {estimatedCapacity && (
+        {capacity && (
           <p>
             <Icon name="users" /> <strong>Estimated capacity:</strong>{" "}
-            {estimatedCapacity}
+            {capacity}
           </p>
         )}
 

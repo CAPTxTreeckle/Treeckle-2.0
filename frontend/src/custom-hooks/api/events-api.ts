@@ -22,36 +22,33 @@ function parseEventFormProps(
   eventFormProps: EventFormProps,
 ): EventPostData | EventPutData {
   const {
-    eventTitle,
-    organisedBy,
+    title,
+    organizedBy,
     venueName,
     categories,
-    estimatedCapacity,
+    capacity,
     startDateTime,
     endDateTime,
     description,
     image,
-    allowSignUp,
-    signUpRequireApproval,
-    publish,
+    isSignUpAllowed,
+    isSignUpApprovalRequired,
+    isPublished,
   } = eventFormProps;
 
   const data: EventPostData | EventPutData = {
-    title: eventTitle,
-    organisedBy,
-    venueName: venueName ?? "",
-    categories: categories ?? [],
-    capacity:
-      estimatedCapacity !== null
-        ? parseInt(estimatedCapacity ?? "", 10)
-        : estimatedCapacity,
-    startDate: startDateTime,
-    endDate: endDateTime,
-    description: description ?? "",
-    image: image ?? "",
-    isSignUpAllowed: allowSignUp,
-    isSignUpApprovalRequired: signUpRequireApproval,
-    isPublished: publish,
+    title,
+    organizedBy,
+    venueName,
+    categories,
+    capacity: capacity || null,
+    startDateTime,
+    endDateTime,
+    description,
+    image,
+    isSignUpAllowed,
+    isSignUpApprovalRequired,
+    isPublished,
   };
 
   return data;
@@ -60,12 +57,12 @@ function parseEventFormProps(
 function parseEventData(eventData: EventData): EventViewProps {
   const {
     title,
-    organisedBy,
+    organizedBy,
     venueName,
     categories,
     capacity,
-    startDate,
-    endDate,
+    startDateTime,
+    endDateTime,
     description,
     image,
     isSignUpAllowed,
@@ -80,18 +77,18 @@ function parseEventData(eventData: EventData): EventViewProps {
   } = eventData;
 
   const eventFormProps: EventFormProps = {
-    eventTitle: title,
-    organisedBy,
+    title,
+    organizedBy,
     venueName,
     categories,
-    estimatedCapacity: capacity ? capacity.toString() : "",
-    startDateTime: startDate,
-    endDateTime: endDate,
+    capacity: capacity ?? "",
+    startDateTime,
+    endDateTime,
     description,
-    image: image ?? "",
-    allowSignUp: isSignUpAllowed,
-    signUpRequireApproval: isSignUpApprovalRequired,
-    publish: isPublished,
+    image,
+    isSignUpAllowed,
+    isSignUpApprovalRequired,
+    isPublished,
   };
 
   const eventViewProps: EventViewProps = {
@@ -374,7 +371,7 @@ export function useSignUpForEvent() {
         await onSuccess?.();
         const { status } = signUpData;
 
-        if (status === SignUpStatus.PENDING) {
+        if (status === SignUpStatus.Pending) {
           toast.info("You have requested to sign up for the event.");
         } else {
           toast.success("You have successfully signed up for the event.");
