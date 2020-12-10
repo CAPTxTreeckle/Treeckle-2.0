@@ -3,7 +3,7 @@ import { Controller, useFormContext } from "react-hook-form";
 import { DateTimeInput } from "semantic-ui-calendar-react";
 import get from "lodash.get";
 import { DATE_TIME_FORMAT } from "../../constants";
-import { displayDatetime, parseDatetime } from "../../utils/parsers";
+import { displayDatetime, parseDatetime } from "../../utils/parser-utils";
 
 type Props = {
   className?: string;

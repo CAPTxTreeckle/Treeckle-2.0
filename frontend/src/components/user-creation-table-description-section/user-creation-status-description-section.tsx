@@ -4,7 +4,7 @@ import {
   userCreationStatuses,
   UserCreationStatusDetails,
 } from "../../types/users";
-import { parseToTitleCase } from "../../utils/parsers";
+import { parseToTitleCase } from "../../utils/parser-utils";
 import "./user-creation-table-description-section.scss";
 
 function UserCreationTableDescriptionSection() {

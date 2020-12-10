@@ -9,11 +9,11 @@ import "./user-tab.scss";
 import QrCodeScannerButton from "../../qr-code-scanner-button";
 
 function UserTab() {
-  const { name, setUser } = useContext(UserContext);
+  const { name, updateUser } = useContext(UserContext);
   const { pathname } = useLocation();
 
   const onSignOut = () => {
-    setUser(null);
+    updateUser(null);
     toast.success("Signed out successfully.");
   };
 

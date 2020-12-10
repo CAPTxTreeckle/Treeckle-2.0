@@ -8,7 +8,7 @@ import { useOpenIdAuth } from "../../../custom-hooks/api";
 import PlaceholderWrapper from "../../placeholder-wrapper";
 
 function OpenIdPage() {
-  const { setUser } = useContext(UserContext);
+  const { updateUser } = useContext(UserContext);
   const { authenticate } = useOpenIdAuth();
   const history = useHistory();
   const query = useQuery();
@@ -29,7 +29,7 @@ function OpenIdPage() {
     }
 
     authenticate({ email, name, userId });
-  }, [history, setUser, handleFailure, authenticate, query]);
+  }, [history, updateUser, handleFailure, authenticate, query]);
 
   return (
     <PlaceholderWrapper

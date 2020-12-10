@@ -56,9 +56,6 @@ class UserInvitesView(APIView):
             organization=requester.organization,
         )
 
-        if not new_user_invites:
-            raise BadRequest("No user invites created.", code="no_user_invites_created")
-
         data = [user_invite_to_json(user_invite) for user_invite in new_user_invites]
 
         return Response(data, status=status.HTTP_201_CREATED)
@@ -87,9 +84,6 @@ class UserInvitesView(APIView):
             organization=requester.organization,
         )
 
-        if not updated_user_invites:
-            raise BadRequest("No user invites updated.", code="no_user_invites_updated")
-
         data = [
             user_invite_to_json(user_invite) for user_invite in updated_user_invites
         ]
@@ -107,9 +101,6 @@ class UserInvitesView(APIView):
             emails_to_be_deleted,
             organization=requester.organization,
         )
-
-        if not deleted_emails:
-            raise BadRequest("No user invites deleted.", code="no_user_invites_deleted")
 
         return Response(deleted_emails, status=status.HTTP_200_OK)
 
@@ -154,9 +145,6 @@ class UsersView(APIView):
             organization=requester.organization,
         )
 
-        if not updated_users:
-            raise BadRequest("No users updated.", code="no_users_updated")
-
         data = [user_to_json(user) for user in updated_users]
 
         return Response(data, status=status.HTTP_200_OK)
@@ -180,8 +168,5 @@ class UsersView(APIView):
             emails_to_be_deleted,
             organization=requester.organization,
         )
-
-        if not deleted_emails:
-            raise BadRequest("No users deleted.", code="no_users_deleted")
 
         return Response(deleted_emails, status=status.HTTP_200_OK)

@@ -24,6 +24,7 @@ import {
 } from "./helpers";
 import { useCreateUserInvites } from "../../custom-hooks/api";
 import { EMAIL, ROLE, STATUS, UUID } from "../../constants";
+import { resolveApiError } from "../../utils/error-utils";
 
 const UserCreationTableStateOptions: VirtualizedTableStateOptions = {
   searchIndex: UUID,
@@ -102,7 +103,7 @@ function UserCreationTable() {
 
       toast.success("New user(s) created successfully.");
     } catch (error) {
-      toast.warn("No new users were created.");
+      resolveApiError(error);
     } finally {
       const invalidNewUsers = getAndUpdateInvalidNewUsers(
         pendingCreationUsersCopy,

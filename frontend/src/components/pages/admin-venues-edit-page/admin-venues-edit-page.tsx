@@ -1,21 +1,32 @@
 import React, { useCallback, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useHistory, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 import { Button, Icon } from "semantic-ui-react";
 import { useGetSingleVenue, useUpdateVenue } from "../../../custom-hooks/api";
 import { ADMIN_VENUES_PATH } from "../../../routes/paths";
 import { VenueFormProps } from "../../../types/venues";
+import { resolveApiError } from "../../../utils/error-utils";
 import PlaceholderWrapper from "../../placeholder-wrapper";
 import VenueDetailsForm from "../../venue-details-form";
 
 function AdminVenuesEditPage() {
+  const history = useHistory();
   const { id } = useParams<{ id: string }>();
   const venueId = parseInt(id, 10);
   const { venue, isLoading, getSingleVenue } = useGetSingleVenue();
   const { updateVenue } = useUpdateVenue();
 
   const onSaveChanges = useCallback(
-    async (data: VenueFormProps) => updateVenue(venue?.id ?? venueId, data),
-    [updateVenue, venue, venueId],
+    async (data: VenueFormProps) => {
+      try {
+        await updateVenue(venue?.id ?? venueId, data);
+        toast.success("The venue has been updated successfully.");
+        history.push(ADMIN_VENUES_PATH);
+      } catch (error) {
+        resolveApiError(error);
+      }
+    },
+    [updateVenue, venue, venueId, history],
   );
 
   useEffect(() => {

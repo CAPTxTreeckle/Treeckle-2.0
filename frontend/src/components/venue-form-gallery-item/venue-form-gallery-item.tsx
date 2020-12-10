@@ -1,10 +1,12 @@
 import React, { useCallback, useContext, useMemo } from "react";
 import { useHistory } from "react-router-dom";
+import { toast } from "react-toastify";
 import { Button } from "semantic-ui-react";
 import { VenuesContext } from "../../context-providers";
 import { useDeleteVenue } from "../../custom-hooks/api";
 import { ADMIN_VENUES_EDIT_PATH } from "../../routes/paths";
 import { VenueViewProps } from "../../types/venues";
+import { resolveApiError } from "../../utils/error-utils";
 import PopUpActionsWrapper from "../pop-up-actions-wrapper";
 import VenueBookingForm from "../venue-booking-form";
 
@@ -16,8 +18,14 @@ function VenueFormGalleryItem({ id, venueFormProps }: Props) {
 
   const { deleteVenue, isLoading } = useDeleteVenue();
 
-  const onDelete = useCallback(() => {
-    deleteVenue(id, getAllVenues);
+  const onDelete = useCallback(async () => {
+    try {
+      await deleteVenue(id);
+      getAllVenues();
+      toast.success("The venue has been deleted successfully.");
+    } catch (error) {
+      resolveApiError(error);
+    }
   }, [id, deleteVenue, getAllVenues]);
 
   const onEdit = useCallback(() => {

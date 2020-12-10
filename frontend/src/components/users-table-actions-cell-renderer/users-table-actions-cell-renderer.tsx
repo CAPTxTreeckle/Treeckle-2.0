@@ -8,6 +8,7 @@ import DeleteModalButton from "../delete-modal-button";
 import UserRoleChangeButton from "../user-role-change-button";
 import PopUpActionsWrapper from "../pop-up-actions-wrapper";
 import { UsersSectionContext } from "../users-section";
+import { resolveApiError } from "../../utils/error-utils";
 
 type Props = {
   rowData: UserData;
@@ -19,13 +20,13 @@ function UsersTableActionsCellRenderer({ rowData }: Props) {
     UsersSectionContext,
   );
   const {
-    deleteExistingUsers: _deleteExistingUsers,
+    deleteExistingUsers,
     isLoading: isDeleting,
   } = useDeleteExistingUsers();
 
   const onDelete = useCallback(async () => {
     try {
-      const deletedEmails = await _deleteExistingUsers([email]);
+      const deletedEmails = await deleteExistingUsers([email]);
       getAllExistingUsers();
 
       toast.success(
@@ -35,10 +36,10 @@ function UsersTableActionsCellRenderer({ rowData }: Props) {
       );
       return true;
     } catch (error) {
-      toast.warn("No existing users were deleted");
+      resolveApiError(error);
       return false;
     }
-  }, [_deleteExistingUsers, getAllExistingUsers, email]);
+  }, [deleteExistingUsers, getAllExistingUsers, email]);
 
   return (
     <DeleteModalProvider

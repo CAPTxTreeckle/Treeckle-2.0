@@ -5,7 +5,7 @@ import {
   Role,
   UserCreationStatus,
 } from "../../types/users";
-import { sanitizeArray } from "../../utils/parsers";
+import { sanitizeArray } from "../../utils/parser-utils";
 
 export function parseInputDataToPendingCreationUsers(
   data: string,

@@ -1,6 +1,5 @@
 import { useCallback, useContext, useState } from "react";
 import useAxios, { Options, RefetchOptions, ResponseValues } from "axios-hooks";
-import { StatusCodes } from "http-status-codes";
 import {
   GoogleLoginResponse,
   GoogleLoginResponseOffline,
@@ -13,13 +12,14 @@ import { HOME_PATH, OPEN_ID_PATH } from "../../routes/paths";
 import { AuthenticationData, OpenIdAuthenticationData } from "../../types/auth";
 import { UserContext } from "../../context-providers";
 import { User } from "../../context-providers/user-provider";
+import { isForbiddenOrNotAuthenticated } from "../../utils/error-utils";
 
 function syncUserContext(
-  setUser: (user: User | null) => void,
+  updateUser: (user: User | null) => void,
   data: AuthenticationData,
 ) {
   const { access, refresh, id, name, email, role, organization } = data;
-  setUser({
+  updateUser({
     accessToken: access,
     refreshToken: refresh,
     id,
@@ -37,7 +37,7 @@ export function useAxiosWithTokenRefresh<T>(
   ResponseValues<T, Error>,
   (config?: AxiosRequestConfig, options?: RefetchOptions) => AxiosPromise<T>,
 ] {
-  const { accessToken, refreshToken, setUser } = useContext(UserContext);
+  const { accessToken, refreshToken, updateUser } = useContext(UserContext);
   const [responseValues, apiCall] = useAxios<T>(
     {
       ...config,
@@ -66,20 +66,21 @@ export function useAxiosWithTokenRefresh<T>(
       config?: AxiosRequestConfig,
       options?: RefetchOptions,
     ): Promise<AxiosResponse<T>> => {
-      let attemptedTokenRefresh = false;
       try {
         setLoading(true);
         const response = await apiCall(config, options);
         return response;
       } catch (error) {
+        if (!isForbiddenOrNotAuthenticated(error)) {
+          throw error;
+        }
+
         try {
           console.log("Error before token refresh:", error, error?.response);
-          if (error?.toString() === "Cancel") {
-            throw error;
-          }
-          console.log("Attempting to refresh token");
-          attemptedTokenRefresh = true;
+
           const { data } = await tokenRefresh();
+
+          console.log("POST /gateway/refresh success:", data);
 
           const response = await apiCall(
             {
@@ -89,36 +90,32 @@ export function useAxiosWithTokenRefresh<T>(
             options,
           );
 
-          syncUserContext(setUser, data);
+          syncUserContext(updateUser, data);
           return response;
         } catch (error) {
-          attemptedTokenRefresh &&
-            console.log("Error after token refresh:", error, error?.response);
-          if (
-            [StatusCodes.UNAUTHORIZED, StatusCodes.FORBIDDEN].some(
-              (statusCode) => error?.response?.status === statusCode,
-            )
-          ) {
+          console.log("Error after token refresh:", error, error?.response);
+          if (isForbiddenOrNotAuthenticated(error)) {
             // kick user out
-            setUser(null);
-            toast.error(
+            updateUser(null);
+            throw new Error(
               "Your current session has expired. Please log in again.",
             );
+          } else {
+            throw error;
           }
-          throw error;
         }
       } finally {
         setLoading(false);
       }
     },
-    [apiCall, setUser, tokenRefresh],
+    [apiCall, updateUser, tokenRefresh],
   );
 
   return [{ ...responseValues, loading: isLoading }, apiCallWithTokenRefresh];
 }
 
 export function useGoogleAuth() {
-  const { setUser } = useContext(UserContext);
+  const { updateUser } = useContext(UserContext);
   const [{ loading }, login] = useAxios<AuthenticationData>(
     {
       url: "/gateway/gmail",
@@ -137,7 +134,7 @@ export function useGoogleAuth() {
         const { tokenId } = response as GoogleLoginResponse;
         const { data } = await login({ data: { tokenId } });
         console.log("POST /gateway/gmail success:", data);
-        syncUserContext(setUser, data);
+        syncUserContext(updateUser, data);
         toast.success("Signed in successfully.");
       } catch (error) {
         console.log("POST /gateway/gmail error:", error, error?.response);
@@ -154,7 +151,7 @@ export function useGoogleAuth() {
 }
 
 export function useOpenIdAuth() {
-  const { setUser } = useContext(UserContext);
+  const { updateUser } = useContext(UserContext);
   const history = useHistory();
   const [, login] = useAxios<AuthenticationData>(
     {
@@ -183,7 +180,7 @@ export function useOpenIdAuth() {
       try {
         const { data } = await login({ data: openIdData });
         console.log("POST /gateway/openid success:", data);
-        syncUserContext(setUser, data);
+        syncUserContext(updateUser, data);
         toast.success("Signed in successfully.");
       } catch (error) {
         console.log("POST /gateway/openid error:", error, error?.response);
@@ -193,7 +190,7 @@ export function useOpenIdAuth() {
         history.push(HOME_PATH);
       }
     },
-    [login, setUser, history],
+    [login, updateUser, history],
   );
 
   return { startOpenIdAuth, authenticate };

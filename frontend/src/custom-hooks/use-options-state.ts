@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { DropdownItemProps } from "semantic-ui-react";
-import { sanitizeArray } from "../utils/parsers";
+import { sanitizeArray } from "../utils/parser-utils";
 
 export default function useOptionsState(existingOptions: string[]) {
   const [defaultOptions, setDefaultOptions] = useState<DropdownItemProps[]>([]);

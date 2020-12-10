@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { Grid, Icon, Image, Label } from "semantic-ui-react";
 import Linkify from "linkifyjs/react";
 import defaultEventPoster from "../../assets/default-event-poster.png";
-import { displayDatetime } from "../../utils/parsers";
+import { displayDatetime } from "../../utils/parser-utils";
 import { SingleEventContext } from "../../context-providers";
 import EventSignUpButton from "../event-sign-up-button";
 import "./event-details-view.scss";

@@ -1,7 +1,4 @@
-import { useCallback, useState } from "react";
-import { useHistory } from "react-router-dom";
-import { toast } from "react-toastify";
-import { ADMIN_VENUES_PATH } from "../../routes/paths";
+import { useCallback, useMemo, useState } from "react";
 import {
   VenueData,
   VenueFormProps,
@@ -9,6 +6,7 @@ import {
   VenuePostData,
   VenuePutData,
 } from "../../types/venues";
+import { errorHandlerWrapper } from "../../utils/error-utils";
 import { useAxiosWithTokenRefresh } from "./auth-api";
 import { defaultArray } from "./default";
 
@@ -122,7 +120,6 @@ export function useGetAllVenues() {
 }
 
 export function useCreateVenue() {
-  const history = useHistory();
   const [{ loading }, apiCall] = useAxiosWithTokenRefresh<VenueData>(
     {
       url: "/venues/",
@@ -131,24 +128,18 @@ export function useCreateVenue() {
     { manual: true },
   );
 
-  const createVenue = useCallback(
-    async (venueFormProps: VenueFormProps) => {
-      try {
+  const createVenue = useMemo(
+    () =>
+      errorHandlerWrapper(async (venueFormProps: VenueFormProps) => {
         const data: VenuePostData = parseVenueFormProps(venueFormProps);
         const { data: venue } = await apiCall({
           data,
         });
         console.log("POST /venues/ success:", venue);
-        toast.success("A new venue has been created successfully.");
-        history.push(ADMIN_VENUES_PATH);
-        return true;
-      } catch (error) {
-        console.log("POST /venues/ error:", error, error?.response);
-        toast.error("An unknown error has occurred.");
-        return false;
-      }
-    },
-    [apiCall, history],
+
+        return venue;
+      }, "POST /venues/ error:"),
+    [apiCall],
   );
 
   return { createVenue, isLoading: loading };
@@ -162,22 +153,16 @@ export function useDeleteVenue() {
     { manual: true },
   );
 
-  const deleteVenue = useCallback(
-    async (id: number, onSuccess?: () => Promise<unknown> | unknown) => {
-      try {
+  const deleteVenue = useMemo(
+    () =>
+      errorHandlerWrapper(async (venueId: number) => {
         const response = await apiCall({
-          url: `/venues/${id}`,
+          url: `/venues/${venueId}`,
         });
-        console.log(`DELETE /venues/${id} success:`, response);
-        onSuccess?.();
-        toast.success("The venue has been deleted successfully.");
+        console.log(`DELETE /venues/${venueId} success:`, response);
+
         return true;
-      } catch (error) {
-        console.log(`DELETE /venues/${id} error:`, error, error?.response);
-        toast.error("An unknown error has occurred.");
-        return false;
-      }
-    },
+      }, `DELETE /venues/:venueId error:`),
     [apiCall],
   );
 
@@ -194,18 +179,19 @@ export function useGetSingleVenue() {
   );
 
   const getSingleVenue = useCallback(
-    async (id: number) => {
+    async (venueId: number) => {
       try {
         const { data: venue } = await apiCall({
-          url: `/venues/${id}`,
+          url: `/venues/${venueId}`,
         });
-        console.log(`GET /venues/${id} success:`, venue);
+        console.log(`GET /venues/${venueId} success:`, venue);
         const parsedVenue = parseVenueData(venue);
         setVenue(parsedVenue);
         return parsedVenue;
       } catch (error) {
-        console.log(`GET /venues/${id} error:`, error, error?.response);
+        console.log(`GET /venues/${venueId} error:`, error, error?.response);
         setVenue(undefined);
+        return undefined;
       }
     },
     [apiCall],
@@ -215,7 +201,6 @@ export function useGetSingleVenue() {
 }
 
 export function useUpdateVenue() {
-  const history = useHistory();
   const [{ loading }, apiCall] = useAxiosWithTokenRefresh<VenueData>(
     {
       method: "put",
@@ -223,25 +208,22 @@ export function useUpdateVenue() {
     { manual: true },
   );
 
-  const updateVenue = useCallback(
-    async (id: number, venueFormProps: VenueFormProps) => {
-      try {
-        const data: VenuePutData = parseVenueFormProps(venueFormProps);
-        const { data: venue } = await apiCall({
-          url: `/venues/${id}`,
-          data,
-        });
-        console.log(`PUT /venues/${id} success:`, venue);
-        toast.success("The venue has been updated successfully.");
-        history.push(ADMIN_VENUES_PATH);
-        return true;
-      } catch (error) {
-        console.log(`PUT /venues/${id} error:`, error, error?.response);
-        toast.error("An unknown error has occurred.");
-        return false;
-      }
-    },
-    [apiCall, history],
+  const updateVenue = useMemo(
+    () =>
+      errorHandlerWrapper(
+        async (venueId: number, venueFormProps: VenueFormProps) => {
+          const data: VenuePutData = parseVenueFormProps(venueFormProps);
+          const { data: venue } = await apiCall({
+            url: `/venues/${venueId}`,
+            data,
+          });
+          console.log(`PUT /venues/${venueId} success:`, venue);
+
+          return venue;
+        },
+        `PUT /venues/:venueId error:`,
+      ),
+    [apiCall],
   );
 
   return { updateVenue, isLoading: loading };

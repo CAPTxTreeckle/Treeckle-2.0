@@ -14,12 +14,12 @@ export type User = {
 };
 
 type UserContextType = User & {
-  setUser: (user: User | null) => void;
+  updateUser: (user: User | null) => void;
 };
 
 export const UserContext = React.createContext<UserContextType>({
-  setUser: () => {
-    throw new Error("setUser is not defined.");
+  updateUser: () => {
+    throw new Error("updateUser is not defined.");
   },
 });
 
@@ -30,7 +30,7 @@ type Props = {
 function UserProvider({ children }: Props) {
   const [user, setUser, deleteUser] = useLocalStorage<User>("user");
 
-  const _setUser = useCallback(
+  const updateUser = useCallback(
     (updatedUser: User | null) =>
       updatedUser ? setUser({ ...user, ...updatedUser }) : deleteUser(),
     [user, setUser, deleteUser],
@@ -47,7 +47,7 @@ function UserProvider({ children }: Props) {
         accessToken: user?.accessToken,
         refreshToken: user?.refreshToken,
         profilePic: user?.profilePic,
-        setUser: _setUser,
+        updateUser,
       }}
     >
       {children}

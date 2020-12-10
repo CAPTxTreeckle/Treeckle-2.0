@@ -12,7 +12,7 @@ import { useVirtualizedTableState } from "../../custom-hooks";
 import { UserInviteData, UserInvitePatchData } from "../../types/users";
 import UserInvitesTableActionsCellRenderer from "../user-invites-table-actions-cell-renderer";
 import { VirtualizedTableStateOptions } from "../../custom-hooks/use-virtualized-table-state";
-import { displayDatetime } from "../../utils/parsers";
+import { displayDatetime } from "../../utils/parser-utils";
 import {
   CREATED_AT,
   CREATED_AT_STRING,
@@ -20,6 +20,7 @@ import {
   ID,
   ROLE,
 } from "../../constants";
+import { resolveApiError } from "../../utils/error-utils";
 
 const UserInvitesTableStateOptions: VirtualizedTableStateOptions = {
   defaultSortBy: CREATED_AT,
@@ -63,7 +64,7 @@ function UserInvitesSection() {
 
         return updatedUserInvites;
       } catch (error) {
-        toast.warn("No pending registration users were updated.");
+        resolveApiError(error);
         return [];
       }
     },

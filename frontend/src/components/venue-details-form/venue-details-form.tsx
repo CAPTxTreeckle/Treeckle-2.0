@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { yupResolver } from "@hookform/resolvers";
 import * as yup from "yup";
 import {
@@ -77,7 +77,7 @@ const schema = yup.object().shape({
 });
 
 type Props = {
-  onSubmit?: (data: VenueFormProps) => void;
+  onSubmit?: (data: VenueFormProps) => Promise<unknown>;
   defaultValues?: VenueFormProps;
   submitButtonProps: StrictButtonProps;
 };
@@ -96,6 +96,7 @@ function VenueDetailsForm({
   onSubmit,
   submitButtonProps,
 }: Props) {
+  const isUnmounted = useRef(false);
   const methods = useForm<VenueFormProps>({
     resolver: yupResolver(schema),
     defaultValues,
@@ -111,13 +112,17 @@ function VenueDetailsForm({
 
   useEffect(() => {
     getVenueCategories();
+    return () => {
+      isUnmounted.current = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const _onSubmit = useCallback(async () => {
     setSubmitting(true);
-    console.log(getValues());
-    if (!(await onSubmit?.(getValues()))) {
+    await onSubmit?.(getValues());
+
+    if (!isUnmounted.current) {
       setSubmitting(false);
     }
   }, [onSubmit, getValues]);

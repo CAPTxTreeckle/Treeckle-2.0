@@ -13,6 +13,7 @@ import {
 } from "../../custom-hooks/api";
 import { VirtualizedTableStateOptions } from "../../custom-hooks/use-virtualized-table-state";
 import { EMAIL, ID, NAME, ROLE } from "../../constants";
+import { resolveApiError } from "../../utils/error-utils";
 
 type UsersSectionContextType = {
   getAllExistingUsers: () => Promise<UserData[]>;
@@ -69,7 +70,7 @@ function UsersSection() {
 
         return updatedExistingUsers;
       } catch (error) {
-        toast.warn("No existing users were updated.");
+        resolveApiError(error);
         return [];
       }
     },

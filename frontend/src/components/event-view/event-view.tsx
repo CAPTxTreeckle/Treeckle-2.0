@@ -5,7 +5,7 @@ import { EventViewProps } from "../../types/events";
 import EventDetailsView from "../event-details-view";
 import EventManagementView from "../event-management-view";
 import { Role } from "../../types/users";
-import { parseUserToUserData } from "../../utils/parsers";
+import { parseUserToUserData } from "../../utils/parser-utils";
 
 type Props = EventViewProps;
 

@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useAxiosWithTokenRefresh } from "./auth-api";
 import {
   UserData,
@@ -7,6 +7,7 @@ import {
   UserInvitePostData,
   UserPatchData,
 } from "../../types/users";
+import { errorHandlerWrapper } from "../../utils/error-utils";
 import { defaultArray } from "./default";
 
 export function useGetAllUserInvites() {
@@ -44,28 +45,26 @@ export function useCreateUserInvites() {
     { manual: true },
   );
 
-  const createUserInvites = useCallback(
-    async (invitations: UserInvitePostData[]) => {
-      try {
+  const createUserInvites = useMemo(
+    () =>
+      errorHandlerWrapper(async (invitations: UserInvitePostData[]) => {
         const { data: userInvites = [] } = await apiCall({
           data: { invitations },
         });
         console.log("POST /users/invite success:", userInvites);
 
         if (userInvites.length <= 0) {
-          throw new Error("No user invites created.");
+          throw new Error("No new users were created.");
         }
-
         return userInvites;
-      } catch (error) {
-        console.log("POST /users/invite error:", error, error?.response);
-        throw error;
-      }
-    },
+      }, "POST /users/invite error:"),
     [apiCall],
   );
 
-  return { isLoading: loading, createUserInvites };
+  return {
+    isLoading: loading,
+    createUserInvites,
+  };
 }
 
 export function useUpdateUserInvites() {
@@ -77,24 +76,20 @@ export function useUpdateUserInvites() {
     { manual: true },
   );
 
-  const updateUserInvites = useCallback(
-    async (users: UserInvitePatchData[]) => {
-      try {
+  const updateUserInvites = useMemo(
+    () =>
+      errorHandlerWrapper(async (users: UserInvitePatchData[]) => {
         const { data: updatedUserInvites = [] } = await apiCall({
           data: { users },
         });
         console.log("PATCH /users/invite success:", updatedUserInvites);
 
         if (updatedUserInvites.length <= 0) {
-          throw new Error("No user invites updated.");
+          throw new Error("No pending registration users were updated.");
         }
 
         return updatedUserInvites;
-      } catch (error) {
-        console.log("PATCH /users/invite error:", error, error?.response);
-        throw error;
-      }
-    },
+      }, "PATCH /users/invite error:"),
     [apiCall],
   );
 
@@ -110,9 +105,9 @@ export function useDeleteUserInvites() {
     { manual: true },
   );
 
-  const deleteUserInvites = useCallback(
-    async (emails: string[]) => {
-      try {
+  const deleteUserInvites = useMemo(
+    () =>
+      errorHandlerWrapper(async (emails: string[]) => {
         const { data: deletedEmails = [] } = await apiCall({
           data: { emails },
         });
@@ -120,15 +115,11 @@ export function useDeleteUserInvites() {
         console.log("DELETE /users/invite success:", deletedEmails);
 
         if (deletedEmails.length <= 0) {
-          throw new Error("No user invites deleted.");
+          throw new Error("No pending registration users were deleted.");
         }
 
         return deletedEmails;
-      } catch (error) {
-        console.log("DELETE /users/invite error:", error, error?.response);
-        throw error;
-      }
-    },
+      }, "DELETE /users/invite error:"),
     [apiCall],
   );
 
@@ -170,24 +161,20 @@ export function useUpdateExistingUsers() {
     { manual: true },
   );
 
-  const updateExistingUsers = useCallback(
-    async (users: UserPatchData[]) => {
-      try {
+  const updateExistingUsers = useMemo(
+    () =>
+      errorHandlerWrapper(async (users: UserPatchData[]) => {
         const { data: updatedExistingUsers = [] } = await apiCall({
           data: { users },
         });
         console.log("PATCH /users/ success:", updatedExistingUsers);
 
         if (updatedExistingUsers.length <= 0) {
-          throw new Error("No existing users updated.");
+          throw new Error("No existing users were updated.");
         }
 
         return updatedExistingUsers;
-      } catch (error) {
-        console.log("PATCH /users/ error:", error, error?.response);
-        throw error;
-      }
-    },
+      }, "PATCH /users/ error:"),
     [apiCall],
   );
 
@@ -203,21 +190,21 @@ export function useDeleteExistingUsers() {
     { manual: true },
   );
 
-  const deleteExistingUsers = useCallback(
-    async (emails: string[]) => {
-      try {
+  const deleteExistingUsers = useMemo(
+    () =>
+      errorHandlerWrapper(async (emails: string[]) => {
         const { data: deletedEmails = [] } = await apiCall({
           data: { emails },
         });
 
         console.log("DELETE /users/ success:", deletedEmails);
 
+        if (deletedEmails.length <= 0) {
+          throw new Error("No existing users were deleted.");
+        }
+
         return deletedEmails;
-      } catch (error) {
-        console.log("DELETE /users/ error:", error, error?.response);
-        throw error;
-      }
-    },
+      }, "DELETE /users/ error:"),
     [apiCall],
   );
 

@@ -3,7 +3,7 @@ import { Grid, Icon, Label, Popup, Table } from "semantic-ui-react";
 import { SingleEventContext } from "../../context-providers";
 import { EVENTS_QR_CODE_PATH } from "../../routes/paths";
 import { SignUpData, SignUpStatus } from "../../types/events";
-import { displayDatetime } from "../../utils/parsers";
+import { displayDatetime } from "../../utils/parser-utils";
 import EventSignUpStatusButton from "../event-sign-up-status-button";
 import PlaceholderWrapper from "../placeholder-wrapper";
 

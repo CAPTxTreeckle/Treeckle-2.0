@@ -11,6 +11,7 @@ import {
 import DeleteModalButton from "../delete-modal-button";
 import UserRoleChangeButton from "../user-role-change-button";
 import PopUpActionsWrapper from "../pop-up-actions-wrapper";
+import { resolveApiError } from "../../utils/error-utils";
 
 type Props = {
   rowData: UserInviteData;
@@ -26,14 +27,11 @@ function UserInvitesTableActionsCellRenderer({
   updateUserInvites,
 }: Props) {
   const { id, email, role } = rowData as UserData;
-  const {
-    deleteUserInvites: _deleteUserInvites,
-    isLoading: isDeleting,
-  } = useDeleteUserInvites();
+  const { deleteUserInvites, isLoading: isDeleting } = useDeleteUserInvites();
 
   const onDelete = useCallback(async () => {
     try {
-      const deletedEmails = await _deleteUserInvites([email]);
+      const deletedEmails = await deleteUserInvites([email]);
       getAllUserInvites();
 
       toast.success(
@@ -44,10 +42,10 @@ function UserInvitesTableActionsCellRenderer({
 
       return true;
     } catch (error) {
-      toast.warn("No pending registration users were deleted.");
+      resolveApiError(error);
       return false;
     }
-  }, [_deleteUserInvites, getAllUserInvites, email]);
+  }, [deleteUserInvites, getAllUserInvites, email]);
 
   return (
     <DeleteModalProvider

@@ -17,11 +17,11 @@ import "./home-page.scss";
 
 function HomePage() {
   const [showScroll, scrollToTop] = useScrollToTop(300);
-  const { setUser } = useContext(UserContext);
+  const { updateUser } = useContext(UserContext);
 
   useEffect(() => {
-    setUser(null);
-  }, [setUser]);
+    updateUser(null);
+  }, [updateUser]);
 
   return (
     <div id="home-page">
