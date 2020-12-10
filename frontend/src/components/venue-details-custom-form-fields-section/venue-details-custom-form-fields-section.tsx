@@ -8,10 +8,16 @@ import {
 import { useFieldArray } from "react-hook-form";
 import { Button, Form, Popup } from "semantic-ui-react";
 import { VENUE_DETAILS_CUSTOM_FORM_FIELDS_SECTION } from "../../constants";
+import { FieldType, VenueCustomFormFieldProps } from "../../types/venues";
 import VenueDetailsCustomFormField from "../venue-details-custom-form-field";
 
 function VenueDetailsCustomFormFieldsSection() {
-  const { fields, append, remove, move } = useFieldArray({
+  const {
+    fields,
+    append,
+    remove,
+    move,
+  } = useFieldArray<VenueCustomFormFieldProps>({
     name: VENUE_DETAILS_CUSTOM_FORM_FIELDS_SECTION,
   });
 
@@ -35,14 +41,14 @@ function VenueDetailsCustomFormFieldsSection() {
       <Form.Field>
         <DragDropContext onDragEnd={onDragEnd}>
           <Droppable droppableId={VENUE_DETAILS_CUSTOM_FORM_FIELDS_SECTION}>
-            {(provided) => (
-              <div ref={provided.innerRef} {...provided.droppableProps}>
+            {({ innerRef, droppableProps, placeholder }) => (
+              <div ref={innerRef} {...droppableProps}>
                 {fields.map((field, index) => {
                   const {
                     id,
                     fieldLabel = "",
                     placeholderText = "",
-                    fieldType = "text",
+                    fieldType = FieldType.TEXT,
                     requiredField = false,
                   } = field;
                   return (
@@ -51,11 +57,8 @@ function VenueDetailsCustomFormFieldsSection() {
                       index={index}
                       draggableId={id ?? `${index}`}
                     >
-                      {(provided) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                        >
+                      {({ innerRef, draggableProps, dragHandleProps }) => (
+                        <div ref={innerRef} {...draggableProps}>
                           <VenueDetailsCustomFormField
                             index={index}
                             onDeleteField={() => remove(index)}
@@ -65,14 +68,14 @@ function VenueDetailsCustomFormFieldsSection() {
                               fieldType,
                               requiredField,
                             }}
-                            dragHandleProps={provided.dragHandleProps}
+                            dragHandleProps={dragHandleProps}
                           />
                         </div>
                       )}
                     </Draggable>
                   );
                 })}
-                {provided.placeholder}
+                {placeholder}
               </div>
             )}
           </Droppable>

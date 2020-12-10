@@ -37,11 +37,6 @@ export function parseDatetime(
   return dayjs(datetimeString, format).toDate();
 }
 
-export function parseStringToInt(s?: string): number | null {
-  const value = parseInt(s ?? "", 10);
-  return Number.isNaN(value) ? null : value ?? null;
-}
-
 export function parseUserToUserData(user: User) {
   const { id, name, email, role, organization } = user ?? {};
 

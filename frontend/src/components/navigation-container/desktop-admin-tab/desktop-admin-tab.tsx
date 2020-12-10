@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Label, Dropdown, MenuItem } from "semantic-ui-react";
+import { Label, Dropdown } from "semantic-ui-react";
 import {
   ADMIN_BOOKINGS_PATH,
   ADMIN_USERS_PATH,
@@ -14,9 +14,9 @@ function DesktopAdminTab() {
 
   return (
     <Dropdown
-      active={pathname.startsWith("/admin")}
+      className={pathname.startsWith("/admin") ? "active" : undefined}
       text="Admin"
-      as={MenuItem}
+      item
       icon={<Label content={0} color="red" />}
       floating
     >

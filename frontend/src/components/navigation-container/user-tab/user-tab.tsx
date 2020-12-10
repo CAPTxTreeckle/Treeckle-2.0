@@ -23,13 +23,13 @@ function UserTab() {
       <Menu.Item content={<strong>{name}</strong>} />
 
       <Dropdown
-        active={pathname.startsWith(PROFILE_PATH)}
+        className={pathname.startsWith(PROFILE_PATH) ? "active" : undefined}
         trigger={
           <Image src={defaultAvatarImage} alt="" avatar bordered size="mini" />
         }
-        as={Menu.Item}
         icon={null}
         floating
+        item
       >
         <Dropdown.Menu>
           <Dropdown.Item

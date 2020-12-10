@@ -15,14 +15,13 @@ import {
   FIELD_TYPE,
   PHONE_NUM_REGEX,
   PLACEHOLDER_TEXT,
-  POSITIVE_NUM_REGEX,
-  RECOMMENDED_CAPACITY,
+  CAPACITY,
   REQUIRED_FIELD,
   VENUE_DETAILS_CUSTOM_FORM_FIELDS_SECTION,
-  VENUE_IC_CONTACT_NUMBER,
-  VENUE_IC_EMAIL,
-  VENUE_IC_NAME,
-  VENUE_NAME,
+  IC_CONTACT_NUMBER,
+  IC_EMAIL,
+  IC_NAME,
+  NAME,
 } from "../../constants";
 import FormField from "../form-field";
 import VenueDetailsCustomFormFieldsSection from "../venue-details-custom-form-fields-section";
@@ -32,23 +31,26 @@ import DropdownSelectorFormField from "../dropdown-selector-form-field";
 import "./venue-details-form.scss";
 
 const schema = yup.object().shape({
-  [VENUE_NAME]: yup.string().trim().required("Please enter a venue name"),
+  [NAME]: yup.string().trim().required("Please enter a venue name"),
   [CATEGORY]: yup
     .string()
     .trim()
     .required("Please select an existing category or add a new one"),
-  [RECOMMENDED_CAPACITY]: yup
-    .string()
-    .trim()
-    .matches(POSITIVE_NUM_REGEX, "Capacity must be a positive integer")
-    .notRequired(),
-  [VENUE_IC_NAME]: yup.string().trim().notRequired(),
-  [VENUE_IC_EMAIL]: yup
+  [CAPACITY]: yup
+    .number()
+    .positive("Capacity must be positive")
+    .integer("Capacity must be an integer")
+    .transform((value, originalValue) =>
+      typeof originalValue === "string" && originalValue === "" ? null : value,
+    )
+    .nullable(),
+  [IC_NAME]: yup.string().trim().notRequired(),
+  [IC_EMAIL]: yup
     .string()
     .trim()
     .email("Input must be a valid email")
     .notRequired(),
-  [VENUE_IC_CONTACT_NUMBER]: yup
+  [IC_CONTACT_NUMBER]: yup
     .string()
     .trim()
     .matches(PHONE_NUM_REGEX, "Input must be a valid phone number")
@@ -81,8 +83,12 @@ type Props = {
 };
 
 const defaultFormProps: VenueFormProps = {
-  [VENUE_NAME]: "",
+  [NAME]: "",
   [CATEGORY]: "",
+  [CAPACITY]: "",
+  [IC_NAME]: "",
+  [IC_EMAIL]: "",
+  [IC_CONTACT_NUMBER]: "",
 };
 
 function VenueDetailsForm({
@@ -110,27 +116,28 @@ function VenueDetailsForm({
 
   const _onSubmit = useCallback(async () => {
     setSubmitting(true);
+    console.log(getValues());
     if (!(await onSubmit?.(getValues()))) {
       setSubmitting(false);
     }
   }, [onSubmit, getValues]);
 
   return (
-    <Segment id="venue-details-form" raised>
+    <Segment className="venue-details-form" raised>
       <FormProvider {...methods}>
         <Form onSubmit={handleSubmit(_onSubmit)}>
           <Form.Field>
-            <Header className="header">Venue Details</Header>
+            <Header className="form-header">Venue Details</Header>
             <p>Please fill in the details for the venue.</p>
           </Form.Field>
 
           <Form.Group widths="equal">
-            <FormField required label="Venue Name" inputName={VENUE_NAME} />
+            <FormField required label="Venue Name" inputName={NAME} />
 
             <DropdownSelectorFormField
               inputName={CATEGORY}
               label="Category"
-              placeholder="Select/add a new category"
+              placeholder="Select/add a category"
               required
               search
               allowAdditions
@@ -140,23 +147,23 @@ function VenueDetailsForm({
 
             <FormField
               label="Recommended Capacity"
-              inputName={RECOMMENDED_CAPACITY}
+              inputName={CAPACITY}
               type="number"
             />
           </Form.Group>
 
           <Form.Group widths="equal">
-            <FormField label="Venue IC Name" inputName={VENUE_IC_NAME} />
+            <FormField label="Venue IC Name" inputName={IC_NAME} />
 
             <FormField
               label="Venue IC Email"
-              inputName={VENUE_IC_EMAIL}
+              inputName={IC_EMAIL}
               type="email"
             />
 
             <FormField
               label="Venue IC Contact Number"
-              inputName={VENUE_IC_CONTACT_NUMBER}
+              inputName={IC_CONTACT_NUMBER}
               type="tel"
             />
           </Form.Group>

@@ -4,7 +4,7 @@ import { Button, Icon } from "semantic-ui-react";
 import { VenuesContext } from "../../../context-providers";
 import { ADMIN_VENUES_CREATION_PATH } from "../../../routes/paths";
 import PlaceholderWrapper from "../../placeholder-wrapper";
-import VenueFormGallery from "../../venue-gallery";
+import VenueFormGallery from "../../venue-form-gallery";
 
 function AdminVenuesPage() {
   const { venues, isLoading, getAllVenues } = useContext(VenuesContext);
@@ -36,7 +36,7 @@ function AdminVenuesPage() {
         inverted
         placeholder
       >
-        <VenueFormGallery venues={venues} displayForm />
+        <VenueFormGallery venues={venues} />
       </PlaceholderWrapper>
     </>
   );

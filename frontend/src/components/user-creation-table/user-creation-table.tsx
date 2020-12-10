@@ -119,7 +119,7 @@ function UserCreationTable() {
               <h3>The following users were not created successfully:</h3>
               <List ordered>
                 {invalidNewUsers.map(({ email }) => (
-                  <List.Item>{email}</List.Item>
+                  <List.Item key={email}>{email}</List.Item>
                 ))}
               </List>
             </Modal.Content>

@@ -63,7 +63,7 @@ ANYMAIL = {
 }
 
 EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
-DEFAULT_FROM_EMAIL = "no-reply@treeckle.com"
+DEFAULT_FROM_EMAIL = "Treeckle <no-reply@treeckle.com>"
 SERVER_EMAIL = "backend-server@treeckle.com"
 
 REST_FRAMEWORK = {
@@ -84,7 +84,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=14) if DEBUG else timedelta(minutes=10),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=14),
     "ROTATE_REFRESH_TOKENS": True,
 }

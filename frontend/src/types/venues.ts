@@ -4,24 +4,37 @@ import {
   FIELD_LABEL,
   FIELD_TYPE,
   PLACEHOLDER_TEXT,
-  RECOMMENDED_CAPACITY,
+  CAPACITY,
   REQUIRED_FIELD,
   VENUE_DETAILS_CUSTOM_FORM_FIELDS_SECTION,
-  VENUE_IC_CONTACT_NUMBER,
-  VENUE_IC_EMAIL,
-  VENUE_IC_NAME,
-  VENUE_NAME,
+  IC_CONTACT_NUMBER,
+  IC_EMAIL,
+  IC_NAME,
+  NAME,
+  FORM_FIELD_DATA,
 } from "../constants";
 
 export type VenuePostData = {
-  name: string;
-  formData: string;
-  category: string;
+  [NAME]: string;
+  [CATEGORY]: string;
+  [CAPACITY]?: string;
+  [IC_NAME]: string;
+  [IC_EMAIL]: string;
+  [IC_CONTACT_NUMBER]: string;
+  [FORM_FIELD_DATA]: VenueCustomFormFieldProps[];
 };
 
 export type VenuePutData = VenuePostData;
 
-export type VenueData = BaseData & VenuePostData;
+export type VenueData = BaseData & {
+  [NAME]: string;
+  [CATEGORY]: string;
+  [CAPACITY]: string;
+  [IC_NAME]: string;
+  [IC_EMAIL]: string;
+  [IC_CONTACT_NUMBER]: string;
+  [FORM_FIELD_DATA]: VenueCustomFormFieldProps[];
+};
 
 export enum FieldType {
   TEXT = "text",
@@ -33,17 +46,17 @@ export enum FieldType {
 export type VenueCustomFormFieldProps = {
   [FIELD_TYPE]: FieldType;
   [FIELD_LABEL]: string;
-  [PLACEHOLDER_TEXT]?: string;
-  [REQUIRED_FIELD]?: boolean;
+  [PLACEHOLDER_TEXT]: string;
+  [REQUIRED_FIELD]: boolean;
 };
 
 export type VenueFormProps = {
-  [VENUE_NAME]: string;
+  [NAME]: string;
   [CATEGORY]: string;
-  [RECOMMENDED_CAPACITY]?: string;
-  [VENUE_IC_NAME]?: string;
-  [VENUE_IC_EMAIL]?: string;
-  [VENUE_IC_CONTACT_NUMBER]?: string;
+  [CAPACITY]: string;
+  [IC_NAME]: string;
+  [IC_EMAIL]: string;
+  [IC_CONTACT_NUMBER]: string;
   [VENUE_DETAILS_CUSTOM_FORM_FIELDS_SECTION]?: VenueCustomFormFieldProps[];
 };
 

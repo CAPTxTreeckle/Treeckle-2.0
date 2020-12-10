@@ -2,7 +2,8 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from treeckle.common.generators import generate_error_message
+
+from treeckle.common.exceptions import BadRequest
 from .logic import (
     get_user_invites,
     get_users,
@@ -25,8 +26,8 @@ from .serializers import (
 )
 
 # Create your views here.
-class UserInviteView(APIView):
-    @check_access([Role.ADMIN])
+class UserInvitesView(APIView):
+    @check_access(Role.ADMIN)
     def get(self, request, requester: User):
         same_organization_user_invites = get_user_invites(
             organization=requester.organization
@@ -39,14 +40,14 @@ class UserInviteView(APIView):
 
         return Response(data, status=status.HTTP_200_OK)
 
-    @check_access([Role.ADMIN])
+    @check_access(Role.ADMIN)
     def post(self, request, requester: User):
         serializer = PostUserInviteSerializer(data=request.data)
 
         serializer.is_valid(raise_exception=True)
 
-        ## shape: [{email: <email>, role: <role>}]
-        invitations = serializer.validated_data["invitations"]
+        ## shape: [{email:, role:}]
+        invitations = serializer.validated_data.get("invitations", [])
 
         ## shape: [(email, role)]
         valid_invitations = get_valid_invitations(invitations)
@@ -56,23 +57,20 @@ class UserInviteView(APIView):
         )
 
         if not new_user_invites:
-            return Response(
-                generate_error_message("No user invites created."),
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            raise BadRequest("No user invites created.", code="no_user_invites_created")
 
         data = [user_invite_to_json(user_invite) for user_invite in new_user_invites]
 
-        return Response(data, status=status.HTTP_200_OK)
+        return Response(data, status=status.HTTP_201_CREATED)
 
-    @check_access([Role.ADMIN])
+    @check_access(Role.ADMIN)
     def patch(self, request, requester: User):
         serializer = PatchUserInviteSerializer(data=request.data)
 
         serializer.is_valid(raise_exception=True)
 
         ## shape: [{id, role}]
-        user_invite_data_list = serializer.validated_data["users"]
+        user_invite_data_list = serializer.validated_data.get("users", [])
 
         ## shape: {id: {role: }}
         user_invite_data_dict = {
@@ -90,10 +88,7 @@ class UserInviteView(APIView):
         )
 
         if not updated_user_invites:
-            return Response(
-                generate_error_message("No user invites updated."),
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            raise BadRequest("No user invites updated.", code="no_user_invites_updated")
 
         data = [
             user_invite_to_json(user_invite) for user_invite in updated_user_invites
@@ -101,29 +96,26 @@ class UserInviteView(APIView):
 
         return Response(data, status=status.HTTP_200_OK)
 
-    @check_access([Role.ADMIN])
+    @check_access(Role.ADMIN)
     def delete(self, request, requester: User):
         serializer = EmailListSerializer(data=request.data)
 
         serializer.is_valid(raise_exception=True)
 
-        emails_to_be_deleted = serializer.validated_data["emails"]
+        emails_to_be_deleted = serializer.validated_data.get("emails", [])
         deleted_emails = delete_user_invites(
             emails_to_be_deleted,
             organization=requester.organization,
         )
 
         if not deleted_emails:
-            return Response(
-                generate_error_message("No user invites deleted."),
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            raise BadRequest("No user invites deleted.", code="no_user_invites_deleted")
 
         return Response(deleted_emails, status=status.HTTP_200_OK)
 
 
-class UserView(APIView):
-    @check_access([Role.ADMIN])
+class UsersView(APIView):
+    @check_access(Role.ADMIN)
     def get(self, request, requester: User):
         same_organization_users = get_users(organization=requester.organization)
 
@@ -131,14 +123,14 @@ class UserView(APIView):
 
         return Response(data, status=status.HTTP_200_OK)
 
-    @check_access([Role.ADMIN])
+    @check_access(Role.ADMIN)
     def patch(self, request, requester: User):
         serializer = PatchUserSerializer(data=request.data)
 
         serializer.is_valid(raise_exception=True)
 
         ## shape: [{id, name, email, role}]
-        user_data_list = serializer.validated_data["users"]
+        user_data_list = serializer.validated_data.get("users", [])
 
         ## shape: {id: {name: , email: , role: }}
         user_data_dict = {
@@ -163,22 +155,19 @@ class UserView(APIView):
         )
 
         if not updated_users:
-            return Response(
-                generate_error_message("No users updated."),
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            raise BadRequest("No users updated.", code="no_users_updated")
 
         data = [user_to_json(user) for user in updated_users]
 
         return Response(data, status=status.HTTP_200_OK)
 
-    @check_access([Role.ADMIN])
+    @check_access(Role.ADMIN)
     def delete(self, request, requester: User):
         serializer = EmailListSerializer(data=request.data)
 
         serializer.is_valid(raise_exception=True)
 
-        emails_to_be_deleted = serializer.validated_data["emails"]
+        emails_to_be_deleted = serializer.validated_data.get("emails", [])
 
         ## ensure user doesn't delete its own account
         try:
@@ -193,9 +182,6 @@ class UserView(APIView):
         )
 
         if not deleted_emails:
-            return Response(
-                generate_error_message("No users deleted."),
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            raise BadRequest("No users deleted.", code="no_users_deleted")
 
         return Response(deleted_emails, status=status.HTTP_200_OK)

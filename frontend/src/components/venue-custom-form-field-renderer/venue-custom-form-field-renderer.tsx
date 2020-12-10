@@ -7,19 +7,17 @@ import TextAreaFormField from "../text-area-form-field";
 type Props = VenueCustomFormFieldProps & {
   inputName: string;
   readOnly?: boolean;
-  defaultValues?: Record<string, string | number>;
 };
 
 function VenueCustomFormFieldRenderer({
   inputName,
   fieldLabel,
   fieldType,
-  placeholderText = "",
-  requiredField = false,
+  placeholderText,
+  requiredField,
   readOnly = false,
-  defaultValues,
 }: Props) {
-  const renderVenueCustomFormField = () => {
+  return (() => {
     switch (fieldType) {
       case FieldType.TEXT:
         return (
@@ -29,7 +27,6 @@ function VenueCustomFormFieldRenderer({
             placeholder={placeholderText}
             required={requiredField}
             readOnly={readOnly}
-            defaultValue={defaultValues && (defaultValues[inputName] as string)}
           />
         );
       case FieldType.TEXT_AREA:
@@ -41,7 +38,6 @@ function VenueCustomFormFieldRenderer({
             required={requiredField}
             readOnly={readOnly}
             rows={8}
-            defaultValue={defaultValues && (defaultValues[inputName] as string)}
           />
         );
       case FieldType.NUMBER:
@@ -53,7 +49,6 @@ function VenueCustomFormFieldRenderer({
             required={requiredField}
             readOnly={readOnly}
             type="number"
-            defaultValue={defaultValues && (defaultValues[inputName] as string)}
           />
         );
       case FieldType.BOOLEAN:
@@ -65,10 +60,10 @@ function VenueCustomFormFieldRenderer({
             readOnly={readOnly}
           />
         );
+      default:
+        return null;
     }
-  };
-
-  return renderVenueCustomFormField();
+  })();
 }
 
 export default VenueCustomFormFieldRenderer;

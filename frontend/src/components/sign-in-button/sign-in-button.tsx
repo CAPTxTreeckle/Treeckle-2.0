@@ -15,9 +15,10 @@ function SignInButton() {
   const [isSignInOptionsOpened, setSignInOptionsOpened] = useState(false);
 
   return (
-    <>
+    <div className="sign-in-button-container">
       <Button
-        id="sign-in-button"
+        fluid
+        className="sign-in-button"
         content="Sign In"
         onClick={() => setSignInOptionsOpened(true)}
       />
@@ -56,7 +57,7 @@ function SignInButton() {
           </Modal.Content>
         </Modal>
       </TransitionablePortal>
-    </>
+    </div>
   );
 }
 

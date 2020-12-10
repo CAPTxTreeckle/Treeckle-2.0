@@ -1,12 +1,13 @@
-#sign-in-button {
+.sign-in-button-container {
   width: 40%;
-  margin: 0;
-  color: white;
-  background: transparent;
-  border: solid 1px white;
+  .button.sign-in-button {
+    color: white;
+    background: transparent !important;
+    border: solid 1px white;
 
-  &:hover {
-    color: #2185d0;
-    border-color: #2185d0;
+    &:hover {
+      color: #2185d0;
+      border-color: #2185d0;
+    }
   }
 }

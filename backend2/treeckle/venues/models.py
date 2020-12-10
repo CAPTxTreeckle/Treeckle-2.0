@@ -25,7 +25,7 @@ class Venue(TimestampedModel):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     category = models.ForeignKey(VenueCategory, on_delete=models.CASCADE)
-    capacity = models.PositiveIntegerField(blank=True)
+    capacity = models.PositiveIntegerField(blank=True, null=True)
     ic_name = models.CharField(max_length=255, blank=True)
     ic_email = models.EmailField(blank=True)
     ic_contact_number = models.CharField(max_length=50, blank=True)
@@ -39,3 +39,6 @@ class Venue(TimestampedModel):
             )
         ]
         ordering = ["name"]
+
+    def __str__(self):
+        return f"{self.name} | {self.category}"

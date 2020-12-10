@@ -5,6 +5,7 @@ from .models import User, UserInvite, Role
 
 
 class PostSingleUserInviteSerializer(serializers.ModelSerializer):
+    ## needed for role to be automatically assigned a default value
     role = serializers.ChoiceField(Role.choices, default=Role.RESIDENT)
 
     class Meta:
@@ -18,7 +19,9 @@ class PostUserInviteSerializer(serializers.Serializer):
 
 
 class PatchSingleUserInviteSerializer(serializers.ModelSerializer):
+    ## needed to access id field
     id = serializers.IntegerField()
+    ## needed to make role required
     role = serializers.ChoiceField(Role.choices)
 
     class Meta:
@@ -27,7 +30,6 @@ class PatchSingleUserInviteSerializer(serializers.ModelSerializer):
 
 
 class PatchUserInviteSerializer(serializers.Serializer):
-
     users = PatchSingleUserInviteSerializer(many=True)
 
 

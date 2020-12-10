@@ -8,7 +8,7 @@ function ProfilePage() {
   const { name, email, organization, role } = useContext(UserContext);
 
   return (
-    <Segment id="profile-page" raised padded="very">
+    <Segment className="profile-page" raised padded="very">
       <Grid columns="2" relaxed="very" stackable>
         <Grid.Column width="6" verticalAlign="middle">
           <Image
@@ -32,7 +32,7 @@ function ProfilePage() {
             </p>
             <p>
               <strong>Role:</strong>{" "}
-              <text className="capitalise">{role?.toLowerCase() ?? role}</text>
+              <span className="capitalise">{role?.toLowerCase() ?? role}</span>
             </p>
           </h4>
         </Grid.Column>

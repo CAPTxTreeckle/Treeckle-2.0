@@ -100,7 +100,7 @@ function UserInvitesSection() {
   return (
     <Segment.Group raised>
       <Segment secondary>
-        <div className="action-container">
+        <div className="action-container horizontal-space-margin">
           <SearchBar
             className="flex-grow"
             searchValue={searchValue}
@@ -110,12 +110,7 @@ function UserInvitesSection() {
           <Popup
             content="Refresh"
             trigger={
-              <Button
-                className="left-space-margin"
-                icon="refresh"
-                color="blue"
-                onClick={getAllUserInvites}
-              />
+              <Button icon="refresh" color="blue" onClick={getAllUserInvites} />
             }
             position="top center"
             on="hover"

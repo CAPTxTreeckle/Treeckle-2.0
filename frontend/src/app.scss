@@ -19,6 +19,30 @@
   }
 }
 
+.vertical-space-margin > * {
+  margin-bottom: 1rem !important;
+}
+
+.vertical-space-margin > *:first-child {
+  margin-top: 0 !important;
+}
+
+.vertical-space-margin > *:last-child {
+  margin-bottom: 0 !important;
+}
+
+.horizontal-space-margin > * {
+  margin-right: 1rem !important;
+}
+
+.horizontal-space-margin > *:first-child {
+  margin-left: 0 !important;
+}
+
+.horizontal-space-margin > *:last-child {
+  margin-right: 0 !important;
+}
+
 .ui.message p {
   opacity: 1;
 }
@@ -156,8 +180,4 @@ body ::-webkit-scrollbar-thumb {
 
 .black-text {
   color: black;
-}
-
-.left-space-margin {
-  margin-left: 1rem !important;
 }

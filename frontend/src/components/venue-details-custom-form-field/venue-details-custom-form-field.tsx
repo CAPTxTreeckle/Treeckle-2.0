@@ -71,8 +71,8 @@ function VenueDetailsCustomFormField({
   const requiredField = `${VENUE_DETAILS_CUSTOM_FORM_FIELDS_SECTION}[${index}].${REQUIRED_FIELD}`;
 
   return (
-    <div id="venue-details-custom-form-field">
-      <Card raised fluid>
+    <div className="venue-details-custom-form-field-container">
+      <Card className="venue-details-custom-form-field" raised fluid>
         <Card.Content className="top-bar">
           <div className="section left">
             <div className="field-number">{index + 1}</div>
@@ -104,9 +104,15 @@ function VenueDetailsCustomFormField({
           </div>
 
           <div className="section right">
-            <div {...dragHandleProps} className="drag-zone">
-              <Icon name="braille" fitted />
-            </div>
+            <Popup
+              trigger={
+                <div {...dragHandleProps} className="drag-zone">
+                  <Icon name="braille" fitted />
+                </div>
+              }
+              on="hover"
+              content="Drag and move up/down to rearrange the fields"
+            />
           </div>
         </Card.Content>
 

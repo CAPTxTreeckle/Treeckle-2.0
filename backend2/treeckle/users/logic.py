@@ -1,6 +1,6 @@
 from typing import Sequence, Iterable, Tuple
 
-from django.db.models.query import QuerySet
+from django.db.models import QuerySet
 
 from treeckle.common.constants import (
     ID,

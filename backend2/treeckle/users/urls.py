@@ -1,8 +1,8 @@
 from django.urls import path
 
-from .views import UserInviteView, UserView
+from .views import UserInvitesView, UsersView
 
 urlpatterns = [
-    path("", UserView.as_view(), name="user"),
-    path("invite", UserInviteView.as_view(), name="user_invite"),
+    path("", UsersView.as_view(), name="users"),
+    path("invite", UserInvitesView.as_view(), name="user_invites"),
 ]

@@ -13,17 +13,17 @@ type Props = {
 };
 
 function PlaceholderWrapper({
-  children,
-  isLoading,
+  children = null,
+  isLoading = false,
   loadingMessage,
-  showDefaultMessage,
+  showDefaultMessage = false,
   defaultMessage,
   inverted = false,
   placeholder = false,
 }: Props) {
   return isLoading || showDefaultMessage ? (
     <Segment
-      id="placeholder-wrapper"
+      className="placeholder-wrapper"
       basic
       placeholder={placeholder}
       textAlign="center"
@@ -37,7 +37,7 @@ function PlaceholderWrapper({
           content={loadingMessage}
         />
       )}
-      {!isLoading && showDefaultMessage && (
+      {!isLoading && showDefaultMessage && defaultMessage && (
         <h2 className="default-message">{defaultMessage}</h2>
       )}
     </Segment>

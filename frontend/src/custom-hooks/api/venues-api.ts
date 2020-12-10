@@ -15,24 +15,55 @@ import { defaultArray } from "./default";
 function parseVenueFormProps(
   venueFormProps: VenueFormProps,
 ): VenuePostData | VenuePutData {
-  const { venueName: name, category } = venueFormProps;
+  const {
+    name,
+    category,
+    capacity,
+    icName,
+    icEmail,
+    icContactNumber,
+    venueDetailsCustomFormFieldsSection,
+  } = venueFormProps;
   const data: VenuePostData | VenuePutData = {
     name,
     category,
-    formData: JSON.stringify(venueFormProps),
+    capacity: capacity || undefined,
+    icName,
+    icEmail,
+    icContactNumber,
+    formFieldData: venueDetailsCustomFormFieldsSection ?? [],
   };
 
   return data;
 }
 
 function parseVenueData(venueData: VenueData): VenueViewProps {
-  const { id, createdAt, updatedAt, formData } = venueData;
+  const {
+    id,
+    createdAt,
+    updatedAt,
+    name,
+    category,
+    capacity,
+    icName,
+    icEmail,
+    icContactNumber,
+    formFieldData,
+  } = venueData;
 
   const venueViewProps: VenueViewProps = {
     id,
     createdAt,
     updatedAt,
-    venueFormProps: JSON.parse(formData),
+    venueFormProps: {
+      name,
+      category,
+      capacity,
+      icName,
+      icEmail,
+      icContactNumber,
+      venueDetailsCustomFormFieldsSection: formFieldData,
+    },
   };
 
   return venueViewProps;

@@ -16,7 +16,6 @@ import {
   SubscriptionData,
   SubscribeAction,
 } from "../../types/events";
-import { parseStringToInt } from "../../utils/parsers";
 import { defaultArray } from "./default";
 
 function parseEventFormProps(
@@ -42,7 +41,10 @@ function parseEventFormProps(
     organisedBy,
     venueName: venueName ?? "",
     categories: categories ?? [],
-    capacity: parseStringToInt(estimatedCapacity),
+    capacity:
+      estimatedCapacity !== null
+        ? parseInt(estimatedCapacity ?? "", 10)
+        : estimatedCapacity,
     startDate: startDateTime,
     endDate: endDateTime,
     description: description ?? "",

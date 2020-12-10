@@ -40,7 +40,7 @@ class User(TimestampedModel):
         return f"{self.name} ({self.organization})"
 
     class Meta:
-        ordering = ["role", "name"]
+        ordering = ["name"]
 
 
 class UserInvite(TimestampedModel):
@@ -52,4 +52,4 @@ class UserInvite(TimestampedModel):
         return f"{self.email} ({self.organization})"
 
     class Meta:
-        ordering = ["role", "email"]
+        ordering = ["email"]

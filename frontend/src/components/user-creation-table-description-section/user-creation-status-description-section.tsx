@@ -15,7 +15,7 @@ function UserCreationTableDescriptionSection() {
         <Message.Content>
           <p>This section contains the parsed users' details.</p>
 
-          <p>
+          <div>
             There are 4 types of user statuses:
             <Grid
               centered
@@ -45,7 +45,7 @@ function UserCreationTableDescriptionSection() {
                 );
               })}
             </Grid>
-          </p>
+          </div>
 
           <p>
             <strong>Note:</strong> Only users with <strong>New</strong> status

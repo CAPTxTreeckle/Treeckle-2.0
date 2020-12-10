@@ -35,5 +35,5 @@ def send_user_invite_emails(user_invites: Iterable[UserInvite]) -> None:
 
         emails.append(email)
 
-    connection = get_connection()
+    connection = get_connection(fail_silently=True)
     connection.send_messages(emails)

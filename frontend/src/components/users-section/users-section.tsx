@@ -100,7 +100,7 @@ function UsersSection() {
     >
       <Segment.Group raised>
         <Segment secondary>
-          <div className="action-container">
+          <div className="action-container horizontal-space-margin">
             <SearchBar
               className="flex-grow"
               searchValue={searchValue}
@@ -111,7 +111,6 @@ function UsersSection() {
               content="Refresh"
               trigger={
                 <Button
-                  className="left-space-margin"
                   icon="refresh"
                   color="blue"
                   onClick={getAllExistingUsers}
