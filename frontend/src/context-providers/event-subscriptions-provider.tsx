@@ -6,20 +6,20 @@ import {
 } from "../custom-hooks/api";
 import {
   EventViewProps,
-  SubscribeAction,
-  SubscriptionData,
+  EventCategorySubscriptionAction,
+  EventCategorySubscriptionData,
 } from "../types/events";
 
 type EventSubscriptionsContextType = {
   subscribedEvents: EventViewProps[];
-  getSubscriptions: () => Promise<SubscriptionData>;
+  getSubscriptions: () => Promise<EventCategorySubscriptionData>;
   updateSubscriptions: (
-    actions: SubscribeAction[],
-  ) => Promise<SubscriptionData>;
+    actions: EventCategorySubscriptionAction[],
+  ) => Promise<EventCategorySubscriptionData>;
   isLoadingSubscribedEvents: boolean;
   isLoadingEventCategories: boolean;
   subscribedCategories: string[];
-  notSubscribedCategories: string[];
+  nonSubscribedCategories: string[];
 };
 
 export const EventSubscriptionsContext = React.createContext<EventSubscriptionsContextType>(
@@ -34,7 +34,7 @@ export const EventSubscriptionsContext = React.createContext<EventSubscriptionsC
     isLoadingSubscribedEvents: false,
     isLoadingEventCategories: false,
     subscribedCategories: [],
-    notSubscribedCategories: [],
+    nonSubscribedCategories: [],
   },
 );
 
@@ -46,7 +46,7 @@ function EventSubscriptionsProvider({ children }: Props) {
   const [subscribedCategories, setSubscribedCategories] = useState<string[]>(
     [],
   );
-  const [notSubscribedCategories, setNotSubscribedCategories] = useState<
+  const [nonSubscribedCategories, setNotSubscribedCategories] = useState<
     string[]
   >([]);
 
@@ -58,7 +58,7 @@ function EventSubscriptionsProvider({ children }: Props) {
 
   const {
     subscribedCategories: _subscribedCategories,
-    notSubscribedCategories: _notSubscribedCategories,
+    nonSubscribedCategories: _nonSubscribedCategories,
     getSubscriptions: _getSubscriptions,
     isLoading: isLoadingEventCategories,
   } = useGetSubscriptions();
@@ -70,17 +70,17 @@ function EventSubscriptionsProvider({ children }: Props) {
 
   useEffect(() => {
     setSubscribedCategories(_subscribedCategories);
-    setNotSubscribedCategories(_notSubscribedCategories);
-  }, [_subscribedCategories, _notSubscribedCategories]);
+    setNotSubscribedCategories(_nonSubscribedCategories);
+  }, [_subscribedCategories, _nonSubscribedCategories]);
 
   const {
     updateSubscriptions: _updateSubscriptions,
     subscribedCategories: updatedSubscribedCategories,
-    notSubscribedCategories: updatedNotSubscribedCategories,
+    nonSubscribedCategories: updatedNotSubscribedCategories,
   } = useUpdateSubscriptions();
 
   const updateSubscriptions = useCallback(
-    (actions: SubscribeAction[]) =>
+    (actions: EventCategorySubscriptionAction[]) =>
       _updateSubscriptions(actions, getSubscribedEvents),
     [_updateSubscriptions, getSubscribedEvents],
   );
@@ -99,7 +99,7 @@ function EventSubscriptionsProvider({ children }: Props) {
         isLoadingSubscribedEvents,
         isLoadingEventCategories,
         subscribedCategories,
-        notSubscribedCategories,
+        nonSubscribedCategories,
       }}
     >
       {children}

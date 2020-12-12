@@ -1,12 +1,12 @@
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import { Icon, Label, StrictLabelProps } from "semantic-ui-react";
 import { EventSubscriptionsContext } from "../../context-providers";
-import { SubscribeActionType } from "../../types/events";
+import { SubscriptionActionType } from "../../types/events";
 
 type Props = {
   category: string;
   color?: StrictLabelProps["color"];
-  actionType: SubscribeActionType;
+  actionType: SubscriptionActionType;
 };
 
 function EventSubscriptionLabel({ category, color, actionType }: Props) {
@@ -16,7 +16,7 @@ function EventSubscriptionLabel({ category, color, actionType }: Props) {
     if (isLoading) {
       return <Icon name="spinner" loading />;
     }
-    if (actionType === SubscribeActionType.Subscribe) {
+    if (actionType === SubscriptionActionType.Subscribe) {
       return <Icon name="plus" />;
     }
     return <Icon name="cancel" />;

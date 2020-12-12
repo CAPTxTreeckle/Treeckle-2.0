@@ -33,8 +33,8 @@ export function displayDatetime(
 export function parseDatetime(
   datetimeString: string,
   format: string = DATE_TIME_FORMAT,
-): Date {
-  return dayjs(datetimeString, format).toDate();
+): number {
+  return dayjs(datetimeString, format).valueOf();
 }
 
 export function parseUserToUserData(user: User) {

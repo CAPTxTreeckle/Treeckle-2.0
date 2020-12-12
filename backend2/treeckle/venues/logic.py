@@ -1,6 +1,7 @@
 from typing import Optional, List
 
 from django.db.models import QuerySet
+from django.db import transaction
 
 from treeckle.common.constants import (
     ID,
@@ -16,7 +17,7 @@ from treeckle.common.constants import (
 )
 from treeckle.common.parsers import parse_datetime_to_ms_timestamp
 from users.models import Organization
-from .models import Venue, VenueCategory
+from .models import VenueCategory, Venue
 
 
 def venue_to_json(venue: Venue) -> dict:
@@ -43,7 +44,7 @@ def get_venue(**kwargs) -> Venue:
 
 
 def get_venues(**kwargs) -> QuerySet[Venue]:
-    return Venue.objects.select_related("category").filter(**kwargs)
+    return Venue.objects.filter(**kwargs)
 
 
 def get_or_create_venue_category(
@@ -56,11 +57,8 @@ def get_or_create_venue_category(
     return venue_category
 
 
-def delete_unused_venue_categories(organization: Organization):
-    used_venue_category_ids = (
-        Venue.objects.all().values_list("category_id", flat=True).distinct()
-    )
-    VenueCategory.objects.exclude(id__in=used_venue_category_ids).delete()
+def delete_unused_venue_categories(organization: Organization) -> None:
+    organization.venuecategory_set.filter(venue=None).delete()
 
 
 def create_venue(
@@ -74,20 +72,21 @@ def create_venue(
     form_field_data: List[dict],
 ) -> Venue:
 
-    venue_category = get_or_create_venue_category(
-        name=category_name, organization=organization
-    )
+    with transaction.atomic():
+        venue_category = get_or_create_venue_category(
+            name=category_name, organization=organization
+        )
 
-    new_venue = Venue.objects.create(
-        organization=organization,
-        name=venue_name,
-        category=venue_category,
-        capacity=capacity,
-        ic_name=ic_name,
-        ic_email=ic_email,
-        ic_contact_number=ic_contact_number,
-        form_field_data=form_field_data,
-    )
+        new_venue = Venue.objects.create(
+            organization=organization,
+            name=venue_name,
+            category=venue_category,
+            capacity=capacity,
+            ic_name=ic_name,
+            ic_email=ic_email,
+            ic_contact_number=ic_contact_number,
+            form_field_data=form_field_data,
+        )
 
     return new_venue
 
@@ -102,23 +101,25 @@ def update_venue(
     ic_contact_number: str,
     form_field_data: List[dict],
 ) -> Venue:
-    venue_category = get_or_create_venue_category(
-        name=category_name, organization=current_venue.organization
-    )
 
-    current_venue.update_from_dict(
-        {
-            "name": venue_name,
-            "category": venue_category,
-            "capacity": capacity,
-            "ic_name": ic_name,
-            "ic_email": ic_email,
-            "ic_contact_number": ic_contact_number,
-            "form_field_data": form_field_data,
-        },
-        commit=True,
-    )
+    with transaction.atomic():
+        venue_category = get_or_create_venue_category(
+            name=category_name, organization=current_venue.organization
+        )
 
-    delete_unused_venue_categories(organization=current_venue.organization)
+        current_venue.update_from_dict(
+            {
+                "name": venue_name,
+                "category": venue_category,
+                "capacity": capacity,
+                "ic_name": ic_name,
+                "ic_email": ic_email,
+                "ic_contact_number": ic_contact_number,
+                "form_field_data": form_field_data,
+            },
+            commit=True,
+        )
+
+        delete_unused_venue_categories(organization=current_venue.organization)
 
     return current_venue

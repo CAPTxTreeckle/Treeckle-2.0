@@ -1,8 +1,9 @@
 import React, { useContext } from "react";
 import { Divider, Tab } from "semantic-ui-react";
 import { EventSubscriptionsContext } from "../../context-providers";
+import EventGallery from "../event-gallery";
 import EventSubscriptionsSelector from "../event-subscriptions-selector";
-import EventViewOnlyGallery from "../event-view-only-gallery";
+import EventViewOnlyGalleryItem from "../event-view-only-gallery-item";
 import PlaceholderWrapper from "../placeholder-wrapper";
 
 function EventsSubscriptionsTabPane() {
@@ -25,7 +26,10 @@ function EventsSubscriptionsTabPane() {
         defaultMessage="There are no subscribed events"
         placeholder
       >
-        <EventViewOnlyGallery events={subscribedEvents} />
+        <EventGallery
+          events={subscribedEvents}
+          GalleryItem={EventViewOnlyGalleryItem}
+        />
       </PlaceholderWrapper>
     </Tab.Pane>
   );

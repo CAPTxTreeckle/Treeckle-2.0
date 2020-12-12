@@ -7,7 +7,7 @@ from users.models import Organization, User
 # Create your models here.
 class Event(TimestampedModel):
     title = models.CharField(max_length=255)
-    organizer = models.ForeignKey(User, on_delete=models.CASCADE)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE)
     organized_by = models.CharField(max_length=255)
     venue_name = models.CharField(max_length=255, blank=True)
     description = models.TextField(blank=True)
@@ -30,7 +30,7 @@ class Event(TimestampedModel):
         ordering = ["-created_at"]
 
     def __str__(self):
-        return f"{self.title} | ${self.organizer}"
+        return f"{self.title} | {self.creator}"
 
 
 class EventCategoryType(TimestampedModel):
@@ -88,6 +88,11 @@ class EventSignUp(TimestampedModel):
 
     def __str__(self):
         return f"{self.user.name} | {self.status} | {self.event}"
+
+
+class SubscriptionActionType(models.TextChoices):
+    SUBSCRIBE = "SUBSCRIBE"
+    UNSUBSCRIBE = "UNSUBSCRIBE"
 
 
 class EventCategoryTypeSubscription(TimestampedModel):

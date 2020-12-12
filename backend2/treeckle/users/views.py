@@ -108,7 +108,9 @@ class UserInvitesView(APIView):
 class UsersView(APIView):
     @check_access(Role.ADMIN)
     def get(self, request, requester: User):
-        same_organization_users = get_users(organization=requester.organization)
+        same_organization_users = get_users(
+            organization=requester.organization
+        ).select_related("organization")
 
         data = [user_to_json(user) for user in same_organization_users]
 

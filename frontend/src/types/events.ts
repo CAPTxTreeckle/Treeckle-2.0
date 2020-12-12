@@ -13,7 +13,7 @@ import {
   IS_SIGN_UP_ALLOWED,
   IS_SIGN_UP_APPROVAL_REQUIRED,
   ORGANIZED_BY,
-  ORGANIZER,
+  CREATOR,
   SIGN_UPS,
   SIGN_UP_COUNT,
   SIGN_UP_STATUS,
@@ -23,6 +23,8 @@ import {
   USER,
   USER_ID,
   VENUE_NAME,
+  SUBSCRIBED_CATEGORIES,
+  NON_SUBSCRIBED_CATEGORIES,
 } from "../constants";
 
 import { BaseData } from "./base";
@@ -46,7 +48,7 @@ export type EventPostData = {
 export type EventPutData = EventPostData;
 
 type EventMetaData = BaseData & {
-  [ORGANIZER]: UserData;
+  [CREATOR]: UserData;
   [SIGN_UP_COUNT]: number;
   [SIGN_UP_STATUS]: SignUpStatus | null;
 };
@@ -100,25 +102,25 @@ export type EventFormProps = {
   [IS_PUBLISHED]: boolean;
 };
 
-export type EventViewProps = EventMetaData & { signUps?: SignUpData[] } & {
+export type EventViewProps = EventMetaData & { [SIGN_UPS]?: SignUpData[] } & {
   eventFormProps: EventFormProps;
 };
 
-export enum SubscribeActionType {
+export enum SubscriptionActionType {
   Subscribe = "SUBSCRIBE",
   Unsubscribe = "UNSUBSCRIBE",
 }
 
-export type SubscribeAction = {
-  [ACTION]: SubscribeActionType;
+export type EventCategorySubscriptionAction = {
+  [ACTION]: SubscriptionActionType;
   [CATEGORY]: string;
 };
 
-export type SubscriptionPatchData = {
-  [ACTIONS]: SubscribeAction[];
+export type EventCategorySubscriptionPatchData = {
+  [ACTIONS]: EventCategorySubscriptionAction[];
 };
 
-export type SubscriptionData = {
-  subscribedCategories: string[];
-  notSubscribedCategories: string[];
+export type EventCategorySubscriptionData = {
+  [SUBSCRIBED_CATEGORIES]: string[];
+  [NON_SUBSCRIBED_CATEGORIES]: string[];
 };

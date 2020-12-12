@@ -1,7 +1,9 @@
 import React, { useEffect } from "react";
 import { Tab } from "semantic-ui-react";
 import { useGetRecommendedEvents } from "../../custom-hooks/api";
-import EventViewOnlyGallery from "../event-view-only-gallery";
+import EventGallery from "../event-gallery";
+import EventViewOnlyGalleryItem from "../event-view-only-gallery-item";
+
 import PlaceholderWrapper from "../placeholder-wrapper";
 
 function EventsRecommendationsTabPane() {
@@ -21,7 +23,7 @@ function EventsRecommendationsTabPane() {
         defaultMessage="There are no recommended events"
         placeholder
       >
-        <EventViewOnlyGallery events={events} />
+        <EventGallery events={events} GalleryItem={EventViewOnlyGalleryItem} />
       </PlaceholderWrapper>
     </Tab.Pane>
   );

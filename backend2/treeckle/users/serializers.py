@@ -1,6 +1,5 @@
 from rest_framework import serializers
 
-from treeckle.common.serializer_fields import EmailListField
 from .models import User, UserInvite, Role
 
 
@@ -34,7 +33,7 @@ class PatchUserInviteSerializer(serializers.Serializer):
 
 
 class EmailListSerializer(serializers.Serializer):
-    emails = EmailListField()
+    emails = serializers.ListField(child=serializers.EmailField())
 
 
 class PatchSingleUserSerializer(serializers.ModelSerializer):

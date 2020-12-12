@@ -48,11 +48,11 @@ def get_user_invite(**kwargs) -> UserInvite:
 
 
 def get_users(**kwargs) -> QuerySet[User]:
-    return User.objects.select_related("organization").filter(**kwargs)
+    return User.objects.filter(**kwargs)
 
 
 def get_user_invites(**kwargs) -> QuerySet[UserInvite]:
-    return UserInvite.objects.select_related("organization").filter(**kwargs)
+    return UserInvite.objects.filter(**kwargs)
 
 
 def get_valid_invitations(invitations: dict) -> Sequence[Tuple[str, str]]:
@@ -119,7 +119,7 @@ def update_users(user_data_dict: dict, organization: Organization) -> Sequence[U
         for user in get_users(
             id__in=user_ids_to_be_updated,
             organization=organization,
-        )
+        ).select_related("organization")
     ]
 
     ## https://pypi.org/project/django-update-from-dict/

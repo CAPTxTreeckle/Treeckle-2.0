@@ -39,7 +39,9 @@ class VenueCategoriesView(APIView):
 class VenuesView(APIView):
     @check_access(Role.RESIDENT, Role.ORGANIZER, Role.ADMIN)
     def get(self, request, requester: User):
-        same_organization_venues = get_venues(organization=requester.organization)
+        same_organization_venues = get_venues(
+            organization=requester.organization
+        ).select_related("category")
 
         data = [venue_to_json(venue) for venue in same_organization_venues]
 
@@ -65,6 +67,8 @@ class VenuesView(APIView):
             )
         except IntegrityError:
             raise Conflict(detail="Venue already exists.")
+        except Exception as e:
+            raise BadRequest(e)
 
         data = venue_to_json(new_venue)
 
@@ -101,6 +105,8 @@ class SingleVenueView(APIView):
 
         except IntegrityError:
             raise Conflict(detail="Venue already exists.")
+        except Exception as e:
+            raise BadRequest(e)
 
         data = venue_to_json(updated_venue)
 
@@ -112,4 +118,4 @@ class SingleVenueView(APIView):
         venue.delete()
         delete_unused_venue_categories(organization=venue.organization)
 
-        return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)

@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "anymail",
     "treeckle",
     "email_service",
+    "content_delivery_service",
     "authentication",
     "users",
     "events",

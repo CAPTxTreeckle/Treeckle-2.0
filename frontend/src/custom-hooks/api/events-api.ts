@@ -13,8 +13,8 @@ import {
   EventWithSignUpsData,
   SignUpAction,
   SignUpPatchData,
-  SubscriptionData,
-  SubscribeAction,
+  EventCategorySubscriptionData,
+  EventCategorySubscriptionAction,
 } from "../../types/events";
 import { defaultArray } from "./default";
 
@@ -73,7 +73,7 @@ function parseEventData(eventData: EventData): EventViewProps {
     id,
     signUpCount,
     signUpStatus,
-    organizer,
+    creator,
   } = eventData;
 
   const eventFormProps: EventFormProps = {
@@ -95,7 +95,7 @@ function parseEventData(eventData: EventData): EventViewProps {
     id,
     createdAt,
     updatedAt,
-    organizer,
+    creator,
     signUpCount,
     signUpStatus,
     eventFormProps,
@@ -170,7 +170,7 @@ export function useGetOwnEvents() {
   const [events, setEvents] = useState<EventViewProps[]>([]);
   const [{ loading }, apiCall] = useAxiosWithTokenRefresh<EventData[]>(
     {
-      url: "/events/self",
+      url: "/events/own",
       method: "get",
     },
     { manual: true },
@@ -179,12 +179,12 @@ export function useGetOwnEvents() {
   const getOwnEvents = useCallback(async () => {
     try {
       const { data: events = [] } = await apiCall();
-      console.log("GET /events/self success:", events);
+      console.log("GET /events/own success:", events);
       const parsedEvents = events.map((event) => parseEventData(event));
       setEvents(parsedEvents);
       return parsedEvents;
     } catch (error) {
-      console.log("GET /events/self error:", error, error?.response);
+      console.log("GET /events/own error:", error, error?.response);
       return [];
     }
   }, [apiCall]);
@@ -196,7 +196,7 @@ export function useGetSignedUpEvents() {
   const [events, setEvents] = useState<EventViewProps[]>([]);
   const [{ loading }, apiCall] = useAxiosWithTokenRefresh<EventData[]>(
     {
-      url: "/events/signed_up",
+      url: "/events/signedup",
       method: "get",
     },
     { manual: true },
@@ -205,12 +205,12 @@ export function useGetSignedUpEvents() {
   const getSignedUpEvents = useCallback(async () => {
     try {
       const { data: events = [] } = await apiCall();
-      console.log("GET /events/signed_up success:", events);
+      console.log("GET /events/signedup success:", events);
       const parsedEvents = events.map((event) => parseEventData(event));
       setEvents(parsedEvents);
       return parsedEvents;
     } catch (error) {
-      console.log("GET /events/signed_up error:", error, error?.response);
+      console.log("GET /events/signedup error:", error, error?.response);
       return [];
     }
   }, [apiCall]);
@@ -536,12 +536,12 @@ export function useGetSubscriptions() {
     {
       data: {
         subscribedCategories = defaultArray as string[],
-        notSubscribedCategories = defaultArray as string[],
+        nonSubscribedCategories = defaultArray as string[],
       } = {},
       loading,
     },
     apiCall,
-  ] = useAxiosWithTokenRefresh<SubscriptionData>(
+  ] = useAxiosWithTokenRefresh<EventCategorySubscriptionData>(
     {
       url: "/events/categories/subscriptions",
       method: "get",
@@ -555,7 +555,7 @@ export function useGetSubscriptions() {
         const {
           data: subscriptions = {
             subscribedCategories: [],
-            notSubscribedCategories: [],
+            nonSubscribedCategories: [],
           },
         } = await apiCall();
         console.log(
@@ -570,7 +570,7 @@ export function useGetSubscriptions() {
           error,
           error?.response,
         );
-        return { subscribedCategories: [], notSubscribedCategories: [] };
+        return { subscribedCategories: [], nonSubscribedCategories: [] };
       }
     },
     [apiCall],
@@ -578,7 +578,7 @@ export function useGetSubscriptions() {
 
   return {
     subscribedCategories,
-    notSubscribedCategories,
+    nonSubscribedCategories,
     isLoading: loading,
     getSubscriptions,
   };
@@ -615,12 +615,12 @@ export function useUpdateSubscriptions() {
     {
       data: {
         subscribedCategories = defaultArray as string[],
-        notSubscribedCategories = defaultArray as string[],
+        nonSubscribedCategories = defaultArray as string[],
       } = {},
       loading,
     },
     apiCall,
-  ] = useAxiosWithTokenRefresh<SubscriptionData>(
+  ] = useAxiosWithTokenRefresh<EventCategorySubscriptionData>(
     {
       url: "/events/categories/subscriptions",
       method: "patch",
@@ -630,14 +630,14 @@ export function useUpdateSubscriptions() {
 
   const updateSubscriptions = useCallback(
     async (
-      actions: SubscribeAction[],
+      actions: EventCategorySubscriptionAction[],
       onSuccess?: () => Promise<unknown> | unknown,
     ) => {
       try {
         const {
           data: subscriptions = {
             subscribedCategories: [],
-            notSubscribedCategories: [],
+            nonSubscribedCategories: [],
           },
         } = await apiCall({ data: { actions } });
         console.log(
@@ -652,7 +652,7 @@ export function useUpdateSubscriptions() {
           error,
           error?.response,
         );
-        return { subscribedCategories: [], notSubscribedCategories: [] };
+        return { subscribedCategories: [], nonSubscribedCategories: [] };
       }
     },
     [apiCall],
@@ -660,7 +660,7 @@ export function useUpdateSubscriptions() {
 
   return {
     subscribedCategories,
-    notSubscribedCategories,
+    nonSubscribedCategories,
     isLoading: loading,
     updateSubscriptions,
   };

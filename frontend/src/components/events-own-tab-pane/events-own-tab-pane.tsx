@@ -1,7 +1,9 @@
 import React, { useContext, useEffect } from "react";
 import { Tab } from "semantic-ui-react";
 import { OwnEventsContext } from "../../context-providers";
-import EventEditableGallery from "../event-editable-gallery";
+import EventEditableGalleryItem from "../event-editable-gallery-item";
+import EventGallery from "../event-gallery";
+
 import PlaceholderWrapper from "../placeholder-wrapper";
 
 function EventsOwnTabPane() {
@@ -21,7 +23,10 @@ function EventsOwnTabPane() {
         defaultMessage="You have not created any event"
         placeholder
       >
-        <EventEditableGallery events={ownEvents} />
+        <EventGallery
+          events={ownEvents}
+          GalleryItem={EventEditableGalleryItem}
+        />
       </PlaceholderWrapper>
     </Tab.Pane>
   );

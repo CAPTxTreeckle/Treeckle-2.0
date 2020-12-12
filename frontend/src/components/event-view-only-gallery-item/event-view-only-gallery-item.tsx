@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 import { SingleEventProvider } from "../../context-providers";
 import { EVENTS_SINGLE_VIEW_PATH } from "../../routes/paths";
 import { EventViewProps } from "../../types/events";
-import EventGalleryItem from "../event-gallery-item";
+import EventGalleryItem from "../event-gallery-card";
 
 type Props = EventViewProps;
 

@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers";
 import * as yup from "yup";
-import dayjs from "dayjs";
 import {
   Form,
   Grid,
@@ -49,23 +48,18 @@ const schema = yup.object().shape({
     )
     .nullable(),
   [START_DATE_TIME]: yup
-    .date()
-    .required("Please enter the event start date/time")
-    .typeError("Please enter the event start date/ime"),
+    .number()
+    .integer()
+    .min(0)
+    .required("Please enter the event start date/time"),
   [END_DATE_TIME]: yup
-    .date()
-    .when(
-      START_DATE_TIME,
-      (startDateTime: Date, schema: yup.DateSchema<Date, unknown>) =>
-        dayjs(startDateTime).isValid()
-          ? schema.min(
-              startDateTime,
-              "Event end date/time cannot be before start date/time",
-            )
-          : schema,
+    .number()
+    .integer()
+    .min(
+      yup.ref(START_DATE_TIME),
+      "Event end date/time cannot be before start date/time",
     )
-    .required("Please enter the event end date/time")
-    .typeError("Please enter the event end date/time"),
+    .required("Please enter the event end date/time"),
   [DESCRIPTION]: yup.string().trim().notRequired(),
   [IMAGE]: yup.string().trim().notRequired(),
   [IS_SIGN_UP_ALLOWED]: yup.boolean().required(),
@@ -145,7 +139,7 @@ function EventDetailsForm({
                 defaultValue={defaultValues.image}
                 render={({ onChange, value }) => (
                   <ImageUploadCropper
-                    onChange={onChange}
+                    onChange={(value) => onChange(value ?? "")}
                     value={value}
                     fixedAspectRatio={1 / Math.sqrt(2)}
                   />

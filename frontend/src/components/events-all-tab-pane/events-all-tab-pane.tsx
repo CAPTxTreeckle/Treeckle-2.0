@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
 import { Tab } from "semantic-ui-react";
 import { useGetAllEvents } from "../../custom-hooks/api";
-import EventViewOnlyGallery from "../event-view-only-gallery";
+import EventGallery from "../event-gallery";
+import EventViewOnlyGalleryItem from "../event-view-only-gallery-item";
 import PlaceholderWrapper from "../placeholder-wrapper";
 
 function EventsAllTabPane() {
@@ -21,7 +22,7 @@ function EventsAllTabPane() {
         defaultMessage="There are no events"
         placeholder
       >
-        <EventViewOnlyGallery events={events} />
+        <EventGallery events={events} GalleryItem={EventViewOnlyGalleryItem} />
       </PlaceholderWrapper>
     </Tab.Pane>
   );

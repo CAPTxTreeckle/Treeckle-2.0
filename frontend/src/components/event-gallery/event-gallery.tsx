@@ -1,22 +1,22 @@
 import React from "react";
 import { Grid } from "semantic-ui-react";
 import { EventViewProps } from "../../types/events";
-import EventViewOnlyGalleryItem from "../event-view-only-gallery-item";
 
 type Props = {
   events: EventViewProps[];
+  GalleryItem: (eventViewProps: EventViewProps) => JSX.Element;
 };
 
-function EventViewOnlyGallery({ events }: Props) {
+function EventGallery({ events, GalleryItem }: Props) {
   return (
-    <Grid stretched columns="3" centered padded="vertically" stackable>
+    <Grid stretched columns="4" centered padded="vertically" stackable>
       {events.map((event) => (
         <Grid.Column key={event.id}>
-          <EventViewOnlyGalleryItem {...event} />
+          <GalleryItem {...event} />
         </Grid.Column>
       ))}
     </Grid>
   );
 }
 
-export default EventViewOnlyGallery;
+export default EventGallery;

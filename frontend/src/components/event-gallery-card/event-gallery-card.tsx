@@ -2,11 +2,11 @@ import React, { useContext } from "react";
 import { Card, Icon, Image } from "semantic-ui-react";
 import defaultEventPoster from "../../assets/default-event-poster.png";
 import { displayDatetime } from "../../utils/parser-utils";
-import "./event-gallery-item.scss";
 import EventSignUpButton from "../event-sign-up-button";
 import { SingleEventContext } from "../../context-providers";
+import "./event-gallery-card.scss";
 
-function EventGalleryItem() {
+function EventGalleryCard() {
   const { event } = useContext(SingleEventContext);
   const { image, title, organizedBy, startDateTime, endDateTime, venueName } = {
     ...event?.eventFormProps,
@@ -55,4 +55,4 @@ function EventGalleryItem() {
   );
 }
 
-export default EventGalleryItem;
+export default EventGalleryCard;
