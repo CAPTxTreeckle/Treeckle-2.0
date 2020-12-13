@@ -15,7 +15,7 @@ def check_user_venue_same_organization(view_method):
             if venue.organization != requester.organization:
                 raise PermissionDenied(
                     "User and venue are in different organization.",
-                    "wrong_organization",
+                    code="wrong_organization",
                 )
 
         except (Venue.DoesNotExist, PermissionDenied):

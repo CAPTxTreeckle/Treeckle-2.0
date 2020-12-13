@@ -365,9 +365,9 @@ export function useSignUpForEvent() {
       try {
         setLoading(true);
         const { data: signUpData } = await apiCall({
-          url: `/events/${id}/self_sign_up`,
+          url: `/events/${id}/selfsignup`,
         });
-        console.log(`POST /events/${id}/self_sign_up success:`, signUpData);
+        console.log(`POST /events/${id}/selfsignup success:`, signUpData);
         await onSuccess?.();
         const { status } = signUpData;
 
@@ -378,7 +378,7 @@ export function useSignUpForEvent() {
         }
       } catch (error) {
         console.log(
-          `POST /events/${id}/self_sign_up error:`,
+          `POST /events/${id}/selfsignup error:`,
           error,
           error?.response,
         );
@@ -406,13 +406,13 @@ export function useWithdrawFromEvent() {
     async (id: number, onSuccess?: () => Promise<unknown> | unknown) => {
       try {
         setLoading(true);
-        const response = await apiCall({ url: `/events/${id}/self_sign_up` });
-        console.log(`DELETE /events/${id}/self_sign_up success:`, response);
+        const response = await apiCall({ url: `/events/${id}/selfsignup` });
+        console.log(`DELETE /events/${id}/selfsignup success:`, response);
         await onSuccess?.();
         toast.success("You have successfully withdrawn from the event.");
       } catch (error) {
         console.log(
-          `DELETE /events/${id}/self_sign_up error:`,
+          `DELETE /events/${id}/selfsignup error:`,
           error,
           error?.response,
         );
@@ -438,15 +438,15 @@ export function useAttendEvent() {
   const attendEvent = useCallback(
     async (id: number, onSuccess?: () => Promise<unknown> | unknown) => {
       try {
-        const response = await apiCall({ url: `/events/${id}/self_sign_up` });
-        console.log(`PATCH /events/${id}/self_sign_up success:`, response);
+        const response = await apiCall({ url: `/events/${id}/selfsignup` });
+        console.log(`PATCH /events/${id}/selfsignup success:`, response);
         onSuccess?.();
         toast.success("Your attendance for the event has been recorded.", {
           position: "top-center",
         });
       } catch (error) {
         console.log(
-          `PATCH /events/${id}/self_sign_up error:`,
+          `PATCH /events/${id}/selfsignup error:`,
           error,
           error?.response,
         );
@@ -480,16 +480,16 @@ export function useUpdateSignUpsForEvent() {
         setLoading(true);
         const data: SignUpPatchData = { actions };
         const response = await apiCall({
-          url: `/events/${eventId}/sign_up`,
+          url: `/events/${eventId}/signup`,
           data,
         });
-        console.log(`PATCH /events/${eventId}/sign_up success:`, response);
+        console.log(`PATCH /events/${eventId}/signup success:`, response);
         await onSuccess?.();
         toast.success("Event sign-ups updated successfully.");
         return true;
       } catch (error) {
         console.log(
-          `PATCH /events/${eventId}/sign_up error:`,
+          `PATCH /events/${eventId}/signup error:`,
           error,
           error?.response,
         );

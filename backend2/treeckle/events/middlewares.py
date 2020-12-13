@@ -15,7 +15,7 @@ def check_user_event_same_organization(view_method):
             if event.creator.organization != requester.organization:
                 raise PermissionDenied(
                     "User and event are in different organization.",
-                    "wrong_organization",
+                    code="wrong_organization",
                 )
 
         except (Event.DoesNotExist, PermissionDenied):
@@ -39,7 +39,7 @@ def check_event_modifier(view_method):
         if not has_modify_event_permission:
             raise PermissionDenied(
                 "No permission to modify event.",
-                "no_modify_event_permission",
+                code="no_modify_event_permission",
             )
 
         return view_method(

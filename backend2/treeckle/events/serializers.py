@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Event, SubscriptionActionType
+from .models import Event, SubscriptionActionType, SignUpAction
 
 
 class EventSerializer(serializers.ModelSerializer):
@@ -45,3 +45,12 @@ class EventCategoryTypeSubscriptionSerializer(serializers.Serializer):
 
 class PatchEventCategoryTypeSubscriptionSerializer(serializers.Serializer):
     actions = EventCategoryTypeSubscriptionSerializer(many=True)
+
+
+class EventSignUpSerializer(serializers.Serializer):
+    action = serializers.ChoiceField(SignUpAction.choices)
+    user_id = serializers.IntegerField()
+
+
+class PatchEventSignUpSerializer(serializers.Serializer):
+    actions = EventSignUpSerializer(many=True)

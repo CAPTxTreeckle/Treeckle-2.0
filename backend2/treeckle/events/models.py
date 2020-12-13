@@ -71,6 +71,12 @@ class SignUpStatus(models.TextChoices):
     ATTENDED = "ATTENDED"
 
 
+class SignUpAction(models.TextChoices):
+    ATTEND = "ATTEND"
+    CONFIRM = "CONFIRM"
+    REJECT = "REJECT"
+
+
 class EventSignUp(TimestampedModel):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
