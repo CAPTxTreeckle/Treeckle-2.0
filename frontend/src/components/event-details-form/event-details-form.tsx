@@ -126,7 +126,7 @@ function EventDetailsForm({
   }, [onSubmit, getValues]);
 
   return (
-    <Segment id="event-details-form" raised>
+    <Segment className="event-details-form" raised>
       <FormProvider {...methods}>
         <Form onSubmit={handleSubmit(_onSubmit)}>
           <Grid columns="2" stackable stretched>
@@ -142,13 +142,14 @@ function EventDetailsForm({
                     onChange={(value) => onChange(value ?? "")}
                     value={value}
                     fixedAspectRatio={1 / Math.sqrt(2)}
+                    modal
                   />
                 )}
               />
             </Grid.Column>
             <Grid.Column>
               <Form.Field>
-                <Header className="header">Event Details</Header>
+                <Header className="form-header">Event Details</Header>
                 <p>Please fill in the details for the event.</p>
               </Form.Field>
 

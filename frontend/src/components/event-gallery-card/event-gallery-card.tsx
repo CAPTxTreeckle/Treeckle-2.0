@@ -13,7 +13,7 @@ function EventGalleryCard() {
   };
 
   return (
-    <Card id="event-gallery-item" raised fluid>
+    <Card className="event-gallery-card" raised fluid>
       <Image src={image || defaultEventPoster} alt="Event" wrapped ui={false} />
 
       <Card.Content className="flex-no-grow">
@@ -25,8 +25,8 @@ function EventGalleryCard() {
         )}
       </Card.Content>
 
-      <Card.Content className="event-info-container flex-grow">
-        <div className="event-info">
+      <Card.Content className="event-info-container flex-grow vertical-space-margin">
+        <div>
           {venueName && (
             <p>
               <Icon name="point" /> <strong>Venue:</strong> {venueName}

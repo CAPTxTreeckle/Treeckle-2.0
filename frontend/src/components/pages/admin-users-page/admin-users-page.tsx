@@ -1,11 +1,12 @@
 import React, { useCallback, useMemo } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
-import { Button, Icon, Menu, MenuItemProps } from "semantic-ui-react";
+import { Button, Icon } from "semantic-ui-react";
 import {
   ADMIN_USERS_CREATION_PATH,
   ADMIN_USERS_PATH,
   ADMIN_USERS_PENDING_REGISTRATION_PATH,
 } from "../../../routes/paths";
+import ResponsiveSelectorMenu from "../../responsive-selector-menu";
 import UserInvitesSection from "../../user-invites-section";
 import UsersSection from "../../users-section";
 
@@ -20,9 +21,11 @@ const adminUsersCategoryHeaders = [
 ];
 
 const adminUsersCategories = [
-  { key: "existing", name: "Existing" },
-  { key: "pending", name: "Pending Registration" },
+  { key: "Existing", name: "Existing", text: "Existing" },
+  { key: "Pending Registration", name: "Pending Registration" },
 ];
+
+const adminUsersSections = [<UsersSection />, <UserInvitesSection />];
 
 function AdminUsersPage() {
   const history = useHistory();
@@ -34,19 +37,16 @@ function AdminUsersPage() {
     return activeIndex >= 0 ? activeIndex : 0;
   }, [location]);
 
-  const activeSection = useMemo(
-    () => [<UsersSection />, <UserInvitesSection />][activeIndex],
-    [activeIndex],
-  );
+  const activeSection = useMemo(() => adminUsersSections[activeIndex], [
+    activeIndex,
+  ]);
 
-  const onTabClick = useCallback(
-    (
-      event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
-      { index = 0 }: MenuItemProps,
-    ) => {
-      const newPath = adminUsersCategoryPaths?.[index] ?? ADMIN_USERS_PATH;
+  const onChange = useCallback(
+    (selectedIndex: number) => {
+      const newPath =
+        adminUsersCategoryPaths?.[selectedIndex] ?? ADMIN_USERS_PATH;
 
-      if (index === activeIndex) {
+      if (selectedIndex === activeIndex) {
         return;
       }
 
@@ -70,11 +70,10 @@ function AdminUsersPage() {
 
       <h1>{adminUsersCategoryHeaders[activeIndex]}</h1>
 
-      <Menu
-        onItemClick={onTabClick}
+      <ResponsiveSelectorMenu
+        options={adminUsersCategories}
+        onChange={onChange}
         activeIndex={activeIndex}
-        items={adminUsersCategories}
-        fluid
       />
 
       {activeSection}

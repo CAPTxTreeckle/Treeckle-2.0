@@ -33,7 +33,7 @@ function EventsQrCodePage() {
       inverted
       placeholder
     >
-      <div id="events-qr-code-page">
+      <div className="events-qr-code-page">
         <h1>{event?.eventFormProps?.title}</h1>
         <h2 className="subtitle">
           (Scan using Treeckle's in-app QR code scanner)

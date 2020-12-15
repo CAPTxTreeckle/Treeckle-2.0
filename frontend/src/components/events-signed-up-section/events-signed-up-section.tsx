@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
-import { Tab } from "semantic-ui-react";
+import { Segment } from "semantic-ui-react";
 import { useGetSignedUpEvents } from "../../custom-hooks/api";
 import EventGallery from "../event-gallery";
 import EventViewOnlyGalleryItem from "../event-view-only-gallery-item";
 import PlaceholderWrapper from "../placeholder-wrapper";
 
-function EventsSignedUpTabPane() {
+function EventsSignedUpSection() {
   const { events, isLoading, getSignedUpEvents } = useGetSignedUpEvents();
 
   useEffect(() => {
@@ -14,7 +14,7 @@ function EventsSignedUpTabPane() {
   }, []);
 
   return (
-    <Tab.Pane attached={false}>
+    <Segment>
       <PlaceholderWrapper
         isLoading={isLoading}
         loadingMessage="Retrieving signed up events"
@@ -24,8 +24,8 @@ function EventsSignedUpTabPane() {
       >
         <EventGallery events={events} GalleryItem={EventViewOnlyGalleryItem} />
       </PlaceholderWrapper>
-    </Tab.Pane>
+    </Segment>
   );
 }
 
-export default EventsSignedUpTabPane;
+export default EventsSignedUpSection;

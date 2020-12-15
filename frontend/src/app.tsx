@@ -25,13 +25,13 @@ configure({ axios: Axios.create({ baseURL: process.env.REACT_APP_API_URL }) });
 function App() {
   return (
     <div className="app">
-      <GlobalModalProvider>
-        <UserProvider>
-          <ResponsiveProvider>
+      <ResponsiveProvider>
+        <GlobalModalProvider>
+          <UserProvider>
             <Routes />
-          </ResponsiveProvider>
-        </UserProvider>
-      </GlobalModalProvider>
+          </UserProvider>
+        </GlobalModalProvider>
+      </ResponsiveProvider>
     </div>
   );
 }

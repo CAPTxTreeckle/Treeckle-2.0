@@ -1,30 +1,15 @@
 import React, { useEffect } from "react";
 import Cropper from "react-easy-crop";
-import { Button, Divider } from "semantic-ui-react";
+import {
+  Button,
+  Divider,
+  Modal,
+  TransitionablePortal,
+} from "semantic-ui-react";
 // @ts-ignore
 import Slider from "semantic-ui-react-slider";
 import { useImageCropperState } from "../../custom-hooks";
 import "./image-cropper.scss";
-
-const defaultAspectRatio = 4 / 3;
-let inputAspectRatio = defaultAspectRatio;
-let height = 0;
-let width = 0;
-
-const scaleHeight = () => {
-  const imageCropper = document.getElementById("image-cropper");
-
-  if (!imageCropper) {
-    return;
-  }
-
-  imageCropper.style.height = `${
-    imageCropper.offsetWidth / inputAspectRatio
-  }px`;
-
-  height = imageCropper.offsetHeight * 0.9;
-  width = imageCropper.offsetWidth * 0.9;
-};
 
 type Props = {
   image: string;
@@ -32,19 +17,24 @@ type Props = {
   onCropImage: (image: string) => void;
   onCancel?: () => void;
   enableRotation?: boolean;
+  modal?: boolean;
 };
 
 function ImageCropper({
   image,
-  fixedAspectRatio = defaultAspectRatio,
+  fixedAspectRatio,
   onCropImage,
   enableRotation = false,
   onCancel,
+  modal = false,
 }: Props) {
   const {
+    cropperRef,
+    cropSize,
     crop,
     zoom,
     rotation,
+    scaleHeight,
     onCropChange,
     onZoomChange,
     onRotationChange,
@@ -53,19 +43,26 @@ function ImageCropper({
     onSliderValuesChange,
     reset,
     isCropping,
-  } = useImageCropperState(image, onCropImage, enableRotation);
+  } = useImageCropperState(
+    image,
+    onCropImage,
+    enableRotation,
+    fixedAspectRatio,
+  );
 
   useEffect(() => {
     reset();
-    inputAspectRatio = fixedAspectRatio;
-    window.addEventListener("resize", scaleHeight);
-    scaleHeight();
-    return () => window.removeEventListener("resize", scaleHeight);
-  }, [image, fixedAspectRatio, reset]);
+  }, [image, reset]);
 
-  return (
+  useEffect(() => {
+    scaleHeight();
+    window.addEventListener("resize", scaleHeight);
+    return () => window.removeEventListener("resize", scaleHeight);
+  }, [scaleHeight]);
+
+  const cropper = (
     <div>
-      <div id="image-cropper">
+      <div className="image-cropper" ref={cropperRef}>
         <Cropper
           image={image}
           crop={crop}
@@ -80,7 +77,7 @@ function ImageCropper({
           restrictPosition={false}
           rotation={rotation}
           onRotationChange={onRotationChange}
-          cropSize={{ height, width }}
+          cropSize={cropSize}
         />
       </div>
 
@@ -125,6 +122,16 @@ function ImageCropper({
         />
       </div>
     </div>
+  );
+
+  return modal ? (
+    <TransitionablePortal open transition={{ animation: "fade down" }}>
+      <Modal open size="tiny" closeIcon onClose={onCancel}>
+        <Modal.Content>{cropper}</Modal.Content>
+      </Modal>
+    </TransitionablePortal>
+  ) : (
+    <>{cropper}</>
   );
 }
 

@@ -24,7 +24,7 @@ function MobileNavigationBar({ children }: Props) {
   useEffect(() => () => setSidebarOpened(false), []);
 
   return (
-    <Sidebar.Pushable id="mobile-navigation-bar">
+    <Sidebar.Pushable className="mobile-navigation-bar">
       <Sidebar
         as={Menu}
         animation="push"

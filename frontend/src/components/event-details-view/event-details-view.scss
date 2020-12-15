@@ -1,4 +1,4 @@
-#event-details-view {
+.event-details-view {
   .sign-up-button-container {
     margin-top: 1rem;
   }
@@ -23,7 +23,7 @@
   }
 
   a {
-    color: #f96332;
+    color: #f96332 !important;
     opacity: 0.85;
   }
 

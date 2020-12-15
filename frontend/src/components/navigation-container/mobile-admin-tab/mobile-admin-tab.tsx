@@ -23,7 +23,7 @@ function MobileAdminTab({ onTabClick }: Props) {
       as={MenuItem}
       fitted="vertically"
       active={pathname.startsWith("/admin")}
-      id="mobile-admin-tab"
+      className="mobile-admin-tab"
     >
       <Accordion.Title
         onClick={() => setExpanded(!isExpanded)}
@@ -35,7 +35,6 @@ function MobileAdminTab({ onTabClick }: Props) {
           content={0}
           color="red"
           size="small"
-          style={{ visibility: "hidden" }}
         />
       </Accordion.Title>
 

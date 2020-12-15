@@ -1,32 +1,31 @@
 import React, { useEffect } from "react";
-import { Tab } from "semantic-ui-react";
-import { useGetRecommendedEvents } from "../../custom-hooks/api";
+import { Segment } from "semantic-ui-react";
+import { useGetAllEvents } from "../../custom-hooks/api";
 import EventGallery from "../event-gallery";
 import EventViewOnlyGalleryItem from "../event-view-only-gallery-item";
-
 import PlaceholderWrapper from "../placeholder-wrapper";
 
-function EventsRecommendationsTabPane() {
-  const { isLoading, events, getRecommendedEvents } = useGetRecommendedEvents();
+function EventsAllSection() {
+  const { events, isLoading, getAllEvents } = useGetAllEvents();
 
   useEffect(() => {
-    getRecommendedEvents();
+    getAllEvents();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <Tab.Pane attached={false}>
+    <Segment raised>
       <PlaceholderWrapper
         isLoading={isLoading}
-        loadingMessage="Retrieving recommended events"
+        loadingMessage="Retrieving all events"
         showDefaultMessage={events.length === 0}
-        defaultMessage="There are no recommended events"
+        defaultMessage="There are no events"
         placeholder
       >
         <EventGallery events={events} GalleryItem={EventViewOnlyGalleryItem} />
       </PlaceholderWrapper>
-    </Tab.Pane>
+    </Segment>
   );
 }
 
-export default EventsRecommendationsTabPane;
+export default EventsAllSection;

@@ -23,7 +23,7 @@ function EventDetailsView() {
 
   return (
     <Grid
-      id="event-details-view"
+      className="event-details-view"
       columns="2"
       stackable
       padded="vertically"

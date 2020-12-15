@@ -8,9 +8,15 @@ type Props = {
   onChange?: (value?: string) => void;
   value?: string;
   fixedAspectRatio?: number;
+  modal?: boolean;
 };
 
-function ImageUploadCropper({ onChange, value, fixedAspectRatio }: Props) {
+function ImageUploadCropper({
+  onChange,
+  value,
+  fixedAspectRatio,
+  modal,
+}: Props) {
   const {
     croppedImage,
     uploadedImageData,
@@ -45,6 +51,7 @@ function ImageUploadCropper({ onChange, value, fixedAspectRatio }: Props) {
           image={uploadedImageData}
           onCropImage={onClickCropImage}
           onCancel={onClickCancel}
+          modal={modal}
         />
       );
     }

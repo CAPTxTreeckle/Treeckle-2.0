@@ -18,7 +18,7 @@ function UserTab() {
   };
 
   return (
-    <Menu.Menu id="user-tab" position="right">
+    <Menu.Menu className="user-tab" position="right">
       <QrCodeScannerButton />
       <Menu.Item content={<strong>{name}</strong>} />
 

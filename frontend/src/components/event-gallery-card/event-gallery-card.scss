@@ -1,14 +1,9 @@
-#event-gallery-item {
+.event-gallery-card {
   .event-info-container {
     display: flex;
     flex-direction: column;
-  }
-
-  .event-info {
-    margin-bottom: 1rem;
-  }
-
-  .sign-up-button-container {
-    margin-top: auto;
+    .sign-up-button-container {
+      margin-top: auto;
+    }
   }
 }

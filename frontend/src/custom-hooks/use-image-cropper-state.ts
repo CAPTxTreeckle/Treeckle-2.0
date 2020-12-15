@@ -1,17 +1,39 @@
-import { useCallback, useState } from "react";
-import { Area, Point } from "react-easy-crop/types";
+import { useCallback, useRef, useState } from "react";
+import { Area, Point, Size } from "react-easy-crop/types";
 import { getCroppedImage } from "../utils/image-utils";
+
+const defaultAspectRatio = 4 / 3;
 
 export default function useImageCropperState(
   image: string,
   onCropImage: (image: string) => void,
   enableRotation: boolean,
+  fixedAspectRatio: number = defaultAspectRatio,
 ) {
+  const cropperRef = useRef<HTMLDivElement>(null);
+  const [cropSize, setCropSize] = useState<Size>({ width: 0, height: 0 });
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [rotation, setRotation] = useState(0);
   const [croppedAreaPixels, setCroppedAreaPixes] = useState<Area>();
   const [isCropping, setCropping] = useState(false);
+
+  const scaleHeight = useCallback(() => {
+    if (!cropperRef.current) {
+      return;
+    }
+
+    const imageCropper = cropperRef.current;
+
+    imageCropper.style.height = `${
+      imageCropper.offsetWidth / fixedAspectRatio
+    }px`;
+
+    setCropSize({
+      height: imageCropper.offsetHeight * 0.9,
+      width: imageCropper.offsetWidth * 0.9,
+    });
+  }, [fixedAspectRatio]);
 
   const reset = useCallback(() => {
     setCrop({ x: 0, y: 0 });
@@ -57,9 +79,12 @@ export default function useImageCropperState(
   };
 
   return {
+    cropperRef,
+    cropSize,
     crop,
     zoom,
     rotation,
+    scaleHeight,
     onCropChange: setCrop,
     onZoomChange: setZoom,
     onRotationChange,

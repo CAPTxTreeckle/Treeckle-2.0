@@ -9,7 +9,7 @@ type Props = {
 
 function EventGallery({ events, GalleryItem }: Props) {
   return (
-    <Grid stretched columns="4" centered padded="vertically" stackable>
+    <Grid stretched columns="3" centered padded="vertically" stackable>
       {events.map((event) => (
         <Grid.Column key={event.id}>
           <GalleryItem {...event} />

@@ -21,7 +21,7 @@ function VenueBookingForm({ venueFormProps, readOnly = false }: Props) {
 
   return (
     <FormProvider {...methods}>
-      <Form id="venue-booking-form">
+      <Form className="venue-booking-form">
         <Card raised>
           <Card.Content className="flex-no-grow">
             <Card.Header textAlign="center">{name}</Card.Header>

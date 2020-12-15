@@ -1,15 +1,7 @@
-#event-details-form {
+.event-details-form {
   color: black;
 
-  .header {
-    margin: 0;
-  }
-
-  .ui.form .fields {
-    margin: 0;
-
-    .field {
-      margin-bottom: 1em;
-    }
+  .header.form-header {
+    margin-bottom: 0;
   }
 }

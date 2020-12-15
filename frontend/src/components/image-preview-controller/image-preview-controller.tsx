@@ -18,7 +18,7 @@ function ImagePreviewController({
   onChange,
 }: Props) {
   return (
-    <div id="image-preview-controller">
+    <div className="image-preview-controller">
       <Image
         className="preview-image"
         fluid
