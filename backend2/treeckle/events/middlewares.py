@@ -28,6 +28,27 @@ def check_user_event_same_organization(view_method):
     return _arguments_wrapper
 
 
+def check_event_viewer(view_method):
+    def _arguments_wrapper(
+        instance, request, requester: User, event: Event, *args, **kwargs
+    ):
+        is_admin = requester.role == Role.ADMIN
+        is_event_creator = requester == event.creator
+        has_view_event_permission = event.is_published or is_admin or is_event_creator
+
+        if not has_view_event_permission:
+            raise PermissionDenied(
+                "No permission to view event.",
+                code="no_view_event_permission",
+            )
+
+        return view_method(
+            instance, request, requester=requester, event=event, *args, **kwargs
+        )
+
+    return _arguments_wrapper
+
+
 def check_event_modifier(view_method):
     def _arguments_wrapper(
         instance, request, requester: User, event: Event, *args, **kwargs

@@ -10,11 +10,11 @@ function EventSubscriptionsSelector() {
     isLoadingEventCategories,
     subscribedCategories,
     nonSubscribedCategories,
-    getSubscriptions,
+    getEventCategorySubscriptions,
   } = useContext(EventSubscriptionsContext);
 
   useEffect(() => {
-    getSubscriptions();
+    getEventCategorySubscriptions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

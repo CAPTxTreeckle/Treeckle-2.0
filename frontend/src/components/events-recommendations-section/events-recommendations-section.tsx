@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { Segment } from "semantic-ui-react";
 import { useGetRecommendedEvents } from "../../custom-hooks/api";
 import EventGallery from "../event-gallery";
 import EventViewOnlyGalleryItem from "../event-view-only-gallery-item";
@@ -15,17 +14,15 @@ function EventsRecommendationsSection() {
   }, []);
 
   return (
-    <Segment>
-      <PlaceholderWrapper
-        isLoading={isLoading}
-        loadingMessage="Retrieving recommended events"
-        showDefaultMessage={events.length === 0}
-        defaultMessage="There are no recommended events"
-        placeholder
-      >
-        <EventGallery events={events} GalleryItem={EventViewOnlyGalleryItem} />
-      </PlaceholderWrapper>
-    </Segment>
+    <PlaceholderWrapper
+      isLoading={isLoading}
+      loadingMessage="Retrieving recommended events"
+      showDefaultMessage={events.length === 0}
+      defaultMessage="There are no recommended events"
+      placeholder
+    >
+      <EventGallery events={events} GalleryItem={EventViewOnlyGalleryItem} />
+    </PlaceholderWrapper>
   );
 }
 

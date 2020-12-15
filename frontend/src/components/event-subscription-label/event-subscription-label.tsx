@@ -10,7 +10,9 @@ type Props = {
 };
 
 function EventSubscriptionLabel({ category, color, actionType }: Props) {
-  const { updateSubscriptions } = useContext(EventSubscriptionsContext);
+  const { updateEventCategorySubscriptions } = useContext(
+    EventSubscriptionsContext,
+  );
   const [isLoading, setLoading] = useState(false);
   const icon = useMemo(() => {
     if (isLoading) {
@@ -24,9 +26,9 @@ function EventSubscriptionLabel({ category, color, actionType }: Props) {
 
   const onClick = useCallback(async () => {
     setLoading(true);
-    await updateSubscriptions([{ action: actionType, category }]);
+    await updateEventCategorySubscriptions([{ action: actionType, category }]);
     setLoading(false);
-  }, [category, updateSubscriptions, actionType]);
+  }, [category, updateEventCategorySubscriptions, actionType]);
 
   return (
     <Label

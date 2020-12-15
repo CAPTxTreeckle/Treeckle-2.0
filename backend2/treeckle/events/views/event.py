@@ -21,7 +21,11 @@ from events.logic.event import (
 )
 from events.logic.sign_up import get_event_sign_ups, event_sign_up_to_json
 from events.models import Event, EventCategory
-from events.middlewares import check_user_event_same_organization, check_event_modifier
+from events.middlewares import (
+    check_user_event_same_organization,
+    check_event_viewer,
+    check_event_modifier,
+)
 
 
 class EventCategoryTypesView(APIView):
@@ -118,9 +122,11 @@ class OwnEventsView(APIView):
 class SignedUpEventsView(APIView):
     @check_access(Role.RESIDENT, Role.ORGANIZER, Role.ADMIN)
     def get(self, request, requester: User):
-        user_event_sign_ups = get_event_sign_ups(user=requester).select_related("event")
+        user_published_event_sign_ups = get_event_sign_ups(
+            user=requester, event__is_published=True
+        ).select_related("event")
         signed_up_events = [
-            event_sign_up.event for event_sign_up in user_event_sign_ups
+            event_sign_up.event for event_sign_up in user_published_event_sign_ups
         ]
 
         data = [event_to_json(event, requester) for event in signed_up_events]
@@ -154,9 +160,8 @@ class PublishedEventsView(APIView):
 class SingleEventView(APIView):
     @check_access(Role.RESIDENT, Role.ORGANIZER, Role.ADMIN)
     @check_user_event_same_organization
+    @check_event_viewer
     def get(self, request, requester: User, event: Event):
-        from django.db import connection
-
         sign_ups = get_event_sign_ups(event=event).select_related("user__organization")
 
         data = {

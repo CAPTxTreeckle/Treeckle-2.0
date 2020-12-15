@@ -1,19 +1,20 @@
 import React, { useCallback, useEffect, useState } from "react";
 import {
   useGetSubscribedEvents,
-  useGetSubscriptions,
-  useUpdateSubscriptions,
+  useGetEventCategorySubscriptions,
+  useUpdateEventCategorySubscriptions,
 } from "../custom-hooks/api";
 import {
   EventViewProps,
   EventCategorySubscriptionAction,
   EventCategorySubscriptionData,
 } from "../types/events";
+import { resolveApiError } from "../utils/error-utils";
 
 type EventSubscriptionsContextType = {
   subscribedEvents: EventViewProps[];
-  getSubscriptions: () => Promise<EventCategorySubscriptionData>;
-  updateSubscriptions: (
+  getEventCategorySubscriptions: () => Promise<EventCategorySubscriptionData>;
+  updateEventCategorySubscriptions: (
     actions: EventCategorySubscriptionAction[],
   ) => Promise<EventCategorySubscriptionData>;
   isLoadingSubscribedEvents: boolean;
@@ -25,11 +26,11 @@ type EventSubscriptionsContextType = {
 export const EventSubscriptionsContext = React.createContext<EventSubscriptionsContextType>(
   {
     subscribedEvents: [],
-    getSubscriptions: () => {
-      throw new Error("getSubcriptions not defined.");
+    getEventCategorySubscriptions: () => {
+      throw new Error("getEventCategorySubscriptions not defined.");
     },
-    updateSubscriptions: () => {
-      throw new Error("updateSubscriptions not defined.");
+    updateEventCategorySubscriptions: () => {
+      throw new Error("updateEventCategorySubscriptions not defined.");
     },
     isLoadingSubscribedEvents: false,
     isLoadingEventCategories: false,
@@ -59,14 +60,15 @@ function EventSubscriptionsProvider({ children }: Props) {
   const {
     subscribedCategories: _subscribedCategories,
     nonSubscribedCategories: _nonSubscribedCategories,
-    getSubscriptions: _getSubscriptions,
+    getEventCategorySubscriptions: _getEventCategorySubscriptions,
     isLoading: isLoadingEventCategories,
-  } = useGetSubscriptions();
+  } = useGetEventCategorySubscriptions();
 
-  const getSubscriptions = useCallback(
-    () => _getSubscriptions(getSubscribedEvents),
-    [_getSubscriptions, getSubscribedEvents],
-  );
+  const getEventCategorySubscriptions = useCallback(async () => {
+    const eventCategorySubscriptions = await _getEventCategorySubscriptions();
+    getSubscribedEvents();
+    return eventCategorySubscriptions;
+  }, [_getEventCategorySubscriptions, getSubscribedEvents]);
 
   useEffect(() => {
     setSubscribedCategories(_subscribedCategories);
@@ -74,15 +76,25 @@ function EventSubscriptionsProvider({ children }: Props) {
   }, [_subscribedCategories, _nonSubscribedCategories]);
 
   const {
-    updateSubscriptions: _updateSubscriptions,
+    updateEventCategorySubscriptions: _updateEventCategorySubscriptions,
     subscribedCategories: updatedSubscribedCategories,
     nonSubscribedCategories: updatedNotSubscribedCategories,
-  } = useUpdateSubscriptions();
+  } = useUpdateEventCategorySubscriptions();
 
-  const updateSubscriptions = useCallback(
-    (actions: EventCategorySubscriptionAction[]) =>
-      _updateSubscriptions(actions, getSubscribedEvents),
-    [_updateSubscriptions, getSubscribedEvents],
+  const updateEventCategorySubscriptions = useCallback(
+    async (actions: EventCategorySubscriptionAction[]) => {
+      try {
+        const eventCategorySubscriptions = await _updateEventCategorySubscriptions(
+          actions,
+        );
+        getSubscribedEvents();
+        return eventCategorySubscriptions;
+      } catch (error) {
+        resolveApiError(error);
+        return { subscribedCategories: [], nonSubscribedCategories: [] };
+      }
+    },
+    [_updateEventCategorySubscriptions, getSubscribedEvents],
   );
 
   useEffect(() => {
@@ -94,8 +106,8 @@ function EventSubscriptionsProvider({ children }: Props) {
     <EventSubscriptionsContext.Provider
       value={{
         subscribedEvents,
-        getSubscriptions,
-        updateSubscriptions,
+        getEventCategorySubscriptions,
+        updateEventCategorySubscriptions,
         isLoadingSubscribedEvents,
         isLoadingEventCategories,
         subscribedCategories,

@@ -17,6 +17,7 @@ export {
   useCreateEvent,
   useGetEventCategories,
   useGetAllEvents,
+  useGetPublishedEvents,
   useGetOwnEvents,
   useGetSignedUpEvents,
   useDeleteEvent,
@@ -28,8 +29,8 @@ export {
   useAttendEvent,
   useGetRecommendedEvents,
   useGetSubscribedEvents,
-  useGetSubscriptions,
-  useUpdateSubscriptions,
+  useGetEventCategorySubscriptions,
+  useUpdateEventCategorySubscriptions,
 } from "./events-api";
 
 export {

@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Divider, Segment } from "semantic-ui-react";
+import { Divider } from "semantic-ui-react";
 import {
   EventSubscriptionsContext,
   EventSubscriptionsProvider,
@@ -35,13 +35,11 @@ const EventSubscriptionGallery = () => {
 function EventsSubscriptionsSection() {
   return (
     <EventSubscriptionsProvider>
-      <Segment raised>
-        <EventSubscriptionsSelector />
+      <EventSubscriptionsSelector />
 
-        <Divider />
+      <Divider />
 
-        <EventSubscriptionGallery />
-      </Segment>
+      <EventSubscriptionGallery />
     </EventSubscriptionsProvider>
   );
 }

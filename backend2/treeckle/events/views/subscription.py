@@ -72,14 +72,16 @@ class SubscribedEventsView(APIView):
             subscription.category for subscription in user_subscriptions
         ]
 
-        subscribed_event_ids = (
-            get_event_categories(category__in=subscribed_category_types)
+        subscribed_published_event_ids = (
+            get_event_categories(
+                category__in=subscribed_category_types, event__is_published=True
+            )
             .values_list("event_id", flat=True)
             .distinct()
         )
 
-        subscribed_events = (
-            get_events(id__in=subscribed_event_ids)
+        subscribed_published_events = (
+            get_events(id__in=subscribed_published_event_ids)
             .prefetch_related(
                 "eventsignup_set",
                 Prefetch(
@@ -90,6 +92,8 @@ class SubscribedEventsView(APIView):
             .select_related("creator")
         )
 
-        data = [event_to_json(event, requester) for event in subscribed_events]
+        data = [
+            event_to_json(event, requester) for event in subscribed_published_events
+        ]
 
         return Response(data, status=status.HTTP_200_OK)

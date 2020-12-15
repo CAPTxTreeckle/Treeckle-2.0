@@ -10,21 +10,19 @@ import VenueDetailsForm from "../../venue-details-form";
 
 function AdminVenuesCreationPage() {
   const history = useHistory();
-  const { createVenue: _createVenue } = useCreateVenue();
+  const { createVenue } = useCreateVenue();
 
-  const createVenue = useCallback(
+  const onCreateVenue = useCallback(
     async (venueFormProps: VenueFormProps) => {
       try {
-        await _createVenue(venueFormProps);
+        await createVenue(venueFormProps);
         toast.success("A new venue has been created successfully.");
         history.push(ADMIN_VENUES_PATH);
-        return true;
       } catch (error) {
         resolveApiError(error);
-        return false;
       }
     },
-    [_createVenue, history],
+    [createVenue, history],
   );
 
   return (
@@ -41,7 +39,7 @@ function AdminVenuesCreationPage() {
       </Button>
 
       <VenueDetailsForm
-        onSubmit={createVenue}
+        onSubmit={onCreateVenue}
         submitButtonProps={{ content: "Create Venue", color: "blue" }}
       />
     </>

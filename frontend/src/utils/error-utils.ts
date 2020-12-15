@@ -25,13 +25,13 @@ export function resolveApiError(error: ApiResponseError) {
 
 export function errorHandlerWrapper<T extends unknown[], R = unknown>(
   f: (...args: T) => Promise<R>,
-  logMessage = "Error:",
+  logMessageLabel = "Error:",
 ) {
   return async (...args: T) => {
     try {
       return (await f(...args)) as R;
     } catch (error) {
-      console.log(logMessage, args, error, error?.response);
+      console.log(logMessageLabel, args, error, error?.response);
 
       if (error?.isAxiosError) {
         const axiosError = error as AxiosError;

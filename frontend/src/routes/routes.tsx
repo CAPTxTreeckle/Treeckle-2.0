@@ -31,7 +31,7 @@ import {
   BOOKINGS_PATH,
   EVENTS_PATH,
   EVENTS_SIGNED_UP_PATH,
-  EVENTS_RECOMMENDATIONS_PATH,
+  // EVENTS_RECOMMENDATIONS_PATH,
   EVENTS_SUBSCRIPTIONS_PATH,
   EVENTS_OWN_PATH,
   EVENTS_CREATION_PATH,
@@ -94,7 +94,7 @@ function Routes() {
               path={[
                 EVENTS_PATH,
                 EVENTS_SIGNED_UP_PATH,
-                EVENTS_RECOMMENDATIONS_PATH,
+                // EVENTS_RECOMMENDATIONS_PATH,
                 EVENTS_SUBSCRIPTIONS_PATH,
               ]}
               exact

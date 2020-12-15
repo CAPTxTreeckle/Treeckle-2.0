@@ -1,5 +1,4 @@
 import React, { useContext, useEffect } from "react";
-import { Segment } from "semantic-ui-react";
 import { OwnEventsContext, OwnEventsProvider } from "../../context-providers";
 import EventEditableGalleryItem from "../event-editable-gallery-item";
 import EventGallery from "../event-gallery";
@@ -30,9 +29,7 @@ const OwnEventGallery = () => {
 function EventsOwnSection() {
   return (
     <OwnEventsProvider>
-      <Segment raised>
-        <OwnEventGallery />
-      </Segment>
+      <OwnEventGallery />
     </OwnEventsProvider>
   );
 }

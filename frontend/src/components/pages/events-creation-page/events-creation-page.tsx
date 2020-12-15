@@ -1,21 +1,34 @@
-import React, { useCallback } from "react";
-import { Link } from "react-router-dom";
+import React, { useCallback, useMemo } from "react";
+import { Link, useHistory } from "react-router-dom";
 import { Button, Icon } from "semantic-ui-react";
 import { useLastLocation } from "react-router-last-location";
+import { toast } from "react-toastify";
 import { EVENTS_PATH } from "../../../routes/paths";
 import EventDetailsForm from "../../event-details-form";
 import { useCreateEvent } from "../../../custom-hooks/api/events-api";
 import { EventFormProps } from "../../../types/events";
+import { resolveApiError } from "../../../utils/error-utils";
 
 function EventsCreationPage() {
   const { createEvent } = useCreateEvent();
+  const history = useHistory();
   const lastLocation = useLastLocation();
-  const previousPath = lastLocation?.pathname ?? EVENTS_PATH;
+  const previousPath = useMemo(() => lastLocation?.pathname ?? EVENTS_PATH, [
+    lastLocation,
+  ]);
 
   const onCreateEvent = useCallback(
-    async (data: EventFormProps) => createEvent(data, previousPath),
+    async (eventFormProps: EventFormProps) => {
+      try {
+        await createEvent(eventFormProps);
+        toast.success("A new event has been created successfully.");
+        history.push(previousPath);
+      } catch (error) {
+        resolveApiError(error);
+      }
+    },
 
-    [createEvent, previousPath],
+    [createEvent, history, previousPath],
   );
 
   return (

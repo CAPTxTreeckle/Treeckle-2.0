@@ -1,10 +1,12 @@
 import React, { useCallback, useContext, useMemo } from "react";
 import { useHistory } from "react-router-dom";
+import { toast } from "react-toastify";
 import { Button } from "semantic-ui-react";
 import { OwnEventsContext, SingleEventProvider } from "../../context-providers";
 import { useDeleteEvent } from "../../custom-hooks/api";
 import { EVENTS_EDIT_PATH, EVENTS_SINGLE_VIEW_PATH } from "../../routes/paths";
 import { EventViewProps } from "../../types/events";
+import { resolveApiError } from "../../utils/error-utils";
 import EventGalleryItem from "../event-gallery-card";
 import PopUpActionsWrapper from "../pop-up-actions-wrapper";
 
@@ -17,11 +19,15 @@ function EventEditableGalleryItem(props: Props) {
 
   const { deleteEvent, isLoading } = useDeleteEvent();
 
-  const onDelete = useCallback(() => deleteEvent(id, getOwnEvents), [
-    id,
-    deleteEvent,
-    getOwnEvents,
-  ]);
+  const onDelete = useCallback(async () => {
+    try {
+      await deleteEvent(id);
+      getOwnEvents();
+      toast.success("The event has been deleted successfully.");
+    } catch (error) {
+      resolveApiError(error);
+    }
+  }, [id, deleteEvent, getOwnEvents]);
 
   const onEdit = useCallback(
     () => history.push(EVENTS_EDIT_PATH.replace(":id", `${id}`)),

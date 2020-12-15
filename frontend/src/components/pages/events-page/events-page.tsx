@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useMemo } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
-import { Button, Icon } from "semantic-ui-react";
+import { Button, Icon, Segment } from "semantic-ui-react";
 import { Role } from "../../../types/users";
 import {
   EVENTS_CREATION_PATH,
@@ -112,7 +112,7 @@ function EventsPage() {
           activeIndex={activeIndex}
         />
 
-        {activeSection}
+        <Segment raised>{activeSection}</Segment>
       </div>
     </>
   );

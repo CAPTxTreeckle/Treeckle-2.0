@@ -1,6 +1,4 @@
-import { useCallback, useState } from "react";
-import { useHistory } from "react-router-dom";
-import { toast } from "react-toastify";
+import { useCallback, useMemo, useState } from "react";
 import { useAxiosWithTokenRefresh } from ".";
 import {
   EventData,
@@ -9,13 +7,13 @@ import {
   EventPostData,
   EventPutData,
   SignUpData,
-  SignUpStatus,
   EventWithSignUpsData,
   SignUpAction,
   SignUpPatchData,
   EventCategorySubscriptionData,
   EventCategorySubscriptionAction,
 } from "../../types/events";
+import { errorHandlerWrapper } from "../../utils/error-utils";
 import { defaultArray } from "./default";
 
 function parseEventFormProps(
@@ -166,6 +164,32 @@ export function useGetAllEvents() {
   return { events, isLoading: loading, getAllEvents };
 }
 
+export function useGetPublishedEvents() {
+  const [events, setEvents] = useState<EventViewProps[]>([]);
+  const [{ loading }, apiCall] = useAxiosWithTokenRefresh<EventData[]>(
+    {
+      url: "/events/published",
+      method: "get",
+    },
+    { manual: true },
+  );
+
+  const getPublishedEvents = useCallback(async () => {
+    try {
+      const { data: events = [] } = await apiCall();
+      console.log("GET /events/published success:", events);
+      const parsedEvents = events.map((event) => parseEventData(event));
+      setEvents(parsedEvents);
+      return parsedEvents;
+    } catch (error) {
+      console.log("GET /events/published error:", error, error?.response);
+      return [];
+    }
+  }, [apiCall]);
+
+  return { events, isLoading: loading, getPublishedEvents };
+}
+
 export function useGetOwnEvents() {
   const [events, setEvents] = useState<EventViewProps[]>([]);
   const [{ loading }, apiCall] = useAxiosWithTokenRefresh<EventData[]>(
@@ -219,8 +243,6 @@ export function useGetSignedUpEvents() {
 }
 
 export function useCreateEvent() {
-  const history = useHistory();
-
   const [{ loading }, apiCall] = useAxiosWithTokenRefresh<EventData>(
     {
       url: "/events/",
@@ -229,9 +251,9 @@ export function useCreateEvent() {
     { manual: true },
   );
 
-  const createEvent = useCallback(
-    async (eventFormProps: EventFormProps, redirectPath?: string) => {
-      try {
+  const createEvent = useMemo(
+    () =>
+      errorHandlerWrapper(async (eventFormProps: EventFormProps) => {
         const data: EventPostData = parseEventFormProps(eventFormProps);
         console.log("POST /events/ data:", data);
         const { data: event } = await apiCall({
@@ -239,16 +261,10 @@ export function useCreateEvent() {
         });
 
         console.log("POST /events/ success:", event);
-        toast.success("A new event has been created successfully.");
-        redirectPath && history.push(redirectPath);
-        return true;
-      } catch (error) {
-        console.log("POST /events/ error:", error, error?.response);
-        toast.error("An unknown error has occurred.");
-        return false;
-      }
-    },
-    [apiCall, history],
+
+        return event;
+      }, "POST /events/ error:"),
+    [apiCall],
   );
 
   return { createEvent, isLoading: loading };
@@ -262,22 +278,14 @@ export function useDeleteEvent() {
     { manual: true },
   );
 
-  const deleteEvent = useCallback(
-    async (id: number, onSuccess?: () => Promise<unknown> | unknown) => {
-      try {
+  const deleteEvent = useMemo(
+    () =>
+      errorHandlerWrapper(async (eventId: number) => {
         const response = await apiCall({
-          url: `/events/${id}`,
+          url: `/events/${eventId}`,
         });
-        console.log(`DELETE /events/${id} success:`, response);
-        onSuccess?.();
-        toast.success("The event has been deleted successfully.");
-        return true;
-      } catch (error) {
-        console.log(`DELETE /events/${id} error:`, error, error?.response);
-        toast.error("An unknown error has occurred.");
-        return false;
-      }
-    },
+        console.log(`DELETE /events/${eventId} success:`, response);
+      }, "DELETE /events/:eventId error:"),
     [apiCall],
   );
 
@@ -294,17 +302,17 @@ export function useGetSingleEvent() {
   );
 
   const getSingleEvent = useCallback(
-    async (id: number) => {
+    async (eventId: number) => {
       try {
         const { data: eventWithSignUpsData } = await apiCall({
-          url: `/events/${id}`,
+          url: `/events/${eventId}`,
         });
-        console.log(`GET /events/${id} success:`, eventWithSignUpsData);
+        console.log(`GET /events/${eventId} success:`, eventWithSignUpsData);
         const parsedEvent = parseEventWithSignUpsData(eventWithSignUpsData);
         setEvent(parsedEvent);
         return parsedEvent;
       } catch (error) {
-        console.log(`GET /events/${id} error:`, error, error?.response);
+        console.log(`GET /events/${eventId} error:`, error, error?.response);
         setEvent(undefined);
       }
     },
@@ -315,7 +323,6 @@ export function useGetSingleEvent() {
 }
 
 export function useUpdateEvent() {
-  const history = useHistory();
   const [{ loading }, apiCall] = useAxiosWithTokenRefresh<EventData>(
     {
       method: "put",
@@ -323,138 +330,90 @@ export function useUpdateEvent() {
     { manual: true },
   );
 
-  const updateEvent = useCallback(
-    async (
-      id: number,
-      eventFormProps: EventFormProps,
-      redirectPath?: string,
-    ) => {
-      try {
-        const data: EventPutData = parseEventFormProps(eventFormProps);
-        const { data: event } = await apiCall({
-          url: `/events/${id}`,
-          data,
-        });
-        console.log(`PUT /events/${id} success:`, event);
-        toast.success("The event has been updated successfully.");
-        redirectPath && history.push(redirectPath);
-        return true;
-      } catch (error) {
-        console.log(`PUT /events/${id} error:`, error, error?.response);
-        toast.error("An unknown error has occurred.");
-        return false;
-      }
-    },
-    [apiCall, history],
+  const updateEvent = useMemo(
+    () =>
+      errorHandlerWrapper(
+        async (eventId: number, eventFormProps: EventFormProps) => {
+          const data: EventPutData = parseEventFormProps(eventFormProps);
+          const { data: event } = await apiCall({
+            url: `/events/${eventId}`,
+            data,
+          });
+          console.log(`PUT /events/${eventId} success:`, event);
+
+          return event;
+        },
+        "PUT /events/:eventId error:",
+      ),
+    [apiCall],
   );
 
   return { updateEvent, isLoading: loading };
 }
 
 export function useSignUpForEvent() {
-  const [, apiCall] = useAxiosWithTokenRefresh<SignUpData>(
+  const [{ loading }, apiCall] = useAxiosWithTokenRefresh<SignUpData>(
     {
       method: "post",
     },
     { manual: true },
   );
-  const [isLoading, setLoading] = useState(false);
 
-  const signUpForEvent = useCallback(
-    async (id: number, onSuccess?: () => Promise<unknown> | unknown) => {
-      try {
-        setLoading(true);
+  const signUpForEvent = useMemo(
+    () =>
+      errorHandlerWrapper(async (eventId: number) => {
         const { data: signUpData } = await apiCall({
-          url: `/events/${id}/selfsignup`,
+          url: `/events/${eventId}/selfsignup`,
         });
-        console.log(`POST /events/${id}/selfsignup success:`, signUpData);
-        await onSuccess?.();
-        const { status } = signUpData;
+        console.log(`POST /events/${eventId}/selfsignup success:`, signUpData);
 
-        if (status === SignUpStatus.Pending) {
-          toast.info("You have requested to sign up for the event.");
-        } else {
-          toast.success("You have successfully signed up for the event.");
-        }
-      } catch (error) {
-        console.log(
-          `POST /events/${id}/selfsignup error:`,
-          error,
-          error?.response,
-        );
-        toast.error("An unknown error has occurred.");
-      } finally {
-        setLoading(false);
-      }
-    },
+        return signUpData;
+      }, "POST /events/:eventId/selfsignup error:"),
     [apiCall],
   );
 
-  return { signUpForEvent, isLoading };
+  return { signUpForEvent, isLoading: loading };
 }
 
 export function useWithdrawFromEvent() {
-  const [, apiCall] = useAxiosWithTokenRefresh(
+  const [{ loading }, apiCall] = useAxiosWithTokenRefresh(
     {
       method: "delete",
     },
     { manual: true },
   );
-  const [isLoading, setLoading] = useState(false);
 
-  const withdrawFromEvent = useCallback(
-    async (id: number, onSuccess?: () => Promise<unknown> | unknown) => {
-      try {
-        setLoading(true);
-        const response = await apiCall({ url: `/events/${id}/selfsignup` });
-        console.log(`DELETE /events/${id}/selfsignup success:`, response);
-        await onSuccess?.();
-        toast.success("You have successfully withdrawn from the event.");
-      } catch (error) {
-        console.log(
-          `DELETE /events/${id}/selfsignup error:`,
-          error,
-          error?.response,
-        );
-        toast.error("An unknown error has occurred.");
-      } finally {
-        setLoading(false);
-      }
-    },
+  const withdrawFromEvent = useMemo(
+    () =>
+      errorHandlerWrapper(async (eventId: number) => {
+        const response = await apiCall({
+          url: `/events/${eventId}/selfsignup`,
+        });
+        console.log(`DELETE /events/${eventId}/selfsignup success:`, response);
+      }, "DELETE /events/:eventId/selfsignup error:"),
     [apiCall],
   );
 
-  return { withdrawFromEvent, isLoading };
+  return { withdrawFromEvent, isLoading: loading };
 }
 
 export function useAttendEvent() {
-  const [{ loading }, apiCall] = useAxiosWithTokenRefresh(
+  const [{ loading }, apiCall] = useAxiosWithTokenRefresh<SignUpData>(
     {
       method: "patch",
     },
     { manual: true },
   );
 
-  const attendEvent = useCallback(
-    async (id: number, onSuccess?: () => Promise<unknown> | unknown) => {
-      try {
-        const response = await apiCall({ url: `/events/${id}/selfsignup` });
-        console.log(`PATCH /events/${id}/selfsignup success:`, response);
-        onSuccess?.();
-        toast.success("Your attendance for the event has been recorded.", {
-          position: "top-center",
+  const attendEvent = useMemo(
+    () =>
+      errorHandlerWrapper(async (eventId: number) => {
+        const { data: signUpData } = await apiCall({
+          url: `/events/${eventId}/selfsignup`,
         });
-      } catch (error) {
-        console.log(
-          `PATCH /events/${id}/selfsignup error:`,
-          error,
-          error?.response,
-        );
-        toast.error("Your attendance for the event cannot be recorded.", {
-          position: "top-center",
-        });
-      }
-    },
+        console.log(`PATCH /events/${eventId}/selfsignup success:`, signUpData);
+        return signUpData;
+      }, "PATCH /events/:eventId/selfsignup error:"),
     [apiCall],
   );
 
@@ -462,47 +421,27 @@ export function useAttendEvent() {
 }
 
 export function useUpdateSignUpsForEvent() {
-  const [, apiCall] = useAxiosWithTokenRefresh(
+  const [{ loading }, apiCall] = useAxiosWithTokenRefresh(
     {
       method: "patch",
     },
     { manual: true },
   );
-  const [isLoading, setLoading] = useState(false);
 
-  const updateSignUpsForEvent = useCallback(
-    async (
-      eventId: number,
-      actions: SignUpAction[],
-      onSuccess?: () => Promise<unknown> | unknown,
-    ) => {
-      try {
-        setLoading(true);
+  const updateSignUpsForEvent = useMemo(
+    () =>
+      errorHandlerWrapper(async (eventId: number, actions: SignUpAction[]) => {
         const data: SignUpPatchData = { actions };
         const response = await apiCall({
           url: `/events/${eventId}/signup`,
           data,
         });
         console.log(`PATCH /events/${eventId}/signup success:`, response);
-        await onSuccess?.();
-        toast.success("Event sign-ups updated successfully.");
-        return true;
-      } catch (error) {
-        console.log(
-          `PATCH /events/${eventId}/signup error:`,
-          error,
-          error?.response,
-        );
-        toast.error("An unknown error has occurred.");
-        return false;
-      } finally {
-        setLoading(false);
-      }
-    },
+      }, "PATCH /events/:eventId/signup error:"),
     [apiCall],
   );
 
-  return { updateSignUpsForEvent, isLoading };
+  return { updateSignUpsForEvent, isLoading: loading };
 }
 
 export function useGetRecommendedEvents() {
@@ -531,7 +470,7 @@ export function useGetRecommendedEvents() {
   return { events, isLoading: loading, getRecommendedEvents };
 }
 
-export function useGetSubscriptions() {
+export function useGetEventCategorySubscriptions() {
   const [
     {
       data: {
@@ -549,38 +488,34 @@ export function useGetSubscriptions() {
     { manual: true },
   );
 
-  const getSubscriptions = useCallback(
-    async (onSuccess?: () => Promise<unknown> | unknown) => {
-      try {
-        const {
-          data: subscriptions = {
-            subscribedCategories: [],
-            nonSubscribedCategories: [],
-          },
-        } = await apiCall();
-        console.log(
-          "GET /events/categories/subscriptions success:",
-          subscriptions,
-        );
-        onSuccess?.();
-        return subscriptions;
-      } catch (error) {
-        console.log(
-          "GET /events/categories/subscriptions error:",
-          error,
-          error?.response,
-        );
-        return { subscribedCategories: [], nonSubscribedCategories: [] };
-      }
-    },
-    [apiCall],
-  );
+  const getEventCategorySubscriptions = useCallback(async () => {
+    try {
+      const {
+        data: eventCategorySubscriptions = {
+          subscribedCategories: [],
+          nonSubscribedCategories: [],
+        },
+      } = await apiCall();
+      console.log(
+        "GET /events/categories/subscriptions success:",
+        eventCategorySubscriptions,
+      );
+      return eventCategorySubscriptions;
+    } catch (error) {
+      console.log(
+        "GET /events/categories/subscriptions error:",
+        error,
+        error?.response,
+      );
+      return { subscribedCategories: [], nonSubscribedCategories: [] };
+    }
+  }, [apiCall]);
 
   return {
     subscribedCategories,
     nonSubscribedCategories,
     isLoading: loading,
-    getSubscriptions,
+    getEventCategorySubscriptions,
   };
 }
 
@@ -610,7 +545,7 @@ export function useGetSubscribedEvents() {
   return { events, isLoading: loading, getSubscribedEvents };
 }
 
-export function useUpdateSubscriptions() {
+export function useUpdateEventCategorySubscriptions() {
   const [
     {
       data: {
@@ -628,33 +563,25 @@ export function useUpdateSubscriptions() {
     { manual: true },
   );
 
-  const updateSubscriptions = useCallback(
-    async (
-      actions: EventCategorySubscriptionAction[],
-      onSuccess?: () => Promise<unknown> | unknown,
-    ) => {
-      try {
-        const {
-          data: subscriptions = {
-            subscribedCategories: [],
-            nonSubscribedCategories: [],
-          },
-        } = await apiCall({ data: { actions } });
-        console.log(
-          "PATCH /events/categories/subscriptions success:",
-          subscriptions,
-        );
-        onSuccess?.();
-        return subscriptions;
-      } catch (error) {
-        console.log(
-          "PATCH /events/categories/subscriptions error:",
-          error,
-          error?.response,
-        );
-        return { subscribedCategories: [], nonSubscribedCategories: [] };
-      }
-    },
+  const updateEventCategorySubscriptions = useMemo(
+    () =>
+      errorHandlerWrapper(
+        async (actions: EventCategorySubscriptionAction[]) => {
+          const {
+            data: eventCategorySubscriptions = {
+              subscribedCategories: [],
+              nonSubscribedCategories: [],
+            },
+          } = await apiCall({ data: { actions } });
+          console.log(
+            "PATCH /events/categories/subscriptions success:",
+            eventCategorySubscriptions,
+          );
+
+          return eventCategorySubscriptions;
+        },
+        "PATCH /events/categories/subscriptions error:",
+      ),
     [apiCall],
   );
 
@@ -662,6 +589,6 @@ export function useUpdateSubscriptions() {
     subscribedCategories,
     nonSubscribedCategories,
     isLoading: loading,
-    updateSubscriptions,
+    updateEventCategorySubscriptions,
   };
 }

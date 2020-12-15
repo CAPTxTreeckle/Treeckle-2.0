@@ -1,20 +1,27 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import {
   useGetSingleEvent,
   useSignUpForEvent,
   useUpdateSignUpsForEvent,
   useWithdrawFromEvent,
 } from "../custom-hooks/api";
-import { EventViewProps, SignUpAction } from "../types/events";
+import {
+  EventViewProps,
+  SignUpAction,
+  SignUpData,
+  SignUpStatus,
+} from "../types/events";
+import { resolveApiError } from "../utils/error-utils";
 import { setAdd, setDelete, setDifference, setUnion } from "../utils/set-utils";
 import { UserContext } from "./user-provider";
 
 type SingleEventType = {
   event?: EventViewProps;
   getSingleEvent: () => Promise<EventViewProps | undefined>;
-  signUpForEvent: () => Promise<void>;
+  signUpForEvent: () => Promise<SignUpData | undefined>;
   withdrawFromEvent: () => Promise<void>;
-  updateSignUpsForEvent: (actions: SignUpAction[]) => Promise<boolean>;
+  updateSignUpsForEvent: (actions: SignUpAction[]) => Promise<void>;
   willUpdateUserIds: Set<number>;
 };
 
@@ -71,9 +78,25 @@ function SingleEventProvider({ children, eventViewProps }: Props) {
   const { signUpForEvent: _signUpForEvent } = useSignUpForEvent();
 
   const signUpForEvent = useCallback(async () => {
-    setWillUpdateUserIds(setAdd(willUpdateUserIds, currentUserId));
-    await _signUpForEvent(eventId, getSingleEvent);
-    setWillUpdateUserIds(setDelete(willUpdateUserIds, currentUserId));
+    try {
+      setWillUpdateUserIds(setAdd(willUpdateUserIds, currentUserId));
+
+      const signUpData = await _signUpForEvent(eventId);
+      await getSingleEvent();
+
+      const { status } = signUpData;
+      toast.success(
+        status === SignUpStatus.Pending
+          ? "You have requested to sign up for the event."
+          : "You have successfully signed up for the event.",
+      );
+      return signUpData;
+    } catch (error) {
+      resolveApiError(error);
+      return undefined;
+    } finally {
+      setWillUpdateUserIds(setDelete(willUpdateUserIds, currentUserId));
+    }
   }, [
     _signUpForEvent,
     getSingleEvent,
@@ -85,9 +108,18 @@ function SingleEventProvider({ children, eventViewProps }: Props) {
   const { withdrawFromEvent: _withdrawFromEvent } = useWithdrawFromEvent();
 
   const withdrawFromEvent = useCallback(async () => {
-    setWillUpdateUserIds(setAdd(willUpdateUserIds, currentUserId));
-    await _withdrawFromEvent(eventId, getSingleEvent);
-    setWillUpdateUserIds(setDelete(willUpdateUserIds, currentUserId));
+    try {
+      setWillUpdateUserIds(setAdd(willUpdateUserIds, currentUserId));
+
+      await _withdrawFromEvent(eventId);
+      await getSingleEvent();
+
+      toast.success("You have successfully withdrawn from the event.");
+    } catch (error) {
+      resolveApiError(error);
+    } finally {
+      setWillUpdateUserIds(setDelete(willUpdateUserIds, currentUserId));
+    }
   }, [
     _withdrawFromEvent,
     getSingleEvent,
@@ -103,14 +135,18 @@ function SingleEventProvider({ children, eventViewProps }: Props) {
   const updateSignUpsForEvent = useCallback(
     async (actions: SignUpAction[]) => {
       const userIds = new Set(actions.map(({ userId }) => userId));
-      setWillUpdateUserIds(setUnion(willUpdateUserIds, userIds));
-      const result = await _updateSignUpsForEvent(
-        eventId,
-        actions,
-        getSingleEvent,
-      );
-      setWillUpdateUserIds(setDifference(willUpdateUserIds, userIds));
-      return result;
+      try {
+        setWillUpdateUserIds(setUnion(willUpdateUserIds, userIds));
+
+        await _updateSignUpsForEvent(eventId, actions);
+        await getSingleEvent();
+
+        toast.success("Event sign-ups updated successfully.");
+      } catch (error) {
+        resolveApiError(error);
+      } finally {
+        setWillUpdateUserIds(setDifference(willUpdateUserIds, userIds));
+      }
     },
     [_updateSignUpsForEvent, getSingleEvent, eventId, willUpdateUserIds],
   );

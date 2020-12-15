@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers";
 import * as yup from "yup";
@@ -68,7 +68,7 @@ const schema = yup.object().shape({
 });
 
 type Props = {
-  onSubmit?: (data: EventFormProps) => void;
+  onSubmit?: (data: EventFormProps) => Promise<unknown>;
   defaultValues?: EventFormProps;
   submitButtonProps: StrictButtonProps;
 };
@@ -107,6 +107,8 @@ function EventDetailsForm({
     isLoading: isLoadingCategories,
     getEventCategories,
   } = useGetEventCategories();
+
+  const isUnmounted = useRef(false);
   const [isSubmitting, setSubmitting] = useState(false);
   const { isSignUpAllowed, onAllowSignUp } = useAllowSignUp(
     defaultValues.isSignUpAllowed,
@@ -115,12 +117,17 @@ function EventDetailsForm({
 
   useEffect(() => {
     getEventCategories();
+    return () => {
+      isUnmounted.current = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const _onSubmit = useCallback(async () => {
     setSubmitting(true);
-    if (!(await onSubmit?.(getValues()))) {
+    await onSubmit?.(getValues());
+
+    if (!isUnmounted.current) {
       setSubmitting(false);
     }
   }, [onSubmit, getValues]);
