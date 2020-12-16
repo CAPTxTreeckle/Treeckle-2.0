@@ -34,8 +34,8 @@ class Venue(TimestampedModel):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["organization_id", "name", "category_id"],
-                name="unique_organization_venue",
+                fields=["organization_id", "name"],
+                name="unique_organization_venue_name",
             )
         ]
         ordering = ["name"]

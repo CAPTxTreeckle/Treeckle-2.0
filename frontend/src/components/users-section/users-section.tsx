@@ -79,8 +79,7 @@ function UsersSection() {
 
   useEffect(() => {
     getAllExistingUsers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [getAllExistingUsers]);
 
   const {
     tableRef,

@@ -115,8 +115,7 @@ function VenueDetailsForm({
     return () => {
       isUnmounted.current = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [getVenueCategories]);
 
   const _onSubmit = useCallback(async () => {
     setSubmitting(true);

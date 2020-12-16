@@ -31,8 +31,7 @@ function AdminVenuesEditPage() {
 
   useEffect(() => {
     getSingleVenue(venueId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [venueId]);
+  }, [getSingleVenue, venueId]);
 
   return (
     <>

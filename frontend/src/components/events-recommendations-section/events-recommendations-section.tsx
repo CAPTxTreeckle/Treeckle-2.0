@@ -10,8 +10,7 @@ function EventsRecommendationsSection() {
 
   useEffect(() => {
     getRecommendedEvents();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [getRecommendedEvents]);
 
   return (
     <PlaceholderWrapper

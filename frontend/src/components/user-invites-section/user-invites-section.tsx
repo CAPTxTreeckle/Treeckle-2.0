@@ -73,8 +73,7 @@ function UserInvitesSection() {
 
   useEffect(() => {
     getAllUserInvites();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [getAllUserInvites]);
 
   const userInviteDisplayData: UserInviteDisplayData[] = useMemo(
     () =>

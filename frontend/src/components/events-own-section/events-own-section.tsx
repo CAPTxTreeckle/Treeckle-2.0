@@ -10,8 +10,7 @@ const OwnEventGallery = () => {
 
   useEffect(() => {
     getOwnEvents();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [getOwnEvents]);
 
   return (
     <PlaceholderWrapper

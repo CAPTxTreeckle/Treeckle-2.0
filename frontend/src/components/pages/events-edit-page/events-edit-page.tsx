@@ -36,8 +36,7 @@ function EventsEditPage() {
 
   useEffect(() => {
     getSingleEvent(eventId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [eventId]);
+  }, [getSingleEvent, eventId]);
 
   return (
     <>

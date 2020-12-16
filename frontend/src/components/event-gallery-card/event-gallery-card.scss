@@ -1,9 +1,12 @@
 .event-gallery-card {
-  .event-info-container {
+  .info-container {
     display: flex;
     flex-direction: column;
-    .sign-up-button-container {
+    .extra-container {
       margin-top: auto;
+      .message {
+        padding: 0.6rem 1rem;
+      }
     }
   }
 }

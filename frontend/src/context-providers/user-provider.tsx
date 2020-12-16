@@ -1,5 +1,6 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useLocalStorage } from "@rehooks/local-storage";
+import isEqual from "lodash.isequal";
 import { Role } from "../types/users";
 
 export type User = {
@@ -29,24 +30,33 @@ type Props = {
 
 function UserProvider({ children }: Props) {
   const [user, setUser, deleteUser] = useLocalStorage<User>("user");
+  const [_user, _setUser] = useState<User | null>(user);
 
   const updateUser = useCallback(
-    (updatedUser: User | null) =>
-      updatedUser ? setUser({ ...user, ...updatedUser }) : deleteUser(),
-    [user, setUser, deleteUser],
+    (updatedUser: User | null) => {
+      updatedUser ? setUser({ ..._user, ...updatedUser }) : deleteUser();
+    },
+    [_user, setUser, deleteUser],
   );
+
+  // required to prevent multiple changes to user
+  useEffect(() => {
+    if (!isEqual(user, _user)) {
+      _setUser(user);
+    }
+  }, [user, _user]);
 
   return (
     <UserContext.Provider
       value={{
-        id: user?.id,
-        name: user?.name,
-        email: user?.email,
-        role: user?.role,
-        organization: user?.organization,
-        accessToken: user?.accessToken,
-        refreshToken: user?.refreshToken,
-        profilePic: user?.profilePic,
+        id: _user?.id,
+        name: _user?.name,
+        email: _user?.email,
+        role: _user?.role,
+        organization: _user?.organization,
+        accessToken: _user?.accessToken,
+        refreshToken: _user?.refreshToken,
+        profilePic: _user?.profilePic,
         updateUser,
       }}
     >

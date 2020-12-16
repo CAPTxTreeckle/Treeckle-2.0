@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Card, Icon, Image } from "semantic-ui-react";
+import { Card, Icon, Image, Message } from "semantic-ui-react";
 import defaultEventPoster from "../../assets/default-event-poster.png";
 import { displayDatetime } from "../../utils/parser-utils";
 import EventSignUpButton from "../event-sign-up-button";
@@ -8,7 +8,15 @@ import "./event-gallery-card.scss";
 
 function EventGalleryCard() {
   const { event } = useContext(SingleEventContext);
-  const { image, title, organizedBy, startDateTime, endDateTime, venueName } = {
+  const {
+    image,
+    title,
+    organizedBy,
+    startDateTime,
+    endDateTime,
+    venueName,
+    isPublished,
+  } = {
     ...event?.eventFormProps,
   };
 
@@ -25,7 +33,7 @@ function EventGalleryCard() {
         )}
       </Card.Content>
 
-      <Card.Content className="event-info-container flex-grow vertical-space-margin">
+      <Card.Content className="info-container flex-grow vertical-space-margin">
         <div>
           {venueName && (
             <p>
@@ -47,8 +55,15 @@ function EventGalleryCard() {
           )}
         </div>
 
-        <div className="sign-up-button-container">
+        <div className="extra-container">
           <EventSignUpButton />
+          {!isPublished && (
+            <Message warning className="center-text">
+              <Message.Content>
+                <Icon name="eye slash" /> Not Published
+              </Message.Content>
+            </Message>
+          )}
         </div>
       </Card.Content>
     </Card>

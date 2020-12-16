@@ -120,8 +120,7 @@ function EventDetailsForm({
     return () => {
       isUnmounted.current = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [getEventCategories]);
 
   const _onSubmit = useCallback(async () => {
     setSubmitting(true);

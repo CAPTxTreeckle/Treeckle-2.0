@@ -9,8 +9,7 @@ function EventsSignedUpSection() {
 
   useEffect(() => {
     getSignedUpEvents();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [getSignedUpEvents]);
 
   return (
     <PlaceholderWrapper

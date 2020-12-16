@@ -11,8 +11,7 @@ function AdminVenuesPage() {
 
   useEffect(() => {
     getAllVenues();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [getAllVenues]);
 
   return (
     <>

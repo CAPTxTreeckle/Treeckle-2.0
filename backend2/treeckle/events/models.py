@@ -24,7 +24,7 @@ class Event(TimestampedModel):
         constraints = [
             models.CheckConstraint(
                 check=Q(start_date_time__lte=F("end_date_time")),
-                name="valid_start_end_date_time",
+                name="valid_event_start_end_date_time",
             )
         ]
         ordering = ["-created_at"]

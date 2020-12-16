@@ -9,8 +9,7 @@ function EventsAllSection() {
 
   useEffect(() => {
     getPublishedEvents();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [getPublishedEvents]);
 
   return (
     <PlaceholderWrapper
