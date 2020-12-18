@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional
 
 from django.db.models import QuerySet
 from django.db import transaction
@@ -69,7 +69,7 @@ def create_venue(
     ic_name: str,
     ic_email: str,
     ic_contact_number: str,
-    form_field_data: List[dict],
+    form_field_data: list[dict],
 ) -> Venue:
 
     with transaction.atomic():
@@ -99,7 +99,7 @@ def update_venue(
     ic_name: str,
     ic_email: str,
     ic_contact_number: str,
-    form_field_data: List[dict],
+    form_field_data: list[dict],
 ) -> Venue:
 
     with transaction.atomic():

@@ -1,4 +1,4 @@
-from typing import Tuple, List, Iterable
+from typing import Iterable
 
 from django.db.models import QuerySet
 from django.db import IntegrityError
@@ -20,7 +20,7 @@ def get_event_category_type_subscriptions(
 
 def get_user_event_category_subscription_info(
     user: User,
-) -> Tuple[List[str], List[str]]:
+) -> tuple[list[str], list[str]]:
     user_subscriptions = get_event_category_type_subscriptions(
         user=user
     ).select_related("category")

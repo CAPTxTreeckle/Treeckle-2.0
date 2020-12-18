@@ -12,7 +12,7 @@ import { EMAIL_REGEX } from "../../constants";
 const userCreationCsvTemplate = new Blob(
   [
     papaparse.unparse({
-      fields: ["email", "role (optional/default to Resident)"],
+      fields: ["email", "role (optional/default to resident)"],
       data: [
         ["jeremy@example.com", "resident"],
         ["john@example.com", "organizer"],

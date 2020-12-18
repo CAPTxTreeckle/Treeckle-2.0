@@ -146,6 +146,12 @@ body ::-webkit-scrollbar-thumb {
   }
 }
 
+.hover-dimming {
+  :hover {
+    background-color: rgb(240, 240, 240);
+  }
+}
+
 .full-width {
   width: 100%;
 }

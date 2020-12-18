@@ -54,11 +54,14 @@ function AdminVenuesEditPage() {
         inverted
         placeholder
       >
-        <VenueDetailsForm
-          onSubmit={onSaveChanges}
-          submitButtonProps={{ content: "Save Changes", color: "blue" }}
-          defaultValues={venue?.venueFormProps}
-        />
+        <>
+          <h1>Venue Update</h1>
+          <VenueDetailsForm
+            onSubmit={onSaveChanges}
+            submitButtonProps={{ content: "Save Changes", color: "blue" }}
+            defaultValues={venue?.venueFormProps}
+          />
+        </>
       </PlaceholderWrapper>
     </>
   );

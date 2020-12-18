@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from treeckle.common.exceptions import BadRequest
 from users.permission_middlewares import check_access
 from users.models import Role, User
 from events.middlewares import check_user_event_same_organization, check_event_modifier
@@ -20,7 +21,10 @@ class SelfSignUpView(APIView):
     @check_access(Role.RESIDENT, Role.ORGANIZER, Role.ADMIN)
     @check_user_event_same_organization
     def post(self, request, requester: User, event: Event):
-        new_event_sign_up = create_event_sign_up(event=event, user=requester)
+        try:
+            new_event_sign_up = create_event_sign_up(event=event, user=requester)
+        except Exception as e:
+            raise BadRequest(e)
 
         data = event_sign_up_to_json(new_event_sign_up)
 
@@ -29,9 +33,12 @@ class SelfSignUpView(APIView):
     @check_access(Role.RESIDENT, Role.ORGANIZER, Role.ADMIN)
     @check_user_event_same_organization
     def patch(self, request, requester: User, event: Event):
-        updated_event_sign_up = attend_event_sign_up(event=event, user=requester)
+        try:
+            attended_event_sign_up = attend_event_sign_up(event=event, user=requester)
+        except Exception as e:
+            raise BadRequest(e)
 
-        data = event_sign_up_to_json(updated_event_sign_up)
+        data = event_sign_up_to_json(attended_event_sign_up)
 
         return Response(data, status=status.HTTP_200_OK)
 
@@ -54,8 +61,16 @@ class SignUpView(APIView):
 
         actions = serializer.validated_data.get("actions", [])
 
-        update_event_sign_ups(
-            actions=actions, event=event, organization=requester.organization
-        )
+        try:
+            updated_event_sign_ups = update_event_sign_ups(
+                actions=actions, event=event, organization=requester.organization
+            )
+        except Exception as e:
+            raise BadRequest(e)
 
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        data = [
+            event_sign_up_to_json(event_sign_up)
+            for event_sign_up in updated_event_sign_ups
+        ]
+
+        return Response(data, status=status.HTTP_200_OK)

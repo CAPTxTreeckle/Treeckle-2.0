@@ -38,6 +38,7 @@ function EventsCreationPage() {
         <Button.Content visible content={<Icon name="close" />} />
       </Button>
 
+      <h1>Event Creation</h1>
       <EventDetailsForm
         onSubmit={onCreateEvent}
         submitButtonProps={{ content: "Create Event", color: "blue" }}

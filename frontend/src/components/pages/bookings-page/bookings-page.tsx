@@ -1,7 +1,25 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { Button, Icon } from "semantic-ui-react";
+import { BOOKINGS_CREATION_PATH } from "../../../routes/paths";
 
 function BookingsPage() {
-  return <h1>This is the bookings page</h1>;
+  return (
+    <>
+      <Button
+        animated="vertical"
+        fluid
+        color="teal"
+        as={Link}
+        to={BOOKINGS_CREATION_PATH}
+      >
+        <Button.Content hidden content="Create New Bookings" />
+        <Button.Content visible content={<Icon name="add" />} />
+      </Button>
+
+      <h1>My Bookings</h1>
+    </>
+  );
 }
 
 export default BookingsPage;

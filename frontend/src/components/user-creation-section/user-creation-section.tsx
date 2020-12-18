@@ -31,7 +31,7 @@ function UserCreationSection() {
         setPendingCreationUsers,
       }}
     >
-      <h1>Create New Users</h1>
+      <h1>User Creation</h1>
       <UserCreationInputSection />
 
       <h1>Pending Creation Users</h1>

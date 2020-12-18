@@ -43,6 +43,13 @@ class VenuesView(APIView):
             organization=requester.organization
         ).select_related("category")
 
+        category_filter = request.query_params.dict().get("category")
+
+        if category_filter:
+            same_organization_venues = same_organization_venues.filter(
+                category__name=category_filter
+            )
+
         data = [venue_to_json(venue) for venue in same_organization_venues]
 
         return Response(data, status=status.HTTP_200_OK)

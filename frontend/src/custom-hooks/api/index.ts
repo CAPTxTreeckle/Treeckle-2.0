@@ -5,7 +5,7 @@ export {
 } from "./auth-api";
 
 export {
-  useGetAllVenues,
+  useGetVenues,
   useCreateVenue,
   useDeleteVenue,
   useGetVenueCategories,

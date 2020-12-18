@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 
 
 from treeckle.common.exceptions import BadRequest
+from email_service.logic import send_user_invite_emails
 from .logic import (
     get_user_invites,
     get_users,
@@ -55,6 +56,8 @@ class UserInvitesView(APIView):
             valid_invitations=valid_invitations,
             organization=requester.organization,
         )
+
+        send_user_invite_emails(new_user_invites)
 
         data = [user_invite_to_json(user_invite) for user_invite in new_user_invites]
 

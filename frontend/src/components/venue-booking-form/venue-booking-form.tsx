@@ -1,9 +1,9 @@
 import React from "react";
-import { Card, Form } from "semantic-ui-react";
+import { Card, Form, Header } from "semantic-ui-react";
 import { useForm, FormProvider } from "react-hook-form";
-import { VenueCustomFormFieldProps, VenueFormProps } from "../../types/venues";
+import { CustomVenueFormFieldProps, VenueFormProps } from "../../types/venues";
 import PlaceholderWrapper from "../placeholder-wrapper";
-import { VENUE_DETAILS_CUSTOM_FORM_FIELDS_SECTION } from "../../constants";
+import { CUSTOM_VENUE_FORM_FIELDS } from "../../constants";
 import VenueCustomFormFieldRenderer from "../venue-custom-form-field-renderer";
 import "./venue-booking-form.scss";
 
@@ -15,16 +15,20 @@ type Props = {
 function VenueBookingForm({ venueFormProps, readOnly = false }: Props) {
   const {
     name,
-    [VENUE_DETAILS_CUSTOM_FORM_FIELDS_SECTION]: fields = [],
+    category,
+    [CUSTOM_VENUE_FORM_FIELDS]: fields = [],
   } = venueFormProps;
-  const methods = useForm<VenueCustomFormFieldProps[]>();
+  const methods = useForm<CustomVenueFormFieldProps[]>();
 
   return (
     <FormProvider {...methods}>
       <Form className="venue-booking-form">
         <Card raised>
           <Card.Content className="flex-no-grow">
-            <Card.Header textAlign="center">{name}</Card.Header>
+            <Header textAlign="center">
+              {name}
+              <Header.Subheader>{category}</Header.Subheader>
+            </Header>
           </Card.Content>
           <Card.Content>
             <PlaceholderWrapper

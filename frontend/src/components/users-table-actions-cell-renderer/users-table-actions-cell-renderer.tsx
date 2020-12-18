@@ -1,13 +1,15 @@
 import React, { useCallback, useContext } from "react";
 import { Button } from "semantic-ui-react";
 import { toast } from "react-toastify";
-import { DeleteModalProvider } from "../../context-providers";
+import {
+  DeleteModalProvider,
+  ExistingUsersContext,
+} from "../../context-providers";
 import { useDeleteExistingUsers } from "../../custom-hooks/api";
 import { UserData } from "../../types/users";
 import DeleteModalButton from "../delete-modal-button";
 import UserRoleChangeButton from "../user-role-change-button";
 import PopUpActionsWrapper from "../pop-up-actions-wrapper";
-import { UsersSectionContext } from "../users-section";
 import { resolveApiError } from "../../utils/error-utils";
 
 type Props = {
@@ -17,7 +19,7 @@ type Props = {
 function UsersTableActionsCellRenderer({ rowData }: Props) {
   const { id, email, role } = rowData as UserData;
   const { getAllExistingUsers, updateExistingUsers } = useContext(
-    UsersSectionContext,
+    ExistingUsersContext,
   );
   const {
     deleteExistingUsers,

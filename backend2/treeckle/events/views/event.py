@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from treeckle.common.exceptions import Conflict, BadRequest
+from treeckle.common.exceptions import BadRequest
 from treeckle.common.parsers import parse_ms_timestamp_to_datetime
 from treeckle.common.constants import EVENT, SIGN_UPS
 from users.permission_middlewares import check_access

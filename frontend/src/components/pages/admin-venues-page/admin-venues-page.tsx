@@ -7,11 +7,11 @@ import PlaceholderWrapper from "../../placeholder-wrapper";
 import VenueFormGallery from "../../venue-form-gallery";
 
 function AdminVenuesPage() {
-  const { venues, isLoading, getAllVenues } = useContext(VenuesContext);
+  const { venues, isLoading, getVenues } = useContext(VenuesContext);
 
   useEffect(() => {
-    getAllVenues();
-  }, [getAllVenues]);
+    getVenues();
+  }, [getVenues]);
 
   return (
     <>

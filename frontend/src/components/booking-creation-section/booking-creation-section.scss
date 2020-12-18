@@ -1,0 +1,13 @@
+.booking-creation-section {
+  color: black;
+  .segment.progress-bar-container {
+    padding: 0;
+    .progress.progress-bar {
+      margin: 0;
+      border-radius: 0;
+      .bar {
+        border-radius: 0;
+      }
+    }
+  }
+}

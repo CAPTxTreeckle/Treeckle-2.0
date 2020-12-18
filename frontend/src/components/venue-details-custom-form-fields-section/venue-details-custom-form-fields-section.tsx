@@ -7,8 +7,8 @@ import {
 } from "react-beautiful-dnd";
 import { useFieldArray } from "react-hook-form";
 import { Button, Form, Popup } from "semantic-ui-react";
-import { VENUE_DETAILS_CUSTOM_FORM_FIELDS_SECTION } from "../../constants";
-import { FieldType, VenueCustomFormFieldProps } from "../../types/venues";
+import { CUSTOM_VENUE_FORM_FIELDS } from "../../constants";
+import { FieldType, CustomVenueFormFieldProps } from "../../types/venues";
 import VenueDetailsCustomFormField from "../venue-details-custom-form-field";
 
 function VenueDetailsCustomFormFieldsSection() {
@@ -17,8 +17,8 @@ function VenueDetailsCustomFormFieldsSection() {
     append,
     remove,
     move,
-  } = useFieldArray<VenueCustomFormFieldProps>({
-    name: VENUE_DETAILS_CUSTOM_FORM_FIELDS_SECTION,
+  } = useFieldArray<CustomVenueFormFieldProps>({
+    name: CUSTOM_VENUE_FORM_FIELDS,
   });
 
   const onDragEnd = ({ destination, source }: DropResult) => {
@@ -40,7 +40,7 @@ function VenueDetailsCustomFormFieldsSection() {
     <>
       <Form.Field>
         <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable droppableId={VENUE_DETAILS_CUSTOM_FORM_FIELDS_SECTION}>
+          <Droppable droppableId={CUSTOM_VENUE_FORM_FIELDS}>
             {({ innerRef, droppableProps, placeholder }) => (
               <div ref={innerRef} {...droppableProps}>
                 {fields.map((field, index) => {
@@ -48,7 +48,7 @@ function VenueDetailsCustomFormFieldsSection() {
                     id,
                     fieldLabel = "",
                     placeholderText = "",
-                    fieldType = FieldType.TEXT,
+                    fieldType = FieldType.Text,
                     requiredField = false,
                   } = field;
                   return (

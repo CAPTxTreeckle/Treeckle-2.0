@@ -20,9 +20,11 @@ function EventViewOnlyGalleryItem(props: Props) {
       className="flex-display hover-bob hover-pointing"
       onClick={onClickEvent}
     >
-      <SingleEventProvider eventViewProps={props}>
-        <EventGalleryItem />
-      </SingleEventProvider>
+      <div className="flex-display full-width scale-in-center">
+        <SingleEventProvider eventViewProps={props}>
+          <EventGalleryItem />
+        </SingleEventProvider>
+      </div>
     </div>
   );
 }

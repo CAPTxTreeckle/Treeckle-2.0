@@ -1,31 +1,70 @@
+import {
+  ACTION,
+  ACTIONS,
+  BOOKER,
+  BOOKING_ID,
+  CUSTOM_BOOKING_FORM_RESPONSES,
+  DATE_TIME_RANGES,
+  END_DATE_TIME,
+  FIELD_LABEL,
+  FIELD_RESPONSE,
+  FORM_RESPONSE_DATA,
+  START_DATE_TIME,
+  STATUS,
+  VENUE_ID,
+  VENUE_NAME,
+} from "../constants";
 import { BaseData } from "./base";
+import { UserData } from "./users";
 
-export type BookingRequestBaseData = {
-  venue: number | string;
-  startDate: string | Date;
-  endDate: string | Date;
-  status: number;
-  formData: string;
+export type BookingPostData = {
+  [VENUE_ID]: number;
+  [DATE_TIME_RANGES]: DateTimeRange[];
+  [FORM_RESPONSE_DATA]: CustomBookingFormResponseProps[];
 };
 
-export type BookingRequestPostData = {
-  booker: number;
-  venue: number;
-  start_date: string;
-  end_date: string;
-  status: number;
-  form_data: string;
+export type DateTimeRange = {
+  [START_DATE_TIME]: number;
+  [END_DATE_TIME]: number;
 };
 
-export type BookingRequestData = (BaseData & BookingRequestBaseData) & {
-  name: string;
-  email: string;
-  venue: string;
+export type BookingData = BaseData & {
+  [BOOKER]: UserData;
+  [VENUE_NAME]: string;
+  [START_DATE_TIME]: number;
+  [END_DATE_TIME]: number;
+  [STATUS]: BookingStatus;
+  [FORM_RESPONSE_DATA]: CustomBookingFormResponseProps[];
 };
 
-export enum BookingRequestStatus {
-  Pending = "Pending",
-  APPROVED = "Approved",
-  REJECTED = "Rejected",
-  CANCELLED = "Cancelled",
+export type CustomBookingFormResponseProps = {
+  [FIELD_LABEL]: string;
+  [FIELD_RESPONSE]: string;
+};
+
+export type BookingPatchData = {
+  [ACTIONS]: BookingStatusAction[];
+};
+
+export type BookingStatusAction = {
+  [BOOKING_ID]: number;
+  [ACTION]: BookingStatusActionType;
+};
+
+export enum BookingStatusActionType {
+  Revoke = "REVOKE",
+  Approve = "APPROVE",
+  Reject = "REJECT",
+  Cancel = "CANCEL",
 }
+
+export enum BookingStatus {
+  Pending = "PENDING",
+  Approved = "APPROVED",
+  Rejected = "REJECTED",
+  Cancelled = "CANCELLED",
+}
+
+export type BookingFormProps = {
+  [CUSTOM_BOOKING_FORM_RESPONSES]: CustomBookingFormResponseProps[];
+};

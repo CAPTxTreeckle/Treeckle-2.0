@@ -1,41 +1,41 @@
 @-webkit-keyframes bob {
   0% {
-    -webkit-transform: translateY(-12px);
-    transform: translateY(-12px);
+    -webkit-transform: translateY(-8px);
+    transform: translateY(-8px);
   }
   50% {
-    -webkit-transform: translateY(-6px);
-    transform: translateY(-6px);
+    -webkit-transform: translateY(-4px);
+    transform: translateY(-4px);
   }
   100% {
-    -webkit-transform: translateY(-12px);
-    transform: translateY(-12px);
+    -webkit-transform: translateY(-8px);
+    transform: translateY(-8px);
   }
 }
 @keyframes bob {
   0% {
-    -webkit-transform: translateY(-12px);
-    transform: translateY(-12px);
+    -webkit-transform: translateY(-8px);
+    transform: translateY(-8px);
   }
   50% {
-    -webkit-transform: translateY(-6px);
-    transform: translateY(-6px);
+    -webkit-transform: translateY(-4px);
+    transform: translateY(-4px);
   }
   100% {
-    -webkit-transform: translateY(-12px);
-    transform: translateY(-12px);
+    -webkit-transform: translateY(-8px);
+    transform: translateY(-8px);
   }
 }
 @-webkit-keyframes bob-float {
   100% {
-    -webkit-transform: translateY(-12px);
-    transform: translateY(-12px);
+    -webkit-transform: translateY(-8px);
+    transform: translateY(-8px);
   }
 }
 @keyframes bob-float {
   100% {
-    -webkit-transform: translateY(-12px);
-    transform: translateY(-12px);
+    -webkit-transform: translateY(-8px);
+    transform: translateY(-8px);
   }
 }
 .hover-bob {

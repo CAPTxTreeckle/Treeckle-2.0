@@ -20,7 +20,7 @@ function parseVenueFormProps(
     icName,
     icEmail,
     icContactNumber,
-    venueDetailsCustomFormFieldsSection,
+    customVenueFormFields,
   } = venueFormProps;
   const data: VenuePostData | VenuePutData = {
     name,
@@ -29,7 +29,7 @@ function parseVenueFormProps(
     icName,
     icEmail,
     icContactNumber,
-    formFieldData: venueDetailsCustomFormFieldsSection ?? [],
+    formFieldData: customVenueFormFields ?? [],
   };
 
   return data;
@@ -60,7 +60,7 @@ function parseVenueData(venueData: VenueData): VenueViewProps {
       icName,
       icEmail,
       icContactNumber,
-      venueDetailsCustomFormFieldsSection: formFieldData,
+      customVenueFormFields: formFieldData,
     },
   };
 
@@ -93,30 +93,34 @@ export function useGetVenueCategories() {
   return { venueCategories, isLoading: loading, getVenueCategories };
 }
 
-export function useGetAllVenues() {
+export function useGetVenues() {
   const [venues, setVenues] = useState<VenueViewProps[]>([]);
   const [{ loading }, apiCall] = useAxiosWithTokenRefresh<VenueData[]>(
     {
-      url: "/venues/",
       method: "get",
     },
     { manual: true },
   );
 
-  const getAllVenues = useCallback(async () => {
-    try {
-      const { data: venues = [] } = await apiCall();
-      console.log("GET /venues/ success:", venues);
-      const parsedVenues = venues.map((venue) => parseVenueData(venue));
-      setVenues(parsedVenues);
-      return parsedVenues;
-    } catch (error) {
-      console.log("GET /venues/ error:", error, error?.response);
-      return [];
-    }
-  }, [apiCall]);
+  const getVenues = useCallback(
+    async (category?: string) => {
+      const url = category ? `/venues/?category=${category}` : "/venues/";
+      try {
+        const { data: venues = [] } = await apiCall({ url });
 
-  return { venues, isLoading: loading, getAllVenues };
+        console.log(`GET ${url} success:`, venues);
+        const parsedVenues = venues.map((venue) => parseVenueData(venue));
+        setVenues(parsedVenues);
+        return parsedVenues;
+      } catch (error) {
+        console.log(`GET ${url} error:`, error, error?.response);
+        return [];
+      }
+    },
+    [apiCall],
+  );
+
+  return { venues, isLoading: loading, getVenues };
 }
 
 export function useCreateVenue() {

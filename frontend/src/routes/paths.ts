@@ -1,6 +1,7 @@
 export const HOME_PATH = "/";
 export const DASHBOARD_PATH = "/dashboard";
 export const BOOKINGS_PATH = "/bookings";
+export const BOOKINGS_CREATION_PATH = "/bookings/create";
 export const EVENTS_PATH = "/events";
 export const EVENTS_SIGNED_UP_PATH = "/events/signedup";
 export const EVENTS_RECOMMENDATIONS_PATH = "/events/recommendations";

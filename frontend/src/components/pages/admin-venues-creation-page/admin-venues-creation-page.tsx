@@ -38,6 +38,8 @@ function AdminVenuesCreationPage() {
         <Button.Content visible content={<Icon name="close" />} />
       </Button>
 
+      <h1>Venue Creation</h1>
+
       <VenueDetailsForm
         onSubmit={onCreateVenue}
         submitButtonProps={{ content: "Create Venue", color: "blue" }}

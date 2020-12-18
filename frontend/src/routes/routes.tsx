@@ -25,6 +25,7 @@ import {
   EventsEditPage,
   EventsQrCodePage,
   AdminUsersCreationPage,
+  BookingsCreationPage,
 } from "../components/pages";
 import {
   DASHBOARD_PATH,
@@ -49,6 +50,7 @@ import {
   ADMIN_VENUES_EDIT_PATH,
   ADMIN_USERS_CREATION_PATH,
   ADMIN_USERS_PENDING_REGISTRATION_PATH,
+  BOOKINGS_CREATION_PATH,
 } from "./paths";
 import { UserContext, VenuesProvider } from "../context-providers";
 import RoleRestrictedRoute from "./role-restricted-route";
@@ -84,6 +86,10 @@ function Routes() {
 
             <Route path={BOOKINGS_PATH} exact strict>
               <BookingsPage />
+            </Route>
+
+            <Route path={BOOKINGS_CREATION_PATH} exact strict>
+              <BookingsCreationPage />
             </Route>
 
             <Route path={PROFILE_PATH} exact strict>

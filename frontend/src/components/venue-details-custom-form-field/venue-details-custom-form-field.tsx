@@ -7,11 +7,11 @@ import {
   FIELD_TYPE,
   PLACEHOLDER_TEXT,
   REQUIRED_FIELD,
-  VENUE_DETAILS_CUSTOM_FORM_FIELDS_SECTION,
+  CUSTOM_VENUE_FORM_FIELDS,
 } from "../../constants";
 import {
   FieldType,
-  VenueCustomFormFieldProps,
+  CustomVenueFormFieldProps,
   VenueFormProps,
 } from "../../types/venues";
 import FormField from "../form-field";
@@ -20,22 +20,22 @@ import "./venue-details-custom-form-field.scss";
 
 const typeOptions = [
   {
-    value: FieldType.TEXT,
+    value: FieldType.Text,
     text: "Single-line Input",
     icon: "minus",
   },
   {
-    value: FieldType.TEXT_AREA,
+    value: FieldType.TextArea,
     text: "Multi-line Input",
     icon: "bars",
   },
   {
-    value: FieldType.NUMBER,
+    value: FieldType.Number,
     text: "Number",
     icon: "sort numeric down",
   },
   {
-    value: FieldType.BOOLEAN,
+    value: FieldType.Boolean,
     text: "Yes / No",
     icon: "radio",
   },
@@ -44,12 +44,12 @@ const typeOptions = [
 type Props = {
   index: number;
   onDeleteField: () => void;
-  defaultValues?: VenueCustomFormFieldProps;
+  defaultValues?: CustomVenueFormFieldProps;
   dragHandleProps?: DraggableProvidedDragHandleProps;
 };
 
-const defaultFormProps: VenueCustomFormFieldProps = {
-  [FIELD_TYPE]: FieldType.TEXT,
+const defaultFormProps: CustomVenueFormFieldProps = {
+  [FIELD_TYPE]: FieldType.Text,
   [FIELD_LABEL]: "",
   [REQUIRED_FIELD]: false,
   [PLACEHOLDER_TEXT]: "",
@@ -63,12 +63,12 @@ function VenueDetailsCustomFormField({
 }: Props) {
   const { setValue } = useFormContext<VenueFormProps>();
   const [isBooleanField, setBooleanField] = useState(
-    defaultValues[FIELD_TYPE] === FieldType.BOOLEAN,
+    defaultValues[FIELD_TYPE] === FieldType.Boolean,
   );
-  const fieldType = `${VENUE_DETAILS_CUSTOM_FORM_FIELDS_SECTION}[${index}].${FIELD_TYPE}`;
-  const fieldLabel = `${VENUE_DETAILS_CUSTOM_FORM_FIELDS_SECTION}[${index}].${FIELD_LABEL}`;
-  const placeholderText = `${VENUE_DETAILS_CUSTOM_FORM_FIELDS_SECTION}[${index}].${PLACEHOLDER_TEXT}`;
-  const requiredField = `${VENUE_DETAILS_CUSTOM_FORM_FIELDS_SECTION}[${index}].${REQUIRED_FIELD}`;
+  const fieldType = `${CUSTOM_VENUE_FORM_FIELDS}[${index}].${FIELD_TYPE}`;
+  const fieldLabel = `${CUSTOM_VENUE_FORM_FIELDS}[${index}].${FIELD_LABEL}`;
+  const placeholderText = `${CUSTOM_VENUE_FORM_FIELDS}[${index}].${PLACEHOLDER_TEXT}`;
+  const requiredField = `${CUSTOM_VENUE_FORM_FIELDS}[${index}].${REQUIRED_FIELD}`;
 
   return (
     <div className="venue-details-custom-form-field-container">
@@ -88,7 +88,7 @@ function VenueDetailsCustomFormField({
                   onChange={(event, { value }) => {
                     onChange(value);
 
-                    if (value === FieldType.BOOLEAN) {
+                    if (value === FieldType.Boolean) {
                       setBooleanField(true);
                       setValue(requiredField, false);
                       setValue(placeholderText, "");

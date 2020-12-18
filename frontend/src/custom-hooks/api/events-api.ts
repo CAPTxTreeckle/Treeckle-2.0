@@ -421,7 +421,7 @@ export function useAttendEvent() {
 }
 
 export function useUpdateSignUpsForEvent() {
-  const [{ loading }, apiCall] = useAxiosWithTokenRefresh(
+  const [{ loading }, apiCall] = useAxiosWithTokenRefresh<SignUpData[]>(
     {
       method: "patch",
     },
@@ -432,11 +432,13 @@ export function useUpdateSignUpsForEvent() {
     () =>
       errorHandlerWrapper(async (eventId: number, actions: SignUpAction[]) => {
         const data: SignUpPatchData = { actions };
-        const response = await apiCall({
+        const { data: signUpData } = await apiCall({
           url: `/events/${eventId}/signup`,
           data,
         });
-        console.log(`PATCH /events/${eventId}/signup success:`, response);
+        console.log(`PATCH /events/${eventId}/signup success:`, signUpData);
+
+        return signUpData;
       }, "PATCH /events/:eventId/signup error:"),
     [apiCall],
   );

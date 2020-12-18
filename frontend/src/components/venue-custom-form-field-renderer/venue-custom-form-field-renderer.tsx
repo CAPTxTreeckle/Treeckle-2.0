@@ -1,10 +1,10 @@
 import React from "react";
-import { FieldType, VenueCustomFormFieldProps } from "../../types/venues";
+import { FieldType, CustomVenueFormFieldProps } from "../../types/venues";
 import FormField from "../form-field";
 import RadioFormField from "../radio-form-field";
 import TextAreaFormField from "../text-area-form-field";
 
-type Props = VenueCustomFormFieldProps & {
+type Props = CustomVenueFormFieldProps & {
   inputName: string;
   readOnly?: boolean;
 };
@@ -19,7 +19,7 @@ function VenueCustomFormFieldRenderer({
 }: Props) {
   return (() => {
     switch (fieldType) {
-      case FieldType.TEXT:
+      case FieldType.Text:
         return (
           <FormField
             label={fieldLabel}
@@ -29,7 +29,7 @@ function VenueCustomFormFieldRenderer({
             readOnly={readOnly}
           />
         );
-      case FieldType.TEXT_AREA:
+      case FieldType.TextArea:
         return (
           <TextAreaFormField
             label={fieldLabel}
@@ -40,7 +40,7 @@ function VenueCustomFormFieldRenderer({
             rows={8}
           />
         );
-      case FieldType.NUMBER:
+      case FieldType.Number:
         return (
           <FormField
             label={fieldLabel}
@@ -51,7 +51,7 @@ function VenueCustomFormFieldRenderer({
             type="number"
           />
         );
-      case FieldType.BOOLEAN:
+      case FieldType.Boolean:
         return (
           <RadioFormField
             label={fieldLabel}

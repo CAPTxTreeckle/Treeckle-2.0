@@ -31,8 +31,8 @@ import RadioFormField from "../radio-form-field";
 import TextAreaFormField from "../text-area-form-field";
 import DropdownSelectorFormField from "../dropdown-selector-form-field";
 import { useGetEventCategories } from "../../custom-hooks/api";
-import "./event-details-form.scss";
 import DateTimeFormField from "../date-time-form-field";
+import "./event-details-form.scss";
 
 const schema = yup.object().shape({
   [TITLE]: yup.string().trim().required("Please enter an event title"),
@@ -154,10 +154,12 @@ function EventDetailsForm({
               />
             </Grid.Column>
             <Grid.Column>
-              <Form.Field>
-                <Header className="form-header">Event Details</Header>
-                <p>Please fill in the details for the event.</p>
-              </Form.Field>
+              <Header as={Form.Field}>
+                Event Details
+                <Header.Subheader>
+                  Please fill in the details for the event.
+                </Header.Subheader>
+              </Header>
 
               <FormField required label="Event Title" inputName={TITLE} />
 

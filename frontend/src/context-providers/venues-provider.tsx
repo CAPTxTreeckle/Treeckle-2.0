@@ -1,17 +1,17 @@
 import React from "react";
-import { useGetAllVenues } from "../custom-hooks/api";
+import { useGetVenues } from "../custom-hooks/api";
 import { VenueViewProps } from "../types/venues";
 
 type VenuesContextType = {
   venues: VenueViewProps[];
-  getAllVenues: () => Promise<VenueViewProps[]>;
+  getVenues: () => Promise<VenueViewProps[]>;
   isLoading: boolean;
 };
 
 export const VenuesContext = React.createContext<VenuesContextType>({
   venues: [],
-  getAllVenues: () => {
-    throw new Error("getAllVenues not defined.");
+  getVenues: () => {
+    throw new Error("getVenues not defined.");
   },
   isLoading: false,
 });
@@ -21,10 +21,10 @@ type Props = {
 };
 
 function VenuesProvider({ children }: Props) {
-  const { venues, isLoading, getAllVenues } = useGetAllVenues();
+  const { venues, isLoading, getVenues } = useGetVenues();
 
   return (
-    <VenuesContext.Provider value={{ venues, isLoading, getAllVenues }}>
+    <VenuesContext.Provider value={{ venues, isLoading, getVenues }}>
       {children}
     </VenuesContext.Provider>
   );

@@ -22,7 +22,7 @@ function FormField({
   label,
   errorMsg,
   inputName,
-  type = "text",
+  type = "TEXT",
   placeholder,
   defaultValue,
   readOnly = false,

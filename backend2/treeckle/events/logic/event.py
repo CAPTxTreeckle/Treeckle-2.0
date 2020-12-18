@@ -1,4 +1,4 @@
-from typing import Optional, List, Iterable, Sequence
+from typing import Optional, Iterable, Sequence
 from datetime import datetime
 
 from django.db.models import QuerySet
@@ -127,7 +127,7 @@ def create_event(
     is_published: bool,
     is_sign_up_allowed: bool,
     is_sign_up_approval_required: bool,
-    categories: List[str],
+    categories: list[str],
 ) -> Event:
     image_id, image_url = upload_image(image)
 
@@ -174,7 +174,7 @@ def update_event(
     is_published: bool,
     is_sign_up_allowed: bool,
     is_sign_up_approval_required: bool,
-    categories: List[str],
+    categories: list[str],
 ) -> Event:
 
     current_image_id, current_image_url = (

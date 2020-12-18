@@ -14,7 +14,7 @@ class BookingStatus(models.TextChoices):
     CANCELLED = "CANCELLED"
 
 
-class BookingAction(models.TextChoices):
+class BookingStatusAction(models.TextChoices):
     REVOKE = "REVOKE"
     APPROVE = "APPROVE"
     REJECT = "REJECT"
@@ -35,7 +35,7 @@ class Booking(TimestampedModel):
         constraints = [
             models.CheckConstraint(
                 check=Q(start_date_time__lt=F("end_date_time")),
-                name="valid_booking_start_end_date_time",
+                name="booking_start_date_time_lt_end_date_time",
             )
         ]
         ordering = ["-created_at"]

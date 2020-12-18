@@ -1,1 +1,1 @@
-export { default, UsersSectionContext } from "./users-section";
+export { default } from "./users-section";

@@ -1,4 +1,4 @@
-from typing import Sequence, Iterable, Tuple
+from typing import Sequence, Iterable
 
 from django.db.models import QuerySet
 
@@ -12,7 +12,6 @@ from treeckle.common.constants import (
     UPDATED_AT,
 )
 from treeckle.common.parsers import parse_datetime_to_ms_timestamp
-from email_service.logic import send_user_invite_emails
 from .models import User, UserInvite, Organization
 
 
@@ -55,7 +54,7 @@ def get_user_invites(**kwargs) -> QuerySet[UserInvite]:
     return UserInvite.objects.filter(**kwargs)
 
 
-def get_valid_invitations(invitations: dict) -> Sequence[Tuple[str, str]]:
+def get_valid_invitations(invitations: dict) -> Sequence[tuple[str, str]]:
     existing_user_emails = User.objects.values_list("email", flat=True)
     existing_user_invite_emails = UserInvite.objects.values_list("email", flat=True)
 
@@ -71,7 +70,7 @@ def get_valid_invitations(invitations: dict) -> Sequence[Tuple[str, str]]:
 
 
 def create_user_invites(
-    valid_invitations: Iterable[Tuple[str, str]], organization: Organization
+    valid_invitations: Iterable[tuple[str, str]], organization: Organization
 ) -> Sequence[UserInvite]:
     user_invites_to_be_created = (
         UserInvite(organization=organization, email=email, role=role)
@@ -80,8 +79,6 @@ def create_user_invites(
     new_user_invites = UserInvite.objects.bulk_create(
         user_invites_to_be_created, ignore_conflicts=True
     )
-
-    send_user_invite_emails(new_user_invites)
 
     return new_user_invites
 

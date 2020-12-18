@@ -1,5 +1,5 @@
 import os
-from typing import Optional, Tuple
+from typing import Optional
 from uuid import uuid4
 
 from imagekitio import ImageKit
@@ -22,7 +22,7 @@ def delete_image(image_id: str) -> None:
     imagekit.delete_file(image_id)
 
 
-def upload_image(base64_image: str, filename: Optional[str] = None) -> Tuple[str, str]:
+def upload_image(base64_image: str, filename: Optional[str] = None) -> tuple[str, str]:
     if not base64_image:
         return "", ""
 

@@ -53,6 +53,7 @@ function EventsEditPage() {
         inverted
         placeholder
       >
+        <h1>Event Update</h1>
         <EventDetailsForm
           onSubmit={onSaveChanges}
           submitButtonProps={{ content: "Save Changes", color: "blue" }}

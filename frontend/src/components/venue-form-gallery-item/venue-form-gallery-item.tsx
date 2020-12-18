@@ -14,19 +14,19 @@ type Props = VenueViewProps;
 
 function VenueFormGalleryItem({ id, venueFormProps }: Props) {
   const history = useHistory();
-  const { getAllVenues } = useContext(VenuesContext);
+  const { getVenues } = useContext(VenuesContext);
 
   const { deleteVenue, isLoading } = useDeleteVenue();
 
   const onDelete = useCallback(async () => {
     try {
       await deleteVenue(id);
-      getAllVenues();
+      getVenues();
       toast.success("The venue has been deleted successfully.");
     } catch (error) {
       resolveApiError(error);
     }
-  }, [id, deleteVenue, getAllVenues]);
+  }, [id, deleteVenue, getVenues]);
 
   const onEdit = useCallback(() => {
     history.push(ADMIN_VENUES_EDIT_PATH.replace(":id", `${id}`));
@@ -51,8 +51,10 @@ function VenueFormGalleryItem({ id, venueFormProps }: Props) {
       actionButtons={actionButtons}
       offsetRatio={{ heightRatio: -2 }}
     >
-      <div className="flex-display hover-bob hover-pointing">
-        <VenueBookingForm venueFormProps={venueFormProps} readOnly />
+      <div className="flex-display hover-bob hover-pointing ">
+        <div className="flex-display full-width scale-in-center">
+          <VenueBookingForm venueFormProps={venueFormProps} readOnly />
+        </div>
       </div>
     </PopUpActionsWrapper>
   );
