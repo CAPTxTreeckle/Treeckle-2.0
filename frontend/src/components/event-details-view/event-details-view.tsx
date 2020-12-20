@@ -1,10 +1,10 @@
 import React, { useContext } from "react";
 import { Grid, Icon, Image, Label } from "semantic-ui-react";
-import Linkify from "linkifyjs/react";
 import defaultEventPoster from "../../assets/default-event-poster.png";
 import { displayDateTime } from "../../utils/parser-utils";
 import { SingleEventContext } from "../../context-providers";
 import EventSignUpButton from "../event-sign-up-button";
+import TextViewer from "../text-viewer";
 import "./event-details-view.scss";
 
 function EventDetailsView() {
@@ -92,11 +92,7 @@ function EventDetailsView() {
           </div>
         )}
 
-        {description && (
-          <Linkify tagName="div">
-            <div className="description">{description}</div>
-          </Linkify>
-        )}
+        {description && <TextViewer>{description}</TextViewer>}
       </Grid.Column>
     </Grid>
   );

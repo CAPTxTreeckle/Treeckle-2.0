@@ -11,7 +11,7 @@ import {
   PLACEHOLDER_TEXT,
   CAPACITY,
   REQUIRED_FIELD,
-  CUSTOM_VENUE_FORM_FIELDS,
+  CUSTOM_VENUE_BOOKING_FORM_FIELDS,
   IC_CONTACT_NUMBER,
   IC_EMAIL,
   IC_NAME,
@@ -23,6 +23,7 @@ import { FieldType, VenueFormProps } from "../../types/venues";
 import { useGetVenueCategories } from "../../custom-hooks/api";
 import DropdownSelectorFormField from "../dropdown-selector-form-field";
 import "./venue-details-form.scss";
+import { deepTrim } from "../../utils/parser-utils";
 
 const schema = yup.object().shape({
   [NAME]: yup.string().trim().required("Please enter a venue name"),
@@ -49,7 +50,7 @@ const schema = yup.object().shape({
     .trim()
     .matches(PHONE_NUM_REGEX, "Input must be a valid phone number")
     .notRequired(),
-  [CUSTOM_VENUE_FORM_FIELDS]: yup
+  [CUSTOM_VENUE_BOOKING_FORM_FIELDS]: yup
     .array(
       yup
         .object()
@@ -63,7 +64,7 @@ const schema = yup.object().shape({
             .trim()
             .required("Please enter a field label"),
           [PLACEHOLDER_TEXT]: yup.string().trim().notRequired(),
-          [REQUIRED_FIELD]: yup.boolean().notRequired(),
+          [REQUIRED_FIELD]: yup.boolean().required("An error as occurred"),
         })
         .required(),
     )
@@ -83,6 +84,7 @@ const defaultFormProps: VenueFormProps = {
   [IC_NAME]: "",
   [IC_EMAIL]: "",
   [IC_CONTACT_NUMBER]: "",
+  [CUSTOM_VENUE_BOOKING_FORM_FIELDS]: [],
 };
 
 function VenueDetailsForm({
@@ -95,7 +97,7 @@ function VenueDetailsForm({
     resolver: yupResolver(schema),
     defaultValues,
   });
-  const { handleSubmit, getValues } = methods;
+  const { handleSubmit } = methods;
   const {
     venueCategories: existingCategories,
     isLoading: isLoadingCategories,
@@ -111,14 +113,17 @@ function VenueDetailsForm({
     };
   }, [getVenueCategories]);
 
-  const _onSubmit = useCallback(async () => {
-    setSubmitting(true);
-    await onSubmit?.(getValues());
+  const _onSubmit = useCallback(
+    async (formData: VenueFormProps) => {
+      setSubmitting(true);
+      await onSubmit?.(deepTrim(formData));
 
-    if (!isUnmounted.current) {
-      setSubmitting(false);
-    }
-  }, [onSubmit, getValues]);
+      if (!isUnmounted.current) {
+        setSubmitting(false);
+      }
+    },
+    [onSubmit],
+  );
 
   return (
     <FormProvider {...methods}>

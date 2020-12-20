@@ -3,11 +3,10 @@ import {
   ACTIONS,
   BOOKER,
   BOOKING_ID,
-  CUSTOM_BOOKING_FORM_RESPONSES,
+  CUSTOM_VENUE_BOOKING_FORM_RESPONSES,
   DATE_TIME_RANGES,
   END_DATE_TIME,
-  FIELD_LABEL,
-  FIELD_RESPONSE,
+  RESPONSE,
   FORM_RESPONSE_DATA,
   START_DATE_TIME,
   STATUS,
@@ -17,12 +16,16 @@ import {
 } from "../constants";
 import { BaseData } from "./base";
 import { UserData } from "./users";
+import { CustomVenueBookingFormFieldProps } from "./venues";
+
+export type CustomVenueBookingFormData = CustomVenueBookingFormFieldProps &
+  CustomVenueBookingFormResponseProps;
 
 export type BookingPostData = {
   [TITLE]: string;
   [VENUE_ID]: number;
   [DATE_TIME_RANGES]: DateTimeRange[];
-  [FORM_RESPONSE_DATA]: CustomBookingFormResponseProps[];
+  [FORM_RESPONSE_DATA]: CustomVenueBookingFormData[];
 };
 
 export type DateTimeRange = {
@@ -37,12 +40,11 @@ export type BookingData = BaseData & {
   [START_DATE_TIME]: number;
   [END_DATE_TIME]: number;
   [STATUS]: BookingStatus;
-  [FORM_RESPONSE_DATA]: CustomBookingFormResponseProps[];
+  [FORM_RESPONSE_DATA]: CustomVenueBookingFormData[];
 };
 
-export type CustomBookingFormResponseProps = {
-  [FIELD_LABEL]: string;
-  [FIELD_RESPONSE]: string;
+export type CustomVenueBookingFormResponseProps = {
+  [RESPONSE]: string | boolean;
 };
 
 export type BookingPatchData = {
@@ -69,5 +71,6 @@ export enum BookingStatus {
 }
 
 export type BookingFormProps = {
-  [CUSTOM_BOOKING_FORM_RESPONSES]: CustomBookingFormResponseProps[];
+  [TITLE]: string;
+  [CUSTOM_VENUE_BOOKING_FORM_RESPONSES]?: CustomVenueBookingFormResponseProps[];
 };

@@ -1,10 +1,13 @@
 import React from "react";
 import { Card, Form, Header } from "semantic-ui-react";
 import { useForm, FormProvider } from "react-hook-form";
-import { CustomVenueFormFieldProps, VenueFormProps } from "../../types/venues";
+import {
+  CustomVenueBookingFormFieldProps,
+  VenueFormProps,
+} from "../../types/venues";
 import PlaceholderWrapper from "../placeholder-wrapper";
-import { CUSTOM_VENUE_FORM_FIELDS } from "../../constants";
-import VenueCustomFormFieldRenderer from "../venue-custom-form-field-renderer";
+import { CUSTOM_VENUE_BOOKING_FORM_FIELDS } from "../../constants";
+import CustomFormFieldRenderer from "../custom-form-field-renderer";
 import "./venue-booking-form.scss";
 
 type Props = {
@@ -16,9 +19,9 @@ function VenueBookingForm({ venueFormProps, readOnly = false }: Props) {
   const {
     name,
     category,
-    [CUSTOM_VENUE_FORM_FIELDS]: fields = [],
+    [CUSTOM_VENUE_BOOKING_FORM_FIELDS]: fields = [],
   } = venueFormProps;
-  const methods = useForm<CustomVenueFormFieldProps[]>();
+  const methods = useForm<CustomVenueBookingFormFieldProps[]>();
 
   return (
     <FormProvider {...methods}>
@@ -37,7 +40,7 @@ function VenueBookingForm({ venueFormProps, readOnly = false }: Props) {
               placeholder
             >
               {fields.map((field, index) => (
-                <VenueCustomFormFieldRenderer
+                <CustomFormFieldRenderer
                   key={index}
                   inputName={`${index}`}
                   readOnly={readOnly}

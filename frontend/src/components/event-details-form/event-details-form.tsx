@@ -33,6 +33,7 @@ import DropdownSelectorFormField from "../dropdown-selector-form-field";
 import { useGetEventCategories } from "../../custom-hooks/api";
 import DateTimeFormField from "../date-time-form-field";
 import "./event-details-form.scss";
+import { deepTrim } from "../../utils/parser-utils";
 
 const schema = yup.object().shape({
   [TITLE]: yup.string().trim().required("Please enter an event title"),
@@ -101,7 +102,7 @@ function EventDetailsForm({
     resolver: yupResolver(schema),
     defaultValues,
   });
-  const { handleSubmit, getValues, setValue } = methods;
+  const { handleSubmit, setValue } = methods;
   const {
     eventCategories: existingCategories,
     isLoading: isLoadingCategories,
@@ -122,14 +123,17 @@ function EventDetailsForm({
     };
   }, [getEventCategories]);
 
-  const _onSubmit = useCallback(async () => {
-    setSubmitting(true);
-    await onSubmit?.(getValues());
+  const _onSubmit = useCallback(
+    async (formData: EventFormProps) => {
+      setSubmitting(true);
+      await onSubmit?.(deepTrim(formData));
 
-    if (!isUnmounted.current) {
-      setSubmitting(false);
-    }
-  }, [onSubmit, getValues]);
+      if (!isUnmounted.current) {
+        setSubmitting(false);
+      }
+    },
+    [onSubmit],
+  );
 
   return (
     <Segment className="event-details-form" raised>

@@ -22,7 +22,7 @@ function parseVenueFormProps(
     icName,
     icEmail,
     icContactNumber,
-    customVenueFormFields,
+    customVenueBookingFormFields,
   } = venueFormProps;
   const data: VenuePostData | VenuePutData = {
     name,
@@ -31,7 +31,7 @@ function parseVenueFormProps(
     icName,
     icEmail,
     icContactNumber,
-    formFieldData: customVenueFormFields ?? [],
+    formFieldData: customVenueBookingFormFields ?? [],
   };
 
   return data;
@@ -62,7 +62,7 @@ function parseVenueData(venueData: VenueData): VenueViewProps {
       icName,
       icEmail,
       icContactNumber,
-      customVenueFormFields: formFieldData,
+      customVenueBookingFormFields: formFieldData,
     },
   };
 

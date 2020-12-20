@@ -7,11 +7,11 @@ import {
   FIELD_TYPE,
   PLACEHOLDER_TEXT,
   REQUIRED_FIELD,
-  CUSTOM_VENUE_FORM_FIELDS,
+  CUSTOM_VENUE_BOOKING_FORM_FIELDS,
 } from "../../constants";
 import {
   FieldType,
-  CustomVenueFormFieldProps,
+  CustomVenueBookingFormFieldProps,
   VenueFormProps,
 } from "../../types/venues";
 import FormField from "../form-field";
@@ -44,11 +44,11 @@ const typeOptions = [
 type Props = {
   index: number;
   onDeleteField: () => void;
-  defaultValues?: CustomVenueFormFieldProps;
+  defaultValues?: CustomVenueBookingFormFieldProps;
   dragHandleProps?: DraggableProvidedDragHandleProps;
 };
 
-const defaultFormProps: CustomVenueFormFieldProps = {
+const defaultFormProps: CustomVenueBookingFormFieldProps = {
   [FIELD_TYPE]: FieldType.Text,
   [FIELD_LABEL]: "",
   [REQUIRED_FIELD]: false,
@@ -65,10 +65,10 @@ function VenueDetailsCustomFormField({
   const [isBooleanField, setBooleanField] = useState(
     defaultValues[FIELD_TYPE] === FieldType.Boolean,
   );
-  const fieldType = `${CUSTOM_VENUE_FORM_FIELDS}[${index}].${FIELD_TYPE}`;
-  const fieldLabel = `${CUSTOM_VENUE_FORM_FIELDS}[${index}].${FIELD_LABEL}`;
-  const placeholderText = `${CUSTOM_VENUE_FORM_FIELDS}[${index}].${PLACEHOLDER_TEXT}`;
-  const requiredField = `${CUSTOM_VENUE_FORM_FIELDS}[${index}].${REQUIRED_FIELD}`;
+  const fieldType = `${CUSTOM_VENUE_BOOKING_FORM_FIELDS}[${index}].${FIELD_TYPE}`;
+  const fieldLabel = `${CUSTOM_VENUE_BOOKING_FORM_FIELDS}[${index}].${FIELD_LABEL}`;
+  const placeholderText = `${CUSTOM_VENUE_BOOKING_FORM_FIELDS}[${index}].${PLACEHOLDER_TEXT}`;
+  const requiredField = `${CUSTOM_VENUE_BOOKING_FORM_FIELDS}[${index}].${REQUIRED_FIELD}`;
 
   return (
     <div className="venue-details-custom-form-field-container">

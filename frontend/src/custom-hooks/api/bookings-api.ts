@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useAxiosWithTokenRefresh } from ".";
 import {
   END_DATE_TIME,
@@ -7,7 +7,12 @@ import {
   USER_ID,
   VENUE_NAME,
 } from "../../constants";
-import { BookingData, BookingStatus } from "../../types/bookings";
+import {
+  BookingData,
+  BookingPostData,
+  BookingStatus,
+} from "../../types/bookings";
+import { errorHandlerWrapper } from "../../utils/error-utils";
 import { parseQueryParamsToUrl } from "../../utils/parser-utils";
 
 export function useGetBookings() {
@@ -46,4 +51,31 @@ export function useGetBookings() {
   );
 
   return { bookings, isLoading: loading, getBookings };
+}
+
+export function useCreateBookings() {
+  const [{ data: bookings = [], loading }, apiCall] = useAxiosWithTokenRefresh<
+    BookingData[]
+  >(
+    {
+      url: "/bookings/",
+      method: "post",
+    },
+    { manual: true },
+  );
+
+  const createBookings = useMemo(
+    () =>
+      errorHandlerWrapper(async (data: BookingPostData) => {
+        console.log("POST /bookings/ data:", data);
+        const { data: bookings = [] } = await apiCall({ data });
+
+        console.log("POST /bookings/ success:", bookings);
+
+        return bookings;
+      }, "POST /bookings/ error:"),
+    [apiCall],
+  );
+
+  return { bookings, isLoading: loading, createBookings };
 }

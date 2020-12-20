@@ -174,12 +174,9 @@ body ::-webkit-scrollbar-thumb {
   display: flex;
   align-items: center;
 
-  .section-title {
-    margin-right: 0.5rem;
-  }
-
   .section-title-action-container {
     display: flex;
+    margin-left: 0.5rem;
   }
 }
 

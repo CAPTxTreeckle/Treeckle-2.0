@@ -1,21 +1,28 @@
 import React from "react";
-import { FieldType, CustomVenueFormFieldProps } from "../../types/venues";
+import {
+  FieldType,
+  CustomVenueBookingFormFieldProps,
+} from "../../types/venues";
 import FormField from "../form-field";
 import RadioFormField from "../radio-form-field";
 import TextAreaFormField from "../text-area-form-field";
 
-type Props = CustomVenueFormFieldProps & {
+type Props = CustomVenueBookingFormFieldProps & {
   inputName: string;
   readOnly?: boolean;
+  defaultValue?: string | boolean;
+  hidden?: boolean;
 };
 
-function VenueCustomFormFieldRenderer({
+function CustomFormFieldRenderer({
   inputName,
   fieldLabel,
   fieldType,
   placeholderText,
   requiredField,
   readOnly = false,
+  defaultValue,
+  hidden = false,
 }: Props) {
   return (() => {
     switch (fieldType) {
@@ -27,6 +34,8 @@ function VenueCustomFormFieldRenderer({
             placeholder={placeholderText}
             required={requiredField}
             readOnly={readOnly}
+            defaultValue={defaultValue as string}
+            hidden={hidden}
           />
         );
       case FieldType.TextArea:
@@ -38,6 +47,8 @@ function VenueCustomFormFieldRenderer({
             required={requiredField}
             readOnly={readOnly}
             rows={8}
+            defaultValue={defaultValue as string}
+            hidden={hidden}
           />
         );
       case FieldType.Number:
@@ -49,6 +60,8 @@ function VenueCustomFormFieldRenderer({
             required={requiredField}
             readOnly={readOnly}
             type="number"
+            defaultValue={defaultValue as string}
+            hidden={hidden}
           />
         );
       case FieldType.Boolean:
@@ -58,6 +71,8 @@ function VenueCustomFormFieldRenderer({
             inputName={inputName}
             type="checkbox"
             readOnly={readOnly}
+            defaultValue={defaultValue as boolean}
+            hidden={hidden}
           />
         );
       default:
@@ -66,4 +81,4 @@ function VenueCustomFormFieldRenderer({
   })();
 }
 
-export default VenueCustomFormFieldRenderer;
+export default CustomFormFieldRenderer;

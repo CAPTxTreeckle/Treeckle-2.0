@@ -6,7 +6,7 @@ import {
   PLACEHOLDER_TEXT,
   CAPACITY,
   REQUIRED_FIELD,
-  CUSTOM_VENUE_FORM_FIELDS,
+  CUSTOM_VENUE_BOOKING_FORM_FIELDS,
   IC_CONTACT_NUMBER,
   IC_EMAIL,
   IC_NAME,
@@ -21,7 +21,7 @@ export type VenuePostData = {
   [IC_NAME]: string;
   [IC_EMAIL]: string;
   [IC_CONTACT_NUMBER]: string;
-  [FORM_FIELD_DATA]: CustomVenueFormFieldProps[];
+  [FORM_FIELD_DATA]: CustomVenueBookingFormFieldProps[];
 };
 
 export type VenuePutData = VenuePostData;
@@ -35,7 +35,7 @@ export enum FieldType {
   Boolean = "BOOLEAN",
 }
 
-export type CustomVenueFormFieldProps = {
+export type CustomVenueBookingFormFieldProps = {
   [FIELD_TYPE]: FieldType;
   [FIELD_LABEL]: string;
   [PLACEHOLDER_TEXT]: string;
@@ -49,7 +49,7 @@ export type VenueFormProps = {
   [IC_NAME]: string;
   [IC_EMAIL]: string;
   [IC_CONTACT_NUMBER]: string;
-  [CUSTOM_VENUE_FORM_FIELDS]?: CustomVenueFormFieldProps[];
+  [CUSTOM_VENUE_BOOKING_FORM_FIELDS]?: CustomVenueBookingFormFieldProps[];
 };
 
 export type VenueViewProps = BaseData & {

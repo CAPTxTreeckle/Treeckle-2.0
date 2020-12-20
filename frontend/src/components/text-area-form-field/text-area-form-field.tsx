@@ -13,6 +13,7 @@ type Props = {
   defaultValue?: string;
   readOnly?: boolean;
   rows?: number;
+  hidden?: boolean;
 };
 
 function TextAreaFormField({
@@ -25,12 +26,18 @@ function TextAreaFormField({
   defaultValue,
   readOnly = false,
   rows,
+  hidden = false,
 }: Props) {
   const { errors, register } = useFormContext();
   const error = get(errors, inputName);
 
   return (
-    <Form.Field className={className} required={required} error={!!error}>
+    <Form.Field
+      className={className}
+      required={required}
+      error={!!error}
+      style={hidden ? { display: "none" } : undefined}
+    >
       {label && <label>{label}</label>}
       {error && (
         <Label

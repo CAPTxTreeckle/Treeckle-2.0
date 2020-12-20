@@ -10,6 +10,7 @@ import { EMAILS, ROLE } from "../../constants";
 import TextAreaFormField from "../text-area-form-field";
 import DropdownSelectorFormField from "../dropdown-selector-form-field";
 import { parseInputDataToPendingCreationUsers } from "./helper";
+import { deepTrim } from "../../utils/parser-utils";
 
 type UserCreationFormProps = {
   [ROLE]: Role.Resident;
@@ -35,42 +36,46 @@ function UserCreationForm() {
     defaultValues,
   });
 
-  const { handleSubmit, getValues, reset } = methods;
+  const { handleSubmit, reset } = methods;
 
-  const onSubmit = useCallback(() => {
-    const { role, emails: data } = getValues();
+  const onSubmit = useCallback(
+    (formData: UserCreationFormProps) => {
+      const { role, emails: data } = deepTrim(formData);
+      const parsedPendingCreationUsers = parseInputDataToPendingCreationUsers(
+        data,
+        role,
+        pendingCreationUsers,
+      );
 
-    const parsedPendingCreationUsers = parseInputDataToPendingCreationUsers(
-      data,
-      role,
-      pendingCreationUsers,
-    );
+      const updatedPendingCreationUsers = parsedPendingCreationUsers.concat(
+        pendingCreationUsers,
+      );
 
-    const updatedPendingCreationUsers = parsedPendingCreationUsers.concat(
-      pendingCreationUsers,
-    );
-
-    setPendingCreationUsers(updatedPendingCreationUsers);
-    reset({ emails: "", role });
-    toast.info("The input has been successfully parsed.");
-  }, [getValues, pendingCreationUsers, setPendingCreationUsers, reset]);
+      setPendingCreationUsers(updatedPendingCreationUsers);
+      reset({ emails: "", role });
+      toast.info("The input has been successfully parsed.");
+    },
+    [pendingCreationUsers, setPendingCreationUsers, reset],
+  );
 
   return (
-    <FormProvider {...methods}>
+    <>
       <h2 className="black-text">Manual Input</h2>
-      <Form onSubmit={handleSubmit(onSubmit)}>
-        <DropdownSelectorFormField
-          inputName={ROLE}
-          label="Role"
-          required
-          defaultOptions={roles}
-        />
+      <FormProvider {...methods}>
+        <Form onSubmit={handleSubmit(onSubmit)}>
+          <DropdownSelectorFormField
+            inputName={ROLE}
+            label="Role"
+            required
+            defaultOptions={roles}
+          />
 
-        <TextAreaFormField inputName={EMAILS} label="Emails" required />
+          <TextAreaFormField inputName={EMAILS} label="Emails" required />
 
-        <Form.Button fluid type="submit" content="Parse Input" color="blue" />
-      </Form>
-    </FormProvider>
+          <Form.Button fluid type="submit" content="Parse Input" color="blue" />
+        </Form>
+      </FormProvider>
+    </>
   );
 }
 

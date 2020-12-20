@@ -23,6 +23,7 @@ type Props = {
     e: React.SyntheticEvent<HTMLElement, Event>,
     data: DropdownProps,
   ) => void;
+  hidden?: boolean;
 };
 
 function DropdownSelectorFormField({
@@ -40,6 +41,7 @@ function DropdownSelectorFormField({
   search = false,
   clearable = false,
   onChangeEffect,
+  hidden = false,
 }: Props) {
   const { options, onSelect } = useOptionsState(defaultOptions);
   const { errors, getValues } = useFormContext();
@@ -52,6 +54,7 @@ function DropdownSelectorFormField({
       rules={{ required }}
       render={({ onChange, onBlur, value }) => (
         <Form.Select
+          style={hidden ? { display: "none" } : undefined}
           className={className}
           loading={isLoadingOptions}
           placeholder={placeholder}

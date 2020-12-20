@@ -1,6 +1,6 @@
-import React, { useCallback, useContext, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { Calendar, View } from "react-big-calendar";
-import { Button, Label, ModalContent, Popup, Segment } from "semantic-ui-react";
+import { Button, Label, Segment } from "semantic-ui-react";
 import {
   BookingCreationContext,
   GlobalModalContext,
@@ -34,10 +34,10 @@ function BookingCreationTimeSlotSelector() {
     goToNextStep,
     goToPreviousStep,
     newBookingDateTimeRanges,
+    selectedVenue,
   } = useContext(BookingCreationContext);
   const { setModalOpen, setModalProps } = useContext(GlobalModalContext);
-  const { selectedVenue } = useContext(BookingCreationContext);
-  const { name: venueName, icName, icEmail, icContactNumber } = {
+  const { name: venueName } = {
     ...selectedVenue?.venueFormProps,
   };
 
@@ -96,60 +96,6 @@ function BookingCreationTimeSlotSelector() {
     });
   }, [getBookings, venueName, visibleDateRange]);
 
-  const onClickHelp = useCallback(() => {
-    const helpInfo = (
-      <>
-        {icName || icEmail || icContactNumber ? (
-          <>
-            {icName && (
-              <p>
-                <strong>Name:</strong> {icName}
-              </p>
-            )}
-            {icEmail && (
-              <p>
-                <strong>Email:</strong>{" "}
-                <a className="email-link" href={`mailto:${icEmail}`}>
-                  {icEmail}
-                </a>
-              </p>
-            )}
-            {icContactNumber && (
-              <p>
-                <strong>Contact Number:</strong> {icContactNumber}
-              </p>
-            )}
-          </>
-        ) : (
-          <p>
-            <strong>Email:</strong>{" "}
-            <a className="email-link" href="mailto:treeckle@googlegroups.com">
-              treeckle@googlegroups.com
-            </a>
-          </p>
-        )}
-      </>
-    );
-
-    setModalProps({
-      header: `${venueName} Help Info`,
-      content: (
-        <ModalContent>
-          <h3>For any queries, do contact:</h3>
-          {helpInfo}
-        </ModalContent>
-      ),
-    });
-    setModalOpen(true);
-  }, [
-    venueName,
-    icName,
-    icEmail,
-    icContactNumber,
-    setModalOpen,
-    setModalProps,
-  ]);
-
   return (
     <>
       <Segment className="booking-creation-time-slot-selector">
@@ -180,26 +126,7 @@ function BookingCreationTimeSlotSelector() {
           </Label.Group>
         </Segment>
 
-        <h2 className="section-title-container">
-          <div className="section-title">
-            Select booking time slot(s) for {venueName}
-          </div>
-          <div className="section-title-action-container">
-            <Popup
-              trigger={
-                <Button
-                  icon="help"
-                  color="black"
-                  circular
-                  compact
-                  onClick={onClickHelp}
-                />
-              }
-              position="top center"
-              content="Help"
-            />
-          </div>
-        </h2>
+        <h2>{venueName} Bookings</h2>
         <Calendar
           className="booking-calendar"
           events={allBookings}
