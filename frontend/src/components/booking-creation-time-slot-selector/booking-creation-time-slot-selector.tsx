@@ -153,7 +153,7 @@ function BookingCreationTimeSlotSelector() {
   return (
     <>
       <Segment className="booking-creation-time-slot-selector">
-        <Segment raised>
+        <Segment raised placeholder>
           <Label
             attached="top left"
             content="Selected time slot(s)"
@@ -182,7 +182,7 @@ function BookingCreationTimeSlotSelector() {
 
         <h2 className="section-title-container">
           <div className="section-title">
-            Select booking time slot for {venueName}
+            Select booking time slot(s) for {venueName}
           </div>
           <div className="section-title-action-container">
             <Popup

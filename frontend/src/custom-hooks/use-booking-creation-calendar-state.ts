@@ -13,6 +13,7 @@ import isEqualObject from "lodash.isequal";
 import {
   getVisibleRangeInCalendarMonth,
   getVisibleRange,
+  mergeDateRanges,
 } from "../utils/calendar-utils";
 import { BookingData, DateTimeRange } from "../types/bookings";
 import { EMAIL, NAME, TITLE, START, END, IS_NEW } from "../constants";
@@ -141,17 +142,21 @@ export default function useBookingCreationCalendarState(
         return;
       }
 
-      setNewBookings(
-        newBookings.concat([
-          {
-            title: NEW_BOOKING,
-            name: "",
-            email: "",
-            isNew: true,
-            ...selectedRange,
-          },
-        ]),
+      const mergedDateRanges = mergeDateRanges(
+        newBookings
+          .map(({ start, end }) => ({ start, end }))
+          .concat([selectedRange]),
       );
+
+      const updatedNewBookings = mergedDateRanges.map((dateRange) => ({
+        title: NEW_BOOKING,
+        name: "",
+        email: "",
+        isNew: true,
+        ...dateRange,
+      }));
+
+      setNewBookings(updatedNewBookings);
     },
     [updateDateView, newBookings],
   );

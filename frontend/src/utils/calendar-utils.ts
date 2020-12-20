@@ -21,7 +21,9 @@ import {
   isBefore,
   isPast,
 } from "date-fns";
+import arraySort from "array-sort";
 import { enUS } from "date-fns/locale";
+import { END, START } from "../constants";
 
 export const CURRENT_LOCALE = "en-US";
 
@@ -99,4 +101,25 @@ export function getVisibleRange(dates: Date[]): DateRange {
     start: minDate,
     end: endOfDay(maxDate),
   };
+}
+
+export function mergeDateRanges(dateRanges: DateRange[]): DateRange[] {
+  const sortedDateRanges = arraySort([...dateRanges], [START, END]);
+  const mergedDateRanges: DateRange[] = [];
+
+  sortedDateRanges.forEach((dateRange) => {
+    if (
+      mergedDateRanges.length === 0 ||
+      mergedDateRanges[mergedDateRanges.length - 1].end < dateRange.start
+    ) {
+      mergedDateRanges.push(dateRange);
+    } else {
+      mergedDateRanges[mergedDateRanges.length - 1].end = max([
+        mergedDateRanges[mergedDateRanges.length - 1].end,
+        dateRange.end,
+      ]);
+    }
+  });
+
+  return mergedDateRanges;
 }
