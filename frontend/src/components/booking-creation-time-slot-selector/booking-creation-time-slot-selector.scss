@@ -1,0 +1,11 @@
+.booking-creation-time-slot-selector {
+  .selected-time-slots-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .booking-calendar {
+    height: 40rem;
+  }
+}

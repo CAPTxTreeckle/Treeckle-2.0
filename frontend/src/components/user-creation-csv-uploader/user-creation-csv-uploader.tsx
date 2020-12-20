@@ -51,7 +51,7 @@ function UserCreationCsvUploader() {
 
   return (
     <>
-      <h2 className="section-title-container black-text flex-no-grow">
+      <h2 className="section-title-container black-text">
         <div className="section-title">CSV Upload</div>
 
         <div className="section-title-action-container">

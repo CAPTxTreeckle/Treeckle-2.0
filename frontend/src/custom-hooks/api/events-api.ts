@@ -304,11 +304,11 @@ export function useGetSingleEvent() {
   const getSingleEvent = useCallback(
     async (eventId: number) => {
       try {
-        const { data: eventWithSignUpsData } = await apiCall({
+        const { data: eventWithSignUps } = await apiCall({
           url: `/events/${eventId}`,
         });
-        console.log(`GET /events/${eventId} success:`, eventWithSignUpsData);
-        const parsedEvent = parseEventWithSignUpsData(eventWithSignUpsData);
+        console.log(`GET /events/${eventId} success:`, eventWithSignUps);
+        const parsedEvent = parseEventWithSignUpsData(eventWithSignUps);
         setEvent(parsedEvent);
         return parsedEvent;
       } catch (error) {
@@ -362,12 +362,12 @@ export function useSignUpForEvent() {
   const signUpForEvent = useMemo(
     () =>
       errorHandlerWrapper(async (eventId: number) => {
-        const { data: signUpData } = await apiCall({
+        const { data: signUp } = await apiCall({
           url: `/events/${eventId}/selfsignup`,
         });
-        console.log(`POST /events/${eventId}/selfsignup success:`, signUpData);
+        console.log(`POST /events/${eventId}/selfsignup success:`, signUp);
 
-        return signUpData;
+        return signUp;
       }, "POST /events/:eventId/selfsignup error:"),
     [apiCall],
   );
@@ -408,11 +408,11 @@ export function useAttendEvent() {
   const attendEvent = useMemo(
     () =>
       errorHandlerWrapper(async (eventId: number) => {
-        const { data: signUpData } = await apiCall({
+        const { data: signUp } = await apiCall({
           url: `/events/${eventId}/selfsignup`,
         });
-        console.log(`PATCH /events/${eventId}/selfsignup success:`, signUpData);
-        return signUpData;
+        console.log(`PATCH /events/${eventId}/selfsignup success:`, signUp);
+        return signUp;
       }, "PATCH /events/:eventId/selfsignup error:"),
     [apiCall],
   );
@@ -432,13 +432,13 @@ export function useUpdateSignUpsForEvent() {
     () =>
       errorHandlerWrapper(async (eventId: number, actions: SignUpAction[]) => {
         const data: SignUpPatchData = { actions };
-        const { data: signUpData } = await apiCall({
+        const { data: signUps = [] } = await apiCall({
           url: `/events/${eventId}/signup`,
           data,
         });
-        console.log(`PATCH /events/${eventId}/signup success:`, signUpData);
+        console.log(`PATCH /events/${eventId}/signup success:`, signUps);
 
-        return signUpData;
+        return signUps;
       }, "PATCH /events/:eventId/signup error:"),
     [apiCall],
   );

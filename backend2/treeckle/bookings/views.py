@@ -104,6 +104,7 @@ class BookingsView(APIView):
 
         try:
             created_bookings = create_bookings(
+                title=validated_data.get("title", ""),
                 booker=requester,
                 venue=venue,
                 new_date_time_intervals=new_date_time_intervals,

@@ -22,6 +22,7 @@ class BookingStatusAction(models.TextChoices):
 
 
 class Booking(TimestampedModel):
+    title = models.CharField(max_length=255)
     booker = models.ForeignKey(User, on_delete=models.CASCADE)
     venue = models.ForeignKey(Venue, on_delete=models.CASCADE)
     start_date_time = models.DateTimeField()
@@ -41,4 +42,4 @@ class Booking(TimestampedModel):
         ordering = ["-created_at"]
 
     def __str__(self):
-        return f"{self.venue.name} | {self.status} | {self.booker}"
+        return f"{self.title} | {self.status} | {self.venue.name} | {self.booker}"

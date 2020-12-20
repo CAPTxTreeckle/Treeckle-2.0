@@ -1,10 +1,7 @@
-import dayjs from "dayjs";
-import customParseFormat from "dayjs/plugin/customParseFormat";
+import { format, parse } from "date-fns";
 import { DATE_TIME_FORMAT } from "../constants";
 import { User } from "../context-providers/user-provider";
 import { UserData } from "../types/users";
-
-dayjs.extend(customParseFormat);
 
 export function parseDataUrlToEncodedData(dataUrl: string): string {
   const partition = dataUrl.split(",");
@@ -23,18 +20,18 @@ export function sanitizeArray(strings: string[], unique = true): string[] {
   return strings.map((s) => s.trim()).filter((s) => s);
 }
 
-export function displayDatetime(
-  datetime: number,
-  format: string = DATE_TIME_FORMAT,
+export function displayDateTime(
+  dateTime: number | Date,
+  dateTimeFormat: string = DATE_TIME_FORMAT,
 ): string {
-  return dayjs(datetime).format(format);
+  return format(dateTime, dateTimeFormat);
 }
 
-export function parseDatetime(
-  datetimeString: string,
-  format: string = DATE_TIME_FORMAT,
+export function parseDateTime(
+  dateTimeString: string,
+  dateTimeFormat: string = DATE_TIME_FORMAT,
 ): number {
-  return dayjs(datetimeString, format).valueOf();
+  return parse(dateTimeString, dateTimeFormat, new Date()).getTime();
 }
 
 export function parseUserToUserData(user: User) {
@@ -47,9 +44,28 @@ export function parseUserToUserData(user: User) {
   return { id, name, email, role, organization } as UserData;
 }
 
-export function parseToTitleCase(str: string) {
+export function parseStringToTitleCase(str: string) {
   return str.replace(
     /\w\S*/g,
     (txt) => txt.charAt(0) + txt.substr(1).toLowerCase(),
   );
+}
+
+export function parseLowerCamelCaseToSnakeCase(str: string) {
+  return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+}
+
+export function parseQueryParamsToUrl(
+  baseUrl: string,
+  queryParams: Partial<Record<string, unknown>>,
+) {
+  const queryString = Object.entries(queryParams)
+    .flatMap(([key, value]) =>
+      value
+        ? [[parseLowerCamelCaseToSnakeCase(key), String(value)].join("=")]
+        : [],
+    )
+    .join("&");
+
+  return queryString ? `${baseUrl}?${queryString}` : baseUrl;
 }

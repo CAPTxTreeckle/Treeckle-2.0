@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Card, Icon, Image, Message } from "semantic-ui-react";
 import defaultEventPoster from "../../assets/default-event-poster.png";
-import { displayDatetime } from "../../utils/parser-utils";
+import { displayDateTime } from "../../utils/parser-utils";
 import EventSignUpButton from "../event-sign-up-button";
 import { SingleEventContext } from "../../context-providers";
 import "./event-gallery-card.scss";
@@ -44,13 +44,13 @@ function EventGalleryCard() {
           {startDateTime && (
             <p>
               <Icon name="calendar" /> <strong>Start:</strong>{" "}
-              {displayDatetime(startDateTime)}
+              {displayDateTime(startDateTime)}
             </p>
           )}
           {endDateTime && (
             <p>
               <Icon name="calendar" /> <strong>End:</strong>{" "}
-              {displayDatetime(endDateTime)}
+              {displayDateTime(endDateTime)}
             </p>
           )}
         </div>

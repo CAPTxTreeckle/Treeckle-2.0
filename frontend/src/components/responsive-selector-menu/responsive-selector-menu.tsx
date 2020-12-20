@@ -35,7 +35,7 @@ function ResponsiveSelectorMenu({ options, activeIndex, onChange }: Props) {
   );
 
   const _onChange = useCallback(
-    (event: unknown, data: MenuItemProps | DropdownProps) => {
+    (e: unknown, data: MenuItemProps | DropdownProps) => {
       const index = data.value ?? 0;
       onChange(index);
       setSelectedIndex(index);

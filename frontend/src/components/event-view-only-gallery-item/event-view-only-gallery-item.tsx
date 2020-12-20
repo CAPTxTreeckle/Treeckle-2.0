@@ -16,10 +16,7 @@ function EventViewOnlyGalleryItem(props: Props) {
   }, [history, id]);
 
   return (
-    <div
-      className="flex-display hover-bob hover-pointing"
-      onClick={onClickEvent}
-    >
+    <div className="flex-display hover-bob pointer" onClick={onClickEvent}>
       <div className="flex-display full-width scale-in-center">
         <SingleEventProvider eventViewProps={props}>
           <EventGalleryItem />

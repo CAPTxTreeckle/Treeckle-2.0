@@ -140,7 +140,9 @@ body ::-webkit-scrollbar-thumb {
   flex-grow: 1 !important;
 }
 
-.hover-pointing {
+.pointer {
+  cursor: pointer;
+
   :hover {
     cursor: pointer;
   }
@@ -170,6 +172,7 @@ body ::-webkit-scrollbar-thumb {
 
 .section-title-container {
   display: flex;
+  align-items: center;
 
   .section-title {
     margin-right: 0.5rem;

@@ -42,3 +42,5 @@ export {
   useUpdateExistingUsers,
   useDeleteExistingUsers,
 } from "./users-api";
+
+export { useGetBookings } from "./bookings-api";

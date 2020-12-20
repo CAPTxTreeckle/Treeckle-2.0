@@ -11,6 +11,7 @@ import {
   FORM_RESPONSE_DATA,
   START_DATE_TIME,
   STATUS,
+  TITLE,
   VENUE_ID,
   VENUE_NAME,
 } from "../constants";
@@ -18,6 +19,7 @@ import { BaseData } from "./base";
 import { UserData } from "./users";
 
 export type BookingPostData = {
+  [TITLE]: string;
   [VENUE_ID]: number;
   [DATE_TIME_RANGES]: DateTimeRange[];
   [FORM_RESPONSE_DATA]: CustomBookingFormResponseProps[];
@@ -29,6 +31,7 @@ export type DateTimeRange = {
 };
 
 export type BookingData = BaseData & {
+  [TITLE]: string;
   [BOOKER]: UserData;
   [VENUE_NAME]: string;
   [START_DATE_TIME]: number;

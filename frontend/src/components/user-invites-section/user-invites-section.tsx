@@ -12,7 +12,7 @@ import { useVirtualizedTableState } from "../../custom-hooks";
 import { UserInviteData, UserInvitePatchData } from "../../types/users";
 import UserInvitesTableActionsCellRenderer from "../user-invites-table-actions-cell-renderer";
 import { VirtualizedTableStateOptions } from "../../custom-hooks/use-virtualized-table-state";
-import { displayDatetime } from "../../utils/parser-utils";
+import { displayDateTime } from "../../utils/parser-utils";
 import {
   CREATED_AT,
   CREATED_AT_STRING,
@@ -79,7 +79,7 @@ function UserInvitesSection() {
     () =>
       userInvites.map((userInvite) => ({
         ...userInvite,
-        createdAtString: displayDatetime(userInvite.createdAt),
+        createdAtString: displayDateTime(userInvite.createdAt),
       })),
     [userInvites],
   );

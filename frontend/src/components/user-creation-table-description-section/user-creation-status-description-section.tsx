@@ -4,7 +4,7 @@ import {
   userCreationStatuses,
   UserCreationStatusDetails,
 } from "../../types/users";
-import { parseToTitleCase } from "../../utils/parser-utils";
+import { parseStringToTitleCase } from "../../utils/parser-utils";
 import "./user-creation-table-description-section.scss";
 
 function UserCreationTableDescriptionSection() {
@@ -35,7 +35,7 @@ function UserCreationTableDescriptionSection() {
                       <Message
                         className="status-title-container"
                         size="mini"
-                        content={parseToTitleCase(status)}
+                        content={parseStringToTitleCase(status)}
                         positive={classType === "positive"}
                         negative={classType === "negative"}
                         warning={classType === "warning"}

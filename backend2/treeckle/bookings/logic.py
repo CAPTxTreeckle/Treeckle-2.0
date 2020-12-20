@@ -9,6 +9,7 @@ from treeckle.common.constants import (
     ID,
     CREATED_AT,
     UPDATED_AT,
+    TITLE,
     VENUE_NAME,
     BOOKER,
     START_DATE_TIME,
@@ -61,6 +62,7 @@ def booking_to_json(booking: Booking):
         ID: booking.id,
         CREATED_AT: parse_datetime_to_ms_timestamp(booking.created_at),
         UPDATED_AT: parse_datetime_to_ms_timestamp(booking.updated_at),
+        TITLE: booking.title,
         BOOKER: user_to_json(booking.booker),
         VENUE_NAME: booking.venue.name,
         START_DATE_TIME: parse_datetime_to_ms_timestamp(booking.start_date_time),
@@ -135,6 +137,7 @@ def get_valid_new_date_time_intervals(
 
 
 def create_bookings(
+    title: str,
     booker: User,
     venue: Venue,
     new_date_time_intervals: Iterable[DateTimeInterval],
@@ -148,6 +151,7 @@ def create_bookings(
     )
     bookings_to_be_created = (
         Booking(
+            title=title,
             booker=booker,
             venue=venue,
             start_date_time=date_time_interval.start,

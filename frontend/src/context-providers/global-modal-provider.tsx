@@ -42,12 +42,12 @@ function GlobalModalProvider({ children }: Props) {
         transition={{ animation: "fade down" }}
       >
         <Modal
+          size="tiny"
+          closeIcon
           {...modalProps}
           dimmer={<Modal.Dimmer style={{ zIndex: 3000 }} />}
           open
           onClose={() => setModalOpen(false)}
-          size="tiny"
-          closeIcon
         />
       </TransitionablePortal>
     </GlobalModalContext.Provider>

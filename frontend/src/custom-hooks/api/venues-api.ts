@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
+import { CATEGORY } from "../../constants";
 import {
   VenueData,
   VenueFormProps,
@@ -7,6 +8,7 @@ import {
   VenuePutData,
 } from "../../types/venues";
 import { errorHandlerWrapper } from "../../utils/error-utils";
+import { parseQueryParamsToUrl } from "../../utils/parser-utils";
 import { useAxiosWithTokenRefresh } from "./auth-api";
 import { defaultArray } from "./default";
 
@@ -103,8 +105,8 @@ export function useGetVenues() {
   );
 
   const getVenues = useCallback(
-    async (category?: string) => {
-      const url = category ? `/venues/?category=${category}` : "/venues/";
+    async (queryParams: { [CATEGORY]?: string } = {}) => {
+      const url = parseQueryParamsToUrl("/venues/", queryParams);
       try {
         const { data: venues = [] } = await apiCall({ url });
 

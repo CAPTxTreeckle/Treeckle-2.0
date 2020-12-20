@@ -51,7 +51,7 @@ function VenueFormGalleryItem({ id, venueFormProps }: Props) {
       actionButtons={actionButtons}
       offsetRatio={{ heightRatio: -2 }}
     >
-      <div className="flex-display hover-bob hover-pointing ">
+      <div className="flex-display hover-bob pointer ">
         <div className="flex-display full-width scale-in-center">
           <VenueBookingForm venueFormProps={venueFormProps} readOnly />
         </div>

@@ -59,7 +59,7 @@ function EventEditableGalleryItem(props: Props) {
       actionButtons={actionButtons}
       offsetRatio={{ heightRatio: -2 }}
     >
-      <div className="flex-display hover-bob hover-pointing">
+      <div className="flex-display hover-bob pointer">
         <div className="flex-display full-width scale-in-center">
           <SingleEventProvider eventViewProps={props}>
             <EventGalleryItem />

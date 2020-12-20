@@ -16,7 +16,6 @@ class GetBookingSerializer(serializers.Serializer):
         """
         Check that start_date_time is before end_date_time.
         """
-        print(data)
         if (
             "start_date_time" in data
             and "end_date_time" in data
@@ -51,7 +50,7 @@ class PostBookingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Booking
-        fields = ["venue_id", "date_time_ranges", "form_response_data"]
+        fields = ["title", "venue_id", "date_time_ranges", "form_response_data"]
 
 
 class BookingStatusActionSerializer(serializers.Serializer):

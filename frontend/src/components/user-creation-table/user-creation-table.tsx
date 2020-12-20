@@ -1,6 +1,6 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import { Table, Column, AutoSizer } from "react-virtualized";
-import { Button, List, Modal, Segment } from "semantic-ui-react";
+import { Button, List, ModalContent, Segment } from "semantic-ui-react";
 import { toast } from "react-toastify";
 import { useVirtualizedTableState } from "../../custom-hooks";
 import PlaceholderWrapper from "../placeholder-wrapper";
@@ -37,6 +37,13 @@ function UserCreationTable() {
   );
   const { setModalOpen, setModalProps } = useContext(GlobalModalContext);
   const { createUserInvites } = useCreateUserInvites();
+  const newPendingCreationUsers = useMemo(
+    () =>
+      pendingCreationUsers.filter(
+        ({ status }) => status === UserCreationStatus.New,
+      ),
+    [pendingCreationUsers],
+  );
 
   const {
     tableRef,
@@ -116,14 +123,14 @@ function UserCreationTable() {
         setModalProps({
           header: "Invalid New Users",
           content: (
-            <Modal.Content>
+            <ModalContent>
               <h3>The following users were not created successfully:</h3>
               <List ordered>
-                {invalidNewUsers.map(({ email }) => (
-                  <List.Item key={email}>{email}</List.Item>
+                {invalidNewUsers.map(({ email }, index) => (
+                  <List.Item key={`${email}${index}`}>{email}</List.Item>
                 ))}
               </List>
-            </Modal.Content>
+            </ModalContent>
           ),
         });
         setModalOpen(true);
@@ -227,7 +234,7 @@ function UserCreationTable() {
               color="blue"
               onClick={onCreateUsers}
               loading={isSubmitting}
-              disabled={pendingCreationUsers.length <= 0}
+              disabled={newPendingCreationUsers.length <= 0}
             />
           </div>
         </Segment>
