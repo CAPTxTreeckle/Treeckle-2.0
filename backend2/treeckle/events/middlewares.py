@@ -2,7 +2,7 @@ from rest_framework.exceptions import NotFound, PermissionDenied
 
 from users.models import User, Role
 from events.models import Event
-from events.logic.event import get_event
+from events.logic.event import get_events
 
 
 def check_user_event_same_organization(view_method):
@@ -10,7 +10,9 @@ def check_user_event_same_organization(view_method):
         instance, request, requester: User, event_id: int, *args, **kwargs
     ):
         try:
-            event = get_event(id=event_id)
+            event = (
+                get_events(id=event_id).select_related("creator__organization").get()
+            )
 
             if event.creator.organization != requester.organization:
                 raise PermissionDenied(
@@ -18,7 +20,11 @@ def check_user_event_same_organization(view_method):
                     code="wrong_organization",
                 )
 
-        except (Event.DoesNotExist, PermissionDenied):
+        except (
+            Event.DoesNotExist,
+            Event.MultipleObjectsReturned,
+            PermissionDenied,
+        ) as e:
             raise NotFound("No event found.", code="no_event_found")
 
         return view_method(

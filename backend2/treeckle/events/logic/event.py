@@ -37,7 +37,7 @@ def event_to_json(event: Event, user: User) -> dict:
 
     try:
         sign_up_status = EventSignUp.objects.get(event=event, user=user).status
-    except EventSignUp.DoesNotExist:
+    except EventSignUp.DoesNotExist as e:
         sign_up_status = None
 
     return {
@@ -65,20 +65,16 @@ def event_to_json(event: Event, user: User) -> dict:
     }
 
 
-def get_event(**kwargs) -> Event:
-    return Event.objects.select_related("creator__organization").get(**kwargs)
+def get_events(*args, **kwargs) -> QuerySet[Event]:
+    return Event.objects.filter(*args, **kwargs)
 
 
-def get_events(**kwargs) -> QuerySet[Event]:
-    return Event.objects.filter(**kwargs)
+def get_event_category_types(*args, **kwargs) -> QuerySet[EventCategoryType]:
+    return EventCategoryType.objects.filter(*args, **kwargs)
 
 
-def get_event_category_types(**kwargs) -> QuerySet[EventCategoryType]:
-    return EventCategoryType.objects.filter(**kwargs)
-
-
-def get_event_categories(**kwargs) -> QuerySet[EventCategory]:
-    return EventCategory.objects.filter(**kwargs)
+def get_event_categories(*args, **kwargs) -> QuerySet[EventCategory]:
+    return EventCategory.objects.filter(*args, **kwargs)
 
 
 def get_or_create_event_category_type(

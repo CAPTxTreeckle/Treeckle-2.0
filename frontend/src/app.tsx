@@ -6,6 +6,7 @@ import {
   UserProvider,
   ResponsiveProvider,
   GlobalModalProvider,
+  PendingBookingCountProvider,
 } from "./context-providers";
 import Routes from "./routes";
 import "semantic-ui-css/semantic.min.css";
@@ -28,7 +29,9 @@ function App() {
       <ResponsiveProvider>
         <GlobalModalProvider>
           <UserProvider>
-            <Routes />
+            <PendingBookingCountProvider>
+              <Routes />
+            </PendingBookingCountProvider>
           </UserProvider>
         </GlobalModalProvider>
       </ResponsiveProvider>

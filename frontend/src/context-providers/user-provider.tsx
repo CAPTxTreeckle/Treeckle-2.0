@@ -41,10 +41,10 @@ function UserProvider({ children }: Props) {
 
   // required to prevent multiple changes to user
   useEffect(() => {
-    if (!isEqual(user, _user)) {
-      _setUser(user);
-    }
-  }, [user, _user]);
+    _setUser((_user) => {
+      return isEqual(user, _user) ? _user : user;
+    });
+  }, [user]);
 
   return (
     <UserContext.Provider

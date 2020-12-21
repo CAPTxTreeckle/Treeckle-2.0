@@ -6,7 +6,7 @@ from django.db import transaction, IntegrityError
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from users.models import User, UserInvite, ThirdPartyAuthenticator
-from users.logic import user_to_json, get_user, get_user_invite
+from users.logic import user_to_json, get_users, get_user_invites
 from treeckle.common.constants import REFRESH, ACCESS
 
 
@@ -30,17 +30,23 @@ def get_gmail_user(token_id: str) -> User:
 def authenticate_user(temp_user: User) -> Optional[User]:
     ## check if an invite exists
     try:
-        user_invite = get_user_invite(email=temp_user.email)
-    except UserInvite.DoesNotExist:
+        user_invite = (
+            get_user_invites(email=temp_user.email).select_related("organization").get()
+        )
+    except (UserInvite.DoesNotExist, UserInvite.MultipleObjectsReturned) as e:
         user_invite = None
 
     ## check if is existing user
     try:
-        existing_user = get_user(
-            email=temp_user.email,
-            third_party_id=temp_user.third_party_id,
+        existing_user = (
+            get_users(
+                email=temp_user.email,
+                third_party_id=temp_user.third_party_id,
+            )
+            .select_related("organization")
+            .get()
         )
-    except User.DoesNotExist:
+    except (User.DoesNotExist, User.MultipleObjectsReturned) as e:
         existing_user = None
 
     if user_invite is None:
@@ -64,7 +70,7 @@ def authenticate_user(temp_user: User) -> Optional[User]:
                 role=user_invite.role,
             )
             user_invite.delete()
-    except IntegrityError:
+    except IntegrityError as e:
         new_user = None
 
     return new_user

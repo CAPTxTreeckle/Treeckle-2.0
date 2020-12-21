@@ -13,9 +13,10 @@ from events.logic.event import get_event_category_types
 
 
 def get_event_category_type_subscriptions(
+    *args,
     **kwargs,
 ) -> QuerySet[EventCategoryTypeSubscription]:
-    return EventCategoryTypeSubscription.objects.filter(**kwargs)
+    return EventCategoryTypeSubscription.objects.filter(*args, **kwargs)
 
 
 def get_user_event_category_subscription_info(
@@ -42,11 +43,16 @@ def update_user_event_category_subscriptions(
     actions: Iterable[dict], user: User
 ) -> None:
     categories = get_event_category_types(organization=user.organization)
+    updated_category_subscriptions = set()
 
     for data in actions:
         try:
             action = data.get("action")
             category = categories.get(name=data.get("category"))
+
+            ## prevents multiple actions on same category
+            if category in updated_category_subscriptions:
+                continue
 
             if action == SubscriptionActionType.SUBSCRIBE:
                 EventCategoryTypeSubscription.objects.create(
@@ -56,5 +62,9 @@ def update_user_event_category_subscriptions(
                 get_event_category_type_subscriptions(
                     user=user, category=category
                 ).delete()
+            else:
+                continue
+
+            updated_category_subscriptions.add(category)
         except (IntegrityError, EventCategoryType.DoesNotExist) as e:
             continue

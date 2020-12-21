@@ -7,8 +7,8 @@ import {
   ADMIN_USERS_PENDING_REGISTRATION_PATH,
 } from "../../../routes/paths";
 import ResponsiveSelectorMenu from "../../responsive-selector-menu";
-import UserInvitesSection from "../../user-invites-section";
-import UsersSection from "../../users-section";
+import UserInviteSection from "../../user-invite-section";
+import UserSection from "../../user-section";
 
 const adminUsersCategoryPaths = [
   ADMIN_USERS_PATH,
@@ -25,7 +25,7 @@ const adminUsersCategories = [
   { key: "Pending Registration", name: "Pending Registration" },
 ];
 
-const adminUsersSections = [<UsersSection />, <UserInvitesSection />];
+const adminUsersSections = [<UserSection />, <UserInviteSection />];
 
 function AdminUsersPage() {
   const history = useHistory();

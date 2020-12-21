@@ -2,8 +2,8 @@ from typing import Iterable, Sequence, Optional
 from datetime import datetime
 from collections import namedtuple
 
-from django.db.models import QuerySet
-
+from django.db.models import QuerySet, Q
+from django.db import transaction
 
 from treeckle.common.constants import (
     ID,
@@ -72,8 +72,8 @@ def booking_to_json(booking: Booking):
     }
 
 
-def get_bookings(**kwargs) -> QuerySet[Booking]:
-    return Booking.objects.filter(**kwargs)
+def get_bookings(*args, **kwargs) -> QuerySet[Booking]:
+    return Booking.objects.filter(*args, **kwargs)
 
 
 def get_requested_bookings(
@@ -171,17 +171,22 @@ def create_bookings(
 def update_booking_statuses(
     actions: Iterable[dict], organization: Organization
 ) -> Sequence[Booking]:
-    same_organization_bookings = get_bookings(
-        venue__organization=organization
-    ).select_related("booker", "venue")
+    same_organization_bookings = get_bookings(venue__organization=organization)
 
     bookings_to_be_updated = []
+    booking_ids_to_be_updated = set()
 
     for data in actions:
         action = data.get("action")
         booking_id = data.get("booking_id")
+
+        ## prevents multiple actions on same booking
+        if booking_id in booking_ids_to_be_updated:
+            continue
+
         booking_to_be_updated = same_organization_bookings.get(id=booking_id)
         bookings_to_be_updated.append(booking_to_be_updated)
+        booking_ids_to_be_updated.add(booking_id)
 
         ## cannot update status of cancelled booking
         if booking_to_be_updated.status == BookingStatus.CANCELLED:
@@ -196,9 +201,39 @@ def update_booking_statuses(
         elif action == BookingStatusAction.REJECT:
             booking_to_be_updated.status = BookingStatus.REJECTED
 
-    Booking.objects.bulk_update(bookings_to_be_updated, fields=["status"])
+    with transaction.atomic():
+        Booking.objects.bulk_update(bookings_to_be_updated, fields=["status"])
 
-    return bookings_to_be_updated
+        for booking in bookings_to_be_updated:
+            if booking.status != BookingStatus.APPROVED:
+                continue
+
+            ## update status value from db and test again
+            booking.refresh_from_db(fields=["status"])
+
+            if booking.status != BookingStatus.APPROVED:
+                continue
+
+            ## update all clashing pending/approved bookings to rejected
+            get_bookings(
+                Q(status=BookingStatus.APPROVED) | Q(status=BookingStatus.PENDING),
+                venue=booking.venue,
+            ).exclude(id=booking.id).exclude(
+                end_date_time__lte=booking.start_date_time
+            ).exclude(
+                start_date_time__gte=booking.end_date_time
+            ).update(
+                status=BookingStatus.REJECTED
+            )
+
+    updated_bookings = [
+        booking
+        for booking in get_bookings(id__in=booking_ids_to_be_updated).select_related(
+            "booker", "venue"
+        )
+    ]
+
+    return updated_bookings
 
 
 def delete_bookings(

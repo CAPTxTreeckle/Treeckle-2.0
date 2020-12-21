@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Button, Icon } from "semantic-ui-react";
 import { BOOKINGS_CREATION_PATH } from "../../../routes/paths";
+import BookingUserSection from "../../booking-user-section";
 
 function BookingsPage() {
   return (
@@ -18,6 +19,8 @@ function BookingsPage() {
       </Button>
 
       <h1>My Bookings</h1>
+
+      <BookingUserSection />
     </>
   );
 }

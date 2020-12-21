@@ -18,7 +18,7 @@ type Props = {
 
 type PopUpActionsWrapperContextType = {
   extraContent: React.ReactNode;
-  setExtraContent: (extraContent: React.ReactNode) => void;
+  setExtraContent: React.Dispatch<React.SetStateAction<React.ReactNode>>;
   closePopUp: () => void;
 };
 

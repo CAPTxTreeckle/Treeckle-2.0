@@ -4,7 +4,7 @@ import * as yup from "yup";
 import { FormProvider, useForm } from "react-hook-form";
 import { Form } from "semantic-ui-react";
 import { toast } from "react-toastify";
-import { UserCreationSectionContext } from "../user-creation-section";
+import { UserCreationContext } from "../../context-providers";
 import { Role, roles } from "../../types/users";
 import { EMAILS, ROLE } from "../../constants";
 import TextAreaFormField from "../text-area-form-field";
@@ -29,7 +29,7 @@ const defaultValues: UserCreationFormProps = {
 
 function UserCreationForm() {
   const { setPendingCreationUsers, pendingCreationUsers } = useContext(
-    UserCreationSectionContext,
+    UserCreationContext,
   );
   const methods = useForm<UserCreationFormProps>({
     resolver: yupResolver(schema),

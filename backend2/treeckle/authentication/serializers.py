@@ -7,7 +7,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.settings import api_settings
 
 from users.models import User, ThirdPartyAuthenticator
-from users.logic import user_to_json, get_user
+from users.logic import user_to_json, get_users
 from treeckle.common.constants import REFRESH
 from .logic import get_gmail_user, authenticate_user, get_authenticated_data
 
@@ -36,7 +36,7 @@ class GmailLoginSerializer(BaseAuthenticationSerializer):
 
             if authenticated_user is None:
                 self.raiseInvalidUser()
-        except:
+        except Exception as e:
             self.raiseInvalidUser()
 
         data = get_authenticated_data(user=authenticated_user)
@@ -84,8 +84,8 @@ class AccessTokenRefreshSerializer(
         user_id = RefreshToken(tokens[REFRESH]).get(key=api_settings.USER_ID_CLAIM)
 
         try:
-            user = get_user(id=user_id)
-        except User.DoesNotExist:
+            user = get_users(id=user_id).select_related("organization").get()
+        except (User.DoesNotExist, User.MultipleObjectsReturned) as e:
             self.raiseInvalidUser()
 
         data = user_to_json(user=user)

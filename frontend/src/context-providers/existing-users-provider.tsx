@@ -2,6 +2,7 @@ import React, { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 import { UserData, UserPatchData } from "../types/users";
 import {
+  useDeleteExistingUsers,
   useGetAllExistingUsers,
   useUpdateExistingUsers,
 } from "../custom-hooks/api";
@@ -12,6 +13,7 @@ type ExistingUsersContextType = {
   isLoading: boolean;
   getAllExistingUsers: () => Promise<UserData[]>;
   updateExistingUsers: (users: UserPatchData[]) => Promise<UserData[]>;
+  deleteExistingUsers: (emails: string[]) => Promise<string[]>;
 };
 
 export const ExistingUsersContext = React.createContext<ExistingUsersContextType>(
@@ -23,6 +25,9 @@ export const ExistingUsersContext = React.createContext<ExistingUsersContextType
     },
     updateExistingUsers: () => {
       throw new Error("updateExistingUsers not defined.");
+    },
+    deleteExistingUsers: () => {
+      throw new Error("deleteExistingUsers not defined.");
     },
   },
 );
@@ -39,6 +44,9 @@ function ExistingUsersProvider({ children }: Props) {
   const {
     updateExistingUsers: _updateExistingUsers,
   } = useUpdateExistingUsers();
+  const {
+    deleteExistingUsers: _deleteExistingUsers,
+  } = useDeleteExistingUsers();
 
   const [isLoading, setLoading] = useState(false);
 
@@ -71,6 +79,26 @@ function ExistingUsersProvider({ children }: Props) {
     [_updateExistingUsers, _getAllExistingUsers],
   );
 
+  const deleteExistingUsers = useCallback(
+    async (emails: string[]) => {
+      try {
+        const deletedEmails = await _deleteExistingUsers(emails);
+        getAllExistingUsers();
+
+        toast.success(
+          deletedEmails.length > 1
+            ? "Existing users deleted successfully."
+            : "The existing user has been deleted successfully.",
+        );
+        return deletedEmails;
+      } catch (error) {
+        resolveApiError(error);
+        return [];
+      }
+    },
+    [_deleteExistingUsers, getAllExistingUsers],
+  );
+
   return (
     <ExistingUsersContext.Provider
       value={{
@@ -78,6 +106,7 @@ function ExistingUsersProvider({ children }: Props) {
         isLoading,
         getAllExistingUsers,
         updateExistingUsers,
+        deleteExistingUsers,
       }}
     >
       {children}

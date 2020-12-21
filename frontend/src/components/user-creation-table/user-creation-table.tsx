@@ -4,16 +4,17 @@ import { Button, List, ModalContent, Segment } from "semantic-ui-react";
 import { toast } from "react-toastify";
 import { useVirtualizedTableState } from "../../custom-hooks";
 import PlaceholderWrapper from "../placeholder-wrapper";
-import { UserCreationSectionContext } from "../user-creation-section";
+import {
+  UserCreationContext,
+  DeleteModalProvider,
+  GlobalModalContext,
+} from "../../context-providers";
 import DeleteButton from "../delete-button";
 import SearchBar from "../search-bar";
 import { VirtualizedTableStateOptions } from "../../custom-hooks/use-virtualized-table-state";
 import DeleteModalButton from "../delete-modal-button";
 import UserCreationTableDescriptionSection from "../user-creation-table-description-section";
-import {
-  DeleteModalProvider,
-  GlobalModalContext,
-} from "../../context-providers";
+
 import { PendingCreationUser, UserCreationStatus } from "../../types/users";
 import {
   getNewUsersWithIndex,
@@ -33,7 +34,7 @@ const UserCreationTableStateOptions: VirtualizedTableStateOptions = {
 
 function UserCreationTable() {
   const { pendingCreationUsers, setPendingCreationUsers } = useContext(
-    UserCreationSectionContext,
+    UserCreationContext,
   );
   const { setModalOpen, setModalProps } = useContext(GlobalModalContext);
   const { createUserInvites } = useCreateUserInvites();
@@ -46,7 +47,6 @@ function UserCreationTable() {
   );
 
   const {
-    tableRef,
     processedData: processedPendingCreationUsers,
     searchValue,
     onSearchValueChange,
@@ -157,10 +157,9 @@ function UserCreationTable() {
           />
         </Segment>
         <Segment className="virtualized-table-wrapper">
-          <AutoSizer onResize={() => tableRef.current?.recomputeRowHeights()}>
+          <AutoSizer>
             {({ width, height }) => (
               <Table
-                ref={tableRef}
                 height={height}
                 width={width}
                 headerHeight={height * 0.1}
@@ -225,7 +224,7 @@ function UserCreationTable() {
                 label="Clear All"
                 popUpContent={null}
                 icon={null}
-                disabled={pendingCreationUsers.length <= 0}
+                disabled={pendingCreationUsers.length === 0}
               />
             </DeleteModalProvider>
 
@@ -234,7 +233,7 @@ function UserCreationTable() {
               color="blue"
               onClick={onCreateUsers}
               loading={isSubmitting}
-              disabled={newPendingCreationUsers.length <= 0}
+              disabled={newPendingCreationUsers.length === 0}
             />
           </div>
         </Segment>

@@ -20,7 +20,7 @@ function BookingCreationVenueSelector() {
         <PlaceholderWrapper
           loadingMessage="Retrieving venues"
           isLoading={isLoading}
-          showDefaultMessage={venues.length <= 0}
+          showDefaultMessage={venues.length === 0}
           defaultMessage="There are no available venues"
         >
           <Grid columns="3" stackable stretched centered padded>

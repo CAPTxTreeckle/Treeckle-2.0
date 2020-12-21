@@ -36,12 +36,17 @@ function SignInButton() {
             Sign In Options
           </Modal.Header>
           <Modal.Content>
-            <Grid columns="2" textAlign="center" verticalAlign="middle">
+            <Grid
+              columns="2"
+              textAlign="center"
+              verticalAlign="middle"
+              stretched
+            >
               <Grid.Column>
                 <Button
                   onClick={startOpenIdAuth}
                   content="Sign in with NUSNET"
-                  primary
+                  color="blue"
                   fluid
                 />
               </Grid.Column>

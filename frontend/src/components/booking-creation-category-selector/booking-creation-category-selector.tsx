@@ -21,7 +21,7 @@ function BookingCreationCategorySelector() {
       <PlaceholderWrapper
         loadingMessage="Retrieving categories"
         isLoading={isLoading}
-        showDefaultMessage={venueCategories.length <= 0}
+        showDefaultMessage={venueCategories.length === 0}
         defaultMessage="There are no available categories"
       >
         <Grid columns="3" stackable stretched centered padded>

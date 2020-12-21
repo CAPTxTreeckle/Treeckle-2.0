@@ -3,9 +3,9 @@ import { Modal, ModalProps, TransitionablePortal } from "semantic-ui-react";
 
 type GlobalModalContextType = {
   isModalOpen: boolean;
-  setModalOpen: (newValue: boolean) => void;
+  setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   modalProps: ModalProps;
-  setModalProps: (modalProps: ModalProps) => void;
+  setModalProps: React.Dispatch<React.SetStateAction<ModalProps>>;
 };
 
 export const GlobalModalContext = React.createContext<GlobalModalContextType>({

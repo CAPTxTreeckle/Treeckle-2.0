@@ -1,1 +1,1 @@
-export { default, UserCreationSectionContext } from "./user-creation-section";
+export { default } from "./user-creation-section";

@@ -1,47 +1,31 @@
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { Button } from "semantic-ui-react";
-import { toast } from "react-toastify";
 import {
   DeleteModalProvider,
   ExistingUsersContext,
 } from "../../context-providers";
-import { useDeleteExistingUsers } from "../../custom-hooks/api";
 import { UserData } from "../../types/users";
 import DeleteModalButton from "../delete-modal-button";
 import UserRoleChangeButton from "../user-role-change-button";
 import PopUpActionsWrapper from "../pop-up-actions-wrapper";
-import { resolveApiError } from "../../utils/error-utils";
 
 type Props = {
   rowData: UserData;
 };
 
-function UsersTableActionsCellRenderer({ rowData }: Props) {
+function UserTableActionsCellRenderer({ rowData }: Props) {
   const { id, email, role } = rowData as UserData;
-  const { getAllExistingUsers, updateExistingUsers } = useContext(
+  const { deleteExistingUsers, updateExistingUsers } = useContext(
     ExistingUsersContext,
   );
-  const {
-    deleteExistingUsers,
-    isLoading: isDeleting,
-  } = useDeleteExistingUsers();
+  const [isDeleting, setDeleting] = useState(false);
 
   const onDelete = useCallback(async () => {
-    try {
-      const deletedEmails = await deleteExistingUsers([email]);
-      getAllExistingUsers();
-
-      toast.success(
-        deletedEmails.length > 1
-          ? "Existing users deleted successfully."
-          : "The existing user has been deleted successfully.",
-      );
-      return true;
-    } catch (error) {
-      resolveApiError(error);
-      return false;
-    }
-  }, [deleteExistingUsers, getAllExistingUsers, email]);
+    setDeleting(true);
+    const deletedEmails = await deleteExistingUsers([email]);
+    setDeleting(false);
+    return deletedEmails.length > 0;
+  }, [deleteExistingUsers, email]);
 
   return (
     <DeleteModalProvider
@@ -67,4 +51,4 @@ function UsersTableActionsCellRenderer({ rowData }: Props) {
   );
 }
 
-export default UsersTableActionsCellRenderer;
+export default UserTableActionsCellRenderer;

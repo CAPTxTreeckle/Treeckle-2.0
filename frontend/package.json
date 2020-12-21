@@ -53,7 +53,9 @@
     "react-easy-crop": "^3.2.0",
     "react-google-login": "^5.1.21",
     "react-hook-form": "^6.8.2",
+    "react-intersection-observer": "^8.31.0",
     "react-qr-reader": "^2.2.1",
+    "react-responsive-carousel": "^3.2.11",
     "react-router-dom": "^5.2.0",
     "react-router-last-location": "^2.0.1",
     "react-scripts": "3.4.3",
@@ -64,6 +66,7 @@
     "semantic-ui-react": "^2.0.1",
     "semantic-ui-react-slider": "^1.1.0",
     "typescript": "~3.7.2",
+    "use-count-up": "^2.2.5",
     "uuid": "^8.3.1",
     "yup": "^0.29.3"
   },

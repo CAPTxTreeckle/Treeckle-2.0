@@ -43,4 +43,11 @@ export {
   useDeleteExistingUsers,
 } from "./users-api";
 
-export { useGetBookings, useCreateBookings } from "./bookings-api";
+export {
+  useGetTotalBookingCount,
+  useGetPendingBookingCount,
+  useGetBookings,
+  useCreateBookings,
+  useUpdateBookingStatuses,
+  useDeleteBookings,
+} from "./bookings-api";

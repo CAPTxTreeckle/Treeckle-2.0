@@ -165,7 +165,7 @@ class UsersView(APIView):
         ## ensure user doesn't delete its own account
         try:
             emails_to_be_deleted.remove(requester.email)
-        except ValueError:
+        except ValueError as e:
             ## self not in emails_to_be_deleted
             pass
 

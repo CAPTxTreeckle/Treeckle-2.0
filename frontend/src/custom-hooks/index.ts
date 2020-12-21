@@ -4,6 +4,6 @@ export { default as useAllowSignUp } from "./use-allow-sign-up";
 export { default as useImageCropperState } from "./use-image-cropper-state";
 export { default as useImageUploadCropperState } from "./use-image-upload-cropper-state";
 export { default as useQuery } from "./use-query";
-export { default as useScrollToTop } from "./use-scroll-to-top";
+export { default as useShowScroller } from "./use-show-scroller";
 export { default as useVirtualizedTableState } from "./use-virtualized-table-state";
 export { default as useBookingCreationCalendarState } from "./use-booking-creation-calendar-state";

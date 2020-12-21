@@ -166,7 +166,7 @@ function BookingCreationTimeSlotSelector() {
             color="blue"
             content="Next"
             onClick={() => goToNextStep(newBookings)}
-            disabled={newBookings.length <= 0}
+            disabled={newBookings.length === 0}
           />
         </div>
       </Segment>

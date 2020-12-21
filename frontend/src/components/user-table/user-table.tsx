@@ -4,13 +4,10 @@ import { AutoSizer, Table, Column } from "react-virtualized";
 import PlaceholderWrapper from "../placeholder-wrapper";
 import SearchBar from "../search-bar";
 import { useVirtualizedTableState } from "../../custom-hooks";
-import UsersTableActionsCellRenderer from "../users-table-actions-cell-renderer";
+import UserTableActionsCellRenderer from "../user-table-actions-cell-renderer";
 import { VirtualizedTableStateOptions } from "../../custom-hooks/use-virtualized-table-state";
 import { EMAIL, ID, NAME, ROLE } from "../../constants";
-import {
-  ExistingUsersContext,
-  ExistingUsersProvider,
-} from "../../context-providers";
+import { ExistingUsersContext } from "../../context-providers";
 
 const UsersTableStateOptions: VirtualizedTableStateOptions = {
   defaultSortBy: ROLE,
@@ -18,7 +15,7 @@ const UsersTableStateOptions: VirtualizedTableStateOptions = {
   searchKeys: [NAME, EMAIL, ROLE],
 };
 
-const ExistingUsersTable = () => {
+function UserTable() {
   const { existingUsers, isLoading, getAllExistingUsers } = useContext(
     ExistingUsersContext,
   );
@@ -28,7 +25,6 @@ const ExistingUsersTable = () => {
   }, [getAllExistingUsers]);
 
   const {
-    tableRef,
     processedData: processedUsers,
     sortBy,
     sortDirection,
@@ -63,10 +59,9 @@ const ExistingUsersTable = () => {
       </Segment>
 
       <Segment className="virtualized-table-wrapper">
-        <AutoSizer onResize={() => tableRef.current?.recomputeRowHeights()}>
+        <AutoSizer>
           {({ width, height }) => (
             <Table
-              ref={tableRef}
               height={height}
               width={width}
               headerHeight={height * 0.1}
@@ -106,7 +101,7 @@ const ExistingUsersTable = () => {
                 width={width * 0.15}
                 disableSort
                 cellRenderer={({ rowData }) => (
-                  <UsersTableActionsCellRenderer rowData={rowData} />
+                  <UserTableActionsCellRenderer rowData={rowData} />
                 )}
               />
             </Table>
@@ -115,14 +110,6 @@ const ExistingUsersTable = () => {
       </Segment>
     </Segment.Group>
   );
-};
-
-function UsersSection() {
-  return (
-    <ExistingUsersProvider>
-      <ExistingUsersTable />
-    </ExistingUsersProvider>
-  );
 }
 
-export default UsersSection;
+export default UserTable;

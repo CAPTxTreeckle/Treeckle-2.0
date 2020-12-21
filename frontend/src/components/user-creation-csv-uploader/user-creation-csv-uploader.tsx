@@ -3,7 +3,7 @@ import { Popup, Button, Icon } from "semantic-ui-react";
 import papaparse from "papaparse";
 import { toast } from "react-toastify";
 import FileUploader from "../file-uploader";
-import { UserCreationSectionContext } from "../user-creation-section";
+import { UserCreationContext } from "../../context-providers";
 import {
   onDownloadCsvTemplate,
   parseCsvDataToPendingCreationUsers,
@@ -11,7 +11,7 @@ import {
 
 function UserCreationCsvUploader() {
   const { pendingCreationUsers, setPendingCreationUsers } = useContext(
-    UserCreationSectionContext,
+    UserCreationContext,
   );
 
   const onAcceptCsvFile = useCallback(

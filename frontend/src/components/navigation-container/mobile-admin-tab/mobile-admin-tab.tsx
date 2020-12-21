@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Accordion, MenuItem, Label } from "semantic-ui-react";
+import { Accordion, MenuItem } from "semantic-ui-react";
 import { useLocation } from "react-router-dom";
 import TabItem from "../tab-item";
 import {
@@ -8,7 +8,7 @@ import {
   ADMIN_SETTINGS_PATH,
   ADMIN_VENUES_PATH,
 } from "../../../routes/paths";
-import "./mobile-admin-tab.scss";
+import BookingPendingStatusCountLabel from "../../booking-pending-status-count-label";
 
 type Props = {
   onTabClick?: () => void;
@@ -23,19 +23,14 @@ function MobileAdminTab({ onTabClick }: Props) {
       as={MenuItem}
       fitted="vertically"
       active={pathname.startsWith("/admin")}
-      className="mobile-admin-tab"
     >
       <Accordion.Title
+        className="horizontal-space-margin"
         onClick={() => setExpanded(!isExpanded)}
         active={isExpanded}
       >
-        Admin
-        <Label
-          className="mobile-admin-label"
-          content={0}
-          color="red"
-          size="small"
-        />
+        <span>Admin</span>
+        <BookingPendingStatusCountLabel />
       </Accordion.Title>
 
       <Accordion.Content active={isExpanded}>

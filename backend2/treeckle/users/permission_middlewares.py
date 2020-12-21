@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
 
 from .models import User, Role
-from .logic import get_user
+from .logic import get_users
 
 
 def check_access(*allowed_roles: Role):
@@ -12,9 +12,11 @@ def check_access(*allowed_roles: Role):
             requester_id = request.user.id
 
             try:
-                requester = get_user(id=requester_id)
+                requester = (
+                    get_users(id=requester_id).select_related("organization").get()
+                )
 
-            except User.DoesNotExist:
+            except (User.DoesNotExist, User.MultipleObjectsReturned) as e:
                 raise AuthenticationFailed(
                     _("Invalid user."),
                     code="invalid_user",

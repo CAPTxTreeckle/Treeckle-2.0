@@ -72,7 +72,7 @@ class VenuesView(APIView):
                 ic_contact_number=validated_data.get("ic_contact_number", ""),
                 form_field_data=validated_data.get("form_field_data", []),
             )
-        except IntegrityError:
+        except IntegrityError as e:
             raise Conflict(detail="Venue already exists.")
         except Exception as e:
             raise BadRequest(e)
@@ -110,7 +110,7 @@ class SingleVenueView(APIView):
                 form_field_data=validated_data.get("form_field_data", []),
             )
 
-        except IntegrityError:
+        except IntegrityError as e:
             raise Conflict(detail="Venue already exists.")
         except Exception as e:
             raise BadRequest(e)

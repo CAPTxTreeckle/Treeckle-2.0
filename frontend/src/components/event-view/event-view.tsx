@@ -12,7 +12,7 @@ type Props = EventViewProps;
 function EventView(props: Props) {
   const { creator } = props;
   const user = useContext(UserContext);
-  const isValidEventOrganiser = useMemo(
+  const isValidEventOrganizer = useMemo(
     () =>
       isEqual(creator, parseUserToUserData(user)) || user.role === Role.Admin,
     [creator, user],
@@ -21,7 +21,7 @@ function EventView(props: Props) {
   return (
     <SingleEventProvider eventViewProps={props}>
       <EventDetailsView />
-      {isValidEventOrganiser && <EventManagementView />}
+      {isValidEventOrganizer && <EventManagementView />}
     </SingleEventProvider>
   );
 }

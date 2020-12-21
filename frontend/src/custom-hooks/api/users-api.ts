@@ -53,7 +53,7 @@ export function useCreateUserInvites() {
         });
         console.log("POST /users/invite success:", userInvites);
 
-        if (userInvites.length <= 0) {
+        if (userInvites.length === 0) {
           throw new Error("No new users were created.");
         }
         return userInvites;
@@ -84,7 +84,7 @@ export function useUpdateUserInvites() {
         });
         console.log("PATCH /users/invite success:", updatedUserInvites);
 
-        if (updatedUserInvites.length <= 0) {
+        if (updatedUserInvites.length === 0) {
           throw new Error("No pending registration users were updated.");
         }
 
@@ -114,7 +114,7 @@ export function useDeleteUserInvites() {
 
         console.log("DELETE /users/invite success:", deletedEmails);
 
-        if (deletedEmails.length <= 0) {
+        if (deletedEmails.length === 0) {
           throw new Error("No pending registration users were deleted.");
         }
 
@@ -169,7 +169,7 @@ export function useUpdateExistingUsers() {
         });
         console.log("PATCH /users/ success:", updatedExistingUsers);
 
-        if (updatedExistingUsers.length <= 0) {
+        if (updatedExistingUsers.length === 0) {
           throw new Error("No existing users were updated.");
         }
 
@@ -199,7 +199,7 @@ export function useDeleteExistingUsers() {
 
         console.log("DELETE /users/ success:", deletedEmails);
 
-        if (deletedEmails.length <= 0) {
+        if (deletedEmails.length === 0) {
           throw new Error("No existing users were deleted.");
         }
 

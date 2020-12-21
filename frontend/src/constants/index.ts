@@ -33,6 +33,7 @@ export const IC_CONTACT_NUMBER = "icContactNumber";
 export const IC_EMAIL = "icEmail";
 export const IC_NAME = "icName";
 export const ID = "id";
+export const IDS = "ids";
 export const IMAGE = "image";
 export const IS_NEW = "isNew";
 export const IS_PUBLISHED = "isPublished";

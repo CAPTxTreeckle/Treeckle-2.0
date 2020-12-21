@@ -6,12 +6,13 @@ from django.db import IntegrityError
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
 
 from treeckle.common.exceptions import BadRequest
 from treeckle.common.parsers import parse_ms_timestamp_to_datetime
 from users.permission_middlewares import check_access
 from users.models import Role, User
-from venues.logic import get_venue
+from venues.logic import get_venues
 from venues.models import Venue
 from .serializers import (
     GetBookingSerializer,
@@ -32,6 +33,8 @@ from .logic import (
 
 # Create your views here.
 class TotalBookingCountView(APIView):
+    permission_classes = [AllowAny]
+
     def get(self, request):
         data = get_bookings().count()
 
@@ -84,11 +87,12 @@ class BookingsView(APIView):
         validated_data = serializer.validated_data
 
         try:
-            venue = get_venue(
+            venue = get_venues(
                 organization=requester.organization,
                 id=validated_data.get("venue_id", None),
-            )
-        except Venue.DoesNotExist:
+            ).get()
+
+        except (Venue.DoesNotExist, Venue.MultipleObjectsReturned) as e:
             raise BadRequest("Invalid venue")
 
         ## shape: [{start_date_time:, end_date_time:}]

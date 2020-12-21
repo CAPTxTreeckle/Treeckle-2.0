@@ -28,12 +28,8 @@ def event_sign_up_to_json(event_sign_up: EventSignUp) -> dict:
     }
 
 
-def get_event_sign_up(**kwargs) -> EventSignUp:
-    return EventSignUp.objects.select_related("user", "event").get(**kwargs)
-
-
-def get_event_sign_ups(**kwargs) -> QuerySet[EventSignUp]:
-    return EventSignUp.objects.filter(**kwargs)
+def get_event_sign_ups(*args, **kwargs) -> QuerySet[EventSignUp]:
+    return EventSignUp.objects.filter(*args, **kwargs)
 
 
 def get_or_create_event_sign_up(
@@ -58,16 +54,24 @@ def create_event_sign_up(event: Event, user: User) -> EventSignUp:
         event_sign_up = get_or_create_event_sign_up(
             event=event, user=user, status=status
         )
-    except IntegrityError:
-        event_sign_up = get_event_sign_up(event=event, user=user)
+    except IntegrityError as e:
+        event_sign_up = (
+            get_event_sign_ups(event=event, user=user)
+            .select_related("user", "event")
+            .get()
+        )
 
     return event_sign_up
 
 
 def attend_event_sign_up(event: Event, user: User) -> EventSignUp:
     try:
-        event_sign_up = get_event_sign_up(event=event, user=user)
-    except EventSignUp.DoesNotExist:
+        event_sign_up = (
+            get_event_sign_ups(event=event, user=user)
+            .select_related("user", "event")
+            .get()
+        )
+    except EventSignUp.DoesNotExist as e:
         raise Exception("Event is not signed up.")
 
     if event_sign_up.status == SignUpStatus.PENDING:
@@ -83,8 +87,12 @@ def attend_event_sign_up(event: Event, user: User) -> EventSignUp:
 
 def confirm_event_sign_up(event: Event, user: User) -> EventSignUp:
     try:
-        event_sign_up = get_event_sign_up(event=event, user=user)
-    except EventSignUp.DoesNotExist:
+        event_sign_up = (
+            get_event_sign_ups(event=event, user=user)
+            .select_related("user", "event")
+            .get()
+        )
+    except EventSignUp.DoesNotExist as e:
         raise Exception("Event is not signed up")
 
     if event_sign_up.status != SignUpStatus.PENDING:
@@ -105,10 +113,16 @@ def update_event_sign_ups(
     same_organization_users = get_users(organization=organization)
 
     updated_event_sign_ups = []
+    associated_updated_event_sign_ups_user_ids = set()
 
     for data in actions:
         action = data.get("action")
         user_id = data.get("user_id")
+
+        ## prevents multiple actions on same user
+        if user_id in associated_updated_event_sign_ups_user_ids:
+            continue
+
         user = same_organization_users.get(id=user_id)
 
         if action == SignUpAction.ATTEND:
@@ -122,5 +136,6 @@ def update_event_sign_ups(
             continue
 
         updated_event_sign_ups.append(updated_event_sign_up)
+        associated_updated_event_sign_ups_user_ids.add(user_id)
 
     return updated_event_sign_ups

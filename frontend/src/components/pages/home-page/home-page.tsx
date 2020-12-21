@@ -8,20 +8,49 @@ import {
   Segment,
   Divider,
   Image,
+  Loader,
 } from "semantic-ui-react";
-import { useScrollToTop } from "../../../custom-hooks";
+import { useInView } from "react-intersection-observer";
+import { useCountUp } from "use-count-up";
+import { useShowScroller } from "../../../custom-hooks";
 import treeckleLogo from "../../../assets/treeckle-outline-min.png";
 import { Media, UserContext } from "../../../context-providers";
 import SignInButton from "../../sign-in-button";
+import { useGetTotalBookingCount } from "../../../custom-hooks/api";
+import { scrollToTop } from "../../scroll-to-top-wrapper";
 import "./home-page.scss";
 
 function HomePage() {
-  const [showScroll, scrollToTop] = useScrollToTop(300);
+  const {
+    totalBookingCount,
+    isLoading,
+    getTotalBookingCount,
+  } = useGetTotalBookingCount();
+
   const { updateUser } = useContext(UserContext);
+  const { ref, inView } = useInView({ delay: 250 });
+  const { value, reset } = useCountUp({
+    isCounting: inView,
+    start: 0,
+    end: totalBookingCount,
+    duration: 4,
+    autoResetKey: totalBookingCount,
+  });
+  const { showScroller } = useShowScroller(300);
 
   useEffect(() => {
     updateUser(null);
   }, [updateUser]);
+
+  useEffect(() => {
+    getTotalBookingCount();
+  }, [getTotalBookingCount]);
+
+  useEffect(() => {
+    if (!inView) {
+      reset(0);
+    }
+  }, [inView, reset]);
 
   return (
     <div id="home-page">
@@ -64,7 +93,7 @@ function HomePage() {
               <h3>COLLEGE EVENTS</h3>
               <p>
                 Digitized events are easier than ever to find, and simplifies
-                creation for event organisers
+                creation for event organizers
               </p>
             </Grid.Column>
             <Grid.Column textAlign="center">
@@ -98,8 +127,14 @@ function HomePage() {
 
           <Grid columns="3" centered stackable relaxed padded="vertically">
             <Grid.Column textAlign="center">
-              <h1>2000+</h1>
-              <p>Room bookings facilitated at CAPT</p>
+              <h1>
+                {isLoading ? (
+                  <Loader active inline size="medium" />
+                ) : (
+                  <div ref={ref}>{value}</div>
+                )}
+              </h1>
+              <p>Facility bookings facilitated in total</p>
             </Grid.Column>
             <Grid.Column textAlign="center">
               <h1>User-Specific</h1>
@@ -107,7 +142,7 @@ function HomePage() {
             </Grid.Column>
             <Grid.Column textAlign="center">
               <h1>Deployable</h1>
-              <p>across all five Residential Colleges</p>
+              <p>Across all five Residential Colleges</p>
             </Grid.Column>
           </Grid>
         </Container>
@@ -140,7 +175,7 @@ function HomePage() {
         </Container>
       </Segment>
 
-      <Transition visible={showScroll} animation="scale" duration="300">
+      <Transition visible={showScroller} animation="scale" duration="300">
         <Button
           className="scroll-to-top-button"
           color="teal"

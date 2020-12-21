@@ -35,16 +35,12 @@ def venue_to_json(venue: Venue) -> dict:
     }
 
 
-def get_venue_categories(**kwargs) -> QuerySet[VenueCategory]:
-    return VenueCategory.objects.filter(**kwargs)
+def get_venue_categories(*args, **kwargs) -> QuerySet[VenueCategory]:
+    return VenueCategory.objects.filter(*args, **kwargs)
 
 
-def get_venue(**kwargs) -> Venue:
-    return Venue.objects.select_related("category", "organization").get(**kwargs)
-
-
-def get_venues(**kwargs) -> QuerySet[Venue]:
-    return Venue.objects.filter(**kwargs)
+def get_venues(*args, **kwargs) -> QuerySet[Venue]:
+    return Venue.objects.filter(*args, **kwargs)
 
 
 def get_or_create_venue_category(

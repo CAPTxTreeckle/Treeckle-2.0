@@ -64,7 +64,7 @@ export default function useVirtualizedTableState<
         !activeSearchValue ||
         !searchIndex ||
         !searchKeys ||
-        searchKeys.length <= 0
+        searchKeys.length === 0
       ) {
         return data;
       }

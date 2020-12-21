@@ -38,20 +38,12 @@ def user_invite_to_json(user_invite: UserInvite) -> dict:
     }
 
 
-def get_user(**kwargs) -> User:
-    return User.objects.select_related("organization").get(**kwargs)
+def get_users(*args, **kwargs) -> QuerySet[User]:
+    return User.objects.filter(*args, **kwargs)
 
 
-def get_user_invite(**kwargs) -> UserInvite:
-    return UserInvite.objects.select_related("organization").get(**kwargs)
-
-
-def get_users(**kwargs) -> QuerySet[User]:
-    return User.objects.filter(**kwargs)
-
-
-def get_user_invites(**kwargs) -> QuerySet[UserInvite]:
-    return UserInvite.objects.filter(**kwargs)
+def get_user_invites(*args, **kwargs) -> QuerySet[UserInvite]:
+    return UserInvite.objects.filter(*args, **kwargs)
 
 
 def get_valid_invitations(invitations: dict) -> Sequence[tuple[str, str]]:

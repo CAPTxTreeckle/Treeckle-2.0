@@ -1,16 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo } from "react";
 import { Popup, Segment, Button } from "semantic-ui-react";
 import { AutoSizer, Table, Column } from "react-virtualized";
-import { toast } from "react-toastify";
+
 import PlaceholderWrapper from "../placeholder-wrapper";
 import SearchBar from "../search-bar";
-import {
-  useGetAllUserInvites,
-  useUpdateUserInvites,
-} from "../../custom-hooks/api";
 import { useVirtualizedTableState } from "../../custom-hooks";
-import { UserInviteData, UserInvitePatchData } from "../../types/users";
-import UserInvitesTableActionsCellRenderer from "../user-invites-table-actions-cell-renderer";
+import { UserInviteData } from "../../types/users";
+import UserInviteTableActionsCellRenderer from "../user-invite-table-actions-cell-renderer";
 import { VirtualizedTableStateOptions } from "../../custom-hooks/use-virtualized-table-state";
 import { displayDateTime } from "../../utils/parser-utils";
 import {
@@ -20,7 +16,7 @@ import {
   ID,
   ROLE,
 } from "../../constants";
-import { resolveApiError } from "../../utils/error-utils";
+import { UserInvitesContext } from "../../context-providers";
 
 const UserInvitesTableStateOptions: VirtualizedTableStateOptions = {
   defaultSortBy: CREATED_AT,
@@ -33,42 +29,9 @@ type UserInviteDisplayData = UserInviteData & {
   createdAtString: string;
 };
 
-function UserInvitesSection() {
-  const {
-    userInvites,
-    getAllUserInvites: _getAllUserInvites,
-  } = useGetAllUserInvites();
-  const { updateUserInvites: _updateUserInvites } = useUpdateUserInvites();
-
-  const [isLoading, setLoading] = useState(false);
-
-  const getAllUserInvites = useCallback(async () => {
-    setLoading(true);
-    const userInvites = await _getAllUserInvites();
-    setLoading(false);
-    return userInvites;
-  }, [_getAllUserInvites]);
-
-  const updateUserInvites = useCallback(
-    async (users: UserInvitePatchData[]) => {
-      try {
-        const updatedUserInvites = await _updateUserInvites(users);
-
-        await _getAllUserInvites();
-
-        toast.success(
-          updatedUserInvites.length > 1
-            ? "Pending registration users updated successfully."
-            : "The pending registration user has been updated successfully.",
-        );
-
-        return updatedUserInvites;
-      } catch (error) {
-        resolveApiError(error);
-        return [];
-      }
-    },
-    [_updateUserInvites, _getAllUserInvites],
+function UserInviteTable() {
+  const { userInvites, isLoading, getAllUserInvites } = useContext(
+    UserInvitesContext,
   );
 
   useEffect(() => {
@@ -85,7 +48,6 @@ function UserInvitesSection() {
   );
 
   const {
-    tableRef,
     processedData: processedUserInvites,
     sortBy,
     sortDirection,
@@ -119,10 +81,9 @@ function UserInvitesSection() {
       </Segment>
 
       <Segment className="virtualized-table-wrapper">
-        <AutoSizer onResize={() => tableRef.current?.recomputeRowHeights()}>
+        <AutoSizer>
           {({ width, height }) => (
             <Table
-              ref={tableRef}
               height={height}
               width={width}
               headerHeight={height * 0.1}
@@ -169,11 +130,7 @@ function UserInvitesSection() {
                 width={width * 0.15}
                 disableSort
                 cellRenderer={({ rowData }) => (
-                  <UserInvitesTableActionsCellRenderer
-                    rowData={rowData}
-                    getAllUserInvites={getAllUserInvites}
-                    updateUserInvites={updateUserInvites}
-                  />
+                  <UserInviteTableActionsCellRenderer rowData={rowData} />
                 )}
               />
             </Table>
@@ -184,4 +141,4 @@ function UserInvitesSection() {
   );
 }
 
-export default UserInvitesSection;
+export default UserInviteTable;

@@ -13,6 +13,7 @@ import {
   TITLE,
   VENUE_ID,
   VENUE_NAME,
+  IDS,
 } from "../constants";
 import { BaseData } from "./base";
 import { UserData } from "./users";
@@ -49,6 +50,10 @@ export type CustomVenueBookingFormResponseProps = {
 
 export type BookingPatchData = {
   [ACTIONS]: BookingStatusAction[];
+};
+
+export type BookingDeleteData = {
+  [IDS]: number[];
 };
 
 export type BookingStatusAction = {

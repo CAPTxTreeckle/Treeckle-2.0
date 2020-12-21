@@ -1,5 +1,5 @@
 import React from "react";
-import { Segment, Loader } from "semantic-ui-react";
+import { Segment, Loader, LoaderProps } from "semantic-ui-react";
 import "./placeholder-wrapper.scss";
 
 type Props = {
@@ -10,6 +10,7 @@ type Props = {
   defaultMessage?: string;
   inverted?: boolean;
   placeholder?: boolean;
+  size?: LoaderProps["size"];
 };
 
 function PlaceholderWrapper({
@@ -20,6 +21,7 @@ function PlaceholderWrapper({
   defaultMessage,
   inverted = false,
   placeholder = false,
+  size = "massive",
 }: Props) {
   return isLoading || showDefaultMessage ? (
     <Segment
@@ -30,7 +32,7 @@ function PlaceholderWrapper({
     >
       {isLoading && (
         <Loader
-          size="massive"
+          size={size}
           active
           inverted={inverted}
           inline
