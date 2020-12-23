@@ -41,9 +41,7 @@ const BookingCreationLayout = () => {
             {icEmail && (
               <p>
                 <strong>Email:</strong>{" "}
-                <a className="email-link" href={`mailto:${icEmail}`}>
-                  {icEmail}
-                </a>
+                <a href={`mailto:${icEmail}`}>{icEmail}</a>
               </p>
             )}
             {icContactNumber && (
@@ -55,7 +53,7 @@ const BookingCreationLayout = () => {
         ) : (
           <p>
             <strong>Email:</strong>{" "}
-            <a className="email-link" href="mailto:treeckle@googlegroups.com">
+            <a href="mailto:treeckle@googlegroups.com">
               treeckle@googlegroups.com
             </a>
           </p>

@@ -154,24 +154,30 @@ function HomePage() {
             <Grid.Column textAlign="center">
               <h2>ABOUT TREECKLE</h2>
               <p>
-                Treeckle is a student-initiated project, built with the aim of
-                making a difference through a web application.
+                Treeckle is an ex-
+                <a
+                  className="link"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  href="https://www.cs3216.com/"
+                >
+                  CS3216
+                </a>{" "}
+                project, built with the aim of making a difference through a web
+                application.
               </p>
             </Grid.Column>
             <Grid.Column textAlign="center">
               <h2>CONTACT US</h2>
               <p>
-                <a
-                  className="email-link"
-                  href="mailto:treeckle@googlegroups.com"
-                >
+                <a className="link" href="mailto:treeckle@googlegroups.com">
                   <Icon name="mail" /> Email
                 </a>
               </p>
             </Grid.Column>
           </Grid>
           <Divider section />
-          <p>© Treeckle 2020</p>
+          <p>© Treeckle 2021</p>
         </Container>
       </Segment>
 

@@ -1,4 +1,4 @@
-FROM node:14.14.0-alpine AS build
+FROM node:14.15.3-alpine AS build
 ARG REACT_APP_API_URL
 ARG REACT_APP_GOOGLE_CLIENT_ID
 
@@ -16,7 +16,7 @@ RUN REACT_APP_API_URL=${REACT_APP_API_URL} REACT_APP_GOOGLE_CLIENT_ID=${REACT_AP
 
 
 ## prepare nginx
-FROM nginx:1.19.3-alpine
+FROM nginx:1.19.6-alpine
 
 ## copy custom nginx config to override default config
 COPY ./nginx/nginx.conf /etc/nginx/conf.d/default.conf

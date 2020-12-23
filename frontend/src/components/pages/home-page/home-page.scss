@@ -143,8 +143,13 @@
       border-bottom-color: rgba(255, 255, 255, 0.7);
     }
 
-    .email-link {
+    .link {
       color: #5ac6e7;
+      opacity: 0.85;
+
+      &:hover {
+        opacity: 1;
+      }
     }
   }
 

@@ -123,6 +123,7 @@ export function useGoogleAuth() {
     },
     { manual: true },
   );
+  const [isUnavailable, setUnavailable] = useState(false);
 
   const { signIn, loaded } = useGoogleLogin({
     clientId: process.env.REACT_APP_GOOGLE_CLIENT_ID ?? "",
@@ -143,11 +144,18 @@ export function useGoogleAuth() {
     },
     onFailure: (error) => {
       console.log("Google Client error:", error, error?.response);
-      toast.error("An unknown error has occurred.");
+      if (error?.error === "idpiframe_initialization_failed") {
+        setUnavailable(true);
+      }
+      toast.error(error?.details ?? "An unknown error has occurred.");
     },
   });
 
-  return { startGoogleAuth: signIn, isLoading: !loaded || loading };
+  return {
+    startGoogleAuth: signIn,
+    isLoading: !loaded || loading,
+    isUnavailable,
+  };
 }
 
 export function useOpenIdAuth() {

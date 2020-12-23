@@ -1,6 +1,6 @@
 ## Setup
 
-Ensure you have [python 3.8](https://www.python.org/downloads/release/python-385/) installed on your local machine.
+Ensure you have [python 3.9](https://www.python.org/downloads/release/python-391/) installed on your local machine.
 
 Then execute:
 

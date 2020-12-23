@@ -11,7 +11,11 @@ import "./sign-in-button.scss";
 
 function SignInButton() {
   const { startOpenIdAuth } = useOpenIdAuth();
-  const { startGoogleAuth, isLoading: googleAuthLoading } = useGoogleAuth();
+  const {
+    startGoogleAuth,
+    isLoading: googleAuthLoading,
+    isUnavailable,
+  } = useGoogleAuth();
   const [isSignInOptionsOpened, setSignInOptionsOpened] = useState(false);
 
   return (
@@ -56,6 +60,7 @@ function SignInButton() {
                   content="Sign in with Google"
                   fluid
                   loading={googleAuthLoading}
+                  disabled={isUnavailable}
                 />
               </Grid.Column>
             </Grid>
