@@ -1,5 +1,6 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useLocalStorage } from "@rehooks/local-storage";
+import isEqual from "lodash.isequal";
 import { Role } from "../types/users";
 
 export type User = {
@@ -7,19 +8,19 @@ export type User = {
   name?: string;
   email?: string;
   role?: Role;
-  organisation?: string;
+  organization?: string;
   accessToken?: string;
   refreshToken?: string;
   profilePic?: string;
 };
 
 type UserContextType = User & {
-  setUser: (user: User | null) => void;
+  updateUser: (user: User | null) => void;
 };
 
 export const UserContext = React.createContext<UserContextType>({
-  setUser: () => {
-    throw new Error("setUser is not defined");
+  updateUser: () => {
+    throw new Error("updateUser is not defined.");
   },
 });
 
@@ -29,25 +30,34 @@ type Props = {
 
 function UserProvider({ children }: Props) {
   const [user, setUser, deleteUser] = useLocalStorage<User>("user");
+  const [_user, _setUser] = useState<User | null>(user);
 
-  const _setUser = useCallback(
-    (updatedUser: User | null) =>
-      updatedUser ? setUser({ ...user, ...updatedUser }) : deleteUser(),
-    [user, setUser, deleteUser],
+  const updateUser = useCallback(
+    (updatedUser: User | null) => {
+      updatedUser ? setUser({ ..._user, ...updatedUser }) : deleteUser();
+    },
+    [_user, setUser, deleteUser],
   );
+
+  // required to prevent multiple changes to user
+  useEffect(() => {
+    _setUser((_user) => {
+      return isEqual(user, _user) ? _user : user;
+    });
+  }, [user]);
 
   return (
     <UserContext.Provider
       value={{
-        id: user?.id,
-        name: user?.name,
-        email: user?.email,
-        role: user?.role,
-        organisation: user?.organisation,
-        accessToken: user?.accessToken,
-        refreshToken: user?.refreshToken,
-        profilePic: user?.profilePic,
-        setUser: _setUser,
+        id: _user?.id,
+        name: _user?.name,
+        email: _user?.email,
+        role: _user?.role,
+        organization: _user?.organization,
+        accessToken: _user?.accessToken,
+        refreshToken: _user?.refreshToken,
+        profilePic: _user?.profilePic,
+        updateUser,
       }}
     >
       {children}

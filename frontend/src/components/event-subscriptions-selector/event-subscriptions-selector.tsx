@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from "react";
 import { Label } from "semantic-ui-react";
 import { EventSubscriptionsContext } from "../../context-providers";
-import { SubscribeActionType } from "../../types/events";
+import { SubscriptionActionType } from "../../types/events";
 import EventSubscriptionLabel from "../event-subscription-label";
 import PlaceholderWrapper from "../placeholder-wrapper";
 
@@ -9,14 +9,13 @@ function EventSubscriptionsSelector() {
   const {
     isLoadingEventCategories,
     subscribedCategories,
-    notSubscribedCategories,
-    getSubscriptions,
+    nonSubscribedCategories,
+    getEventCategorySubscriptions,
   } = useContext(EventSubscriptionsContext);
 
   useEffect(() => {
-    getSubscriptions();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    getEventCategorySubscriptions();
+  }, [getEventCategorySubscriptions]);
 
   return (
     <>
@@ -25,15 +24,15 @@ function EventSubscriptionsSelector() {
         isLoading={isLoadingEventCategories}
         loadingMessage="Retrieving available categories"
         defaultMessage="There are no available categories"
-        showDefaultMessage={notSubscribedCategories.length === 0}
+        showDefaultMessage={nonSubscribedCategories.length === 0}
       >
         <Label.Group>
-          {notSubscribedCategories.map((category: string) => (
+          {nonSubscribedCategories.map((category: string) => (
             <EventSubscriptionLabel
               key={category}
               category={category}
               color="blue"
-              actionType={SubscribeActionType.SUBSCRIBE}
+              actionType={SubscriptionActionType.Subscribe}
             />
           ))}
         </Label.Group>
@@ -52,7 +51,7 @@ function EventSubscriptionsSelector() {
               key={category}
               category={category}
               color="purple"
-              actionType={SubscribeActionType.UNSUBSCRIBE}
+              actionType={SubscriptionActionType.Unsubscribe}
             />
           ))}
         </Label.Group>

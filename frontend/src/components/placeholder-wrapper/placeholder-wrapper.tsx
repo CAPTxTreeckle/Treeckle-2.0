@@ -1,5 +1,5 @@
 import React from "react";
-import { Segment, Loader as SUILoader, Dimmer } from "semantic-ui-react";
+import { Segment, Loader, LoaderProps } from "semantic-ui-react";
 import "./placeholder-wrapper.scss";
 
 type Props = {
@@ -10,50 +10,36 @@ type Props = {
   defaultMessage?: string;
   inverted?: boolean;
   placeholder?: boolean;
-  withDimmer?: boolean;
-  className?: string;
+  size?: LoaderProps["size"];
 };
 
 function PlaceholderWrapper({
-  children,
-  isLoading,
+  children = null,
+  isLoading = false,
   loadingMessage,
-  showDefaultMessage,
+  showDefaultMessage = false,
   defaultMessage,
-  className,
   inverted = false,
   placeholder = false,
-  withDimmer = false,
+  size = "massive",
 }: Props) {
-  function Loader() {
-    return (
-      <SUILoader
-        size="massive"
-        active
-        inverted={inverted}
-        inline
-        content={loadingMessage}
-      />
-    );
-  }
-
   return isLoading || showDefaultMessage ? (
     <Segment
-      id="placeholder-wrapper"
+      className="placeholder-wrapper"
       basic
       placeholder={placeholder}
       textAlign="center"
-      className={className}
     >
-      {isLoading &&
-        (withDimmer ? (
-          <Dimmer active inverted={inverted}>
-            <Loader />
-          </Dimmer>
-        ) : (
-          <Loader />
-        ))}
-      {!isLoading && showDefaultMessage && (
+      {isLoading && (
+        <Loader
+          size={size}
+          active
+          inverted={inverted}
+          inline
+          content={loadingMessage}
+        />
+      )}
+      {!isLoading && showDefaultMessage && defaultMessage && (
         <h2 className="default-message">{defaultMessage}</h2>
       )}
     </Segment>

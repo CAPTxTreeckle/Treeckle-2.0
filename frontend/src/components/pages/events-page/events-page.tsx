@@ -1,107 +1,92 @@
 import React, { useCallback, useContext, useMemo } from "react";
-import { Link, useHistory, useRouteMatch } from "react-router-dom";
-import { Button, Icon, Tab, TabProps } from "semantic-ui-react";
-import {
-  EventSubscriptionsProvider,
-  OwnEventsProvider,
-  UserContext,
-} from "../../../context-providers";
+import { Link, useHistory, useLocation } from "react-router-dom";
+import { Button, Icon, Segment } from "semantic-ui-react";
 import { Role } from "../../../types/users";
-import { EVENTS_CREATION_PATH, EVENTS_PATH } from "../../../routes";
-import EventsAllTabPane from "../../events-all-tab-pane";
-import EventsOwnTabPane from "../../events-own-tab-pane";
-import EventsRecommendationsTabPane from "../../events-recommendations-tab-pane";
-import EventsSignedUpTabPane from "../../events-signed-up-tab-pane";
-import EventsSubscriptionsTabPane from "../../events-subscriptions-tab-pane";
+import {
+  EVENTS_CREATION_PATH,
+  EVENTS_PATH,
+  EVENTS_SIGNED_UP_PATH,
+  EVENTS_SUBSCRIPTIONS_PATH,
+  EVENTS_OWN_PATH,
+} from "../../../routes/paths";
+import EventsAllSection from "../../events-all-section";
+import EventsOwnSection from "../../events-own-section";
+import EventsSignedUpSection from "../../events-signed-up-section";
+import EventsSubscriptionsSection from "../../events-subscriptions-section";
 import RoleRestrictedWrapper from "../../role-restricted-wrapper";
-import "./events-page.scss";
+import { UserContext } from "../../../context-providers";
+import ResponsiveSelectorMenu from "../../responsive-selector-menu";
 
-const EVENTS_CATEGORY_PATH = "/events/:category";
 const eventCategoryPaths = [
-  "",
-  "signedup",
-  "recommendations",
-  "subscriptions",
-  "own",
+  EVENTS_PATH,
+  EVENTS_SIGNED_UP_PATH,
+  EVENTS_SUBSCRIPTIONS_PATH,
+  EVENTS_OWN_PATH,
 ];
 const eventCategoryHeaders = [
   "All Events",
   "Signed Up Events",
-  "Event Recommendations",
   "Event Subscriptions",
   "Own Events",
 ];
-
-const residentPanes = [
-  { menuItem: "All", render: () => <EventsAllTabPane /> },
-  { menuItem: "Signed Up", render: () => <EventsSignedUpTabPane /> },
+const residentEventCategories = [
+  { key: "All", name: "All" },
   {
-    menuItem: "Recommendations",
-    render: () => <EventsRecommendationsTabPane />,
+    key: "Signed Up",
+    name: "Signed Up",
   },
   {
-    menuItem: "Subscriptions",
-    render: () => (
-      <EventSubscriptionsProvider>
-        <EventsSubscriptionsTabPane />
-      </EventSubscriptionsProvider>
-    ),
+    key: "Subscriptions",
+    name: "Subscriptions",
   },
 ];
 
-const organiserPanes = [
+const organizerEventCategories = [
+  ...residentEventCategories,
   {
-    menuItem: "Own Events",
-    render: () => (
-      <OwnEventsProvider>
-        <EventsOwnTabPane />
-      </OwnEventsProvider>
-    ),
+    key: "Own Events",
+    name: "Own Events",
   },
+];
+
+const eventSections = [
+  <EventsAllSection />,
+  <EventsSignedUpSection />,
+  <EventsSubscriptionsSection />,
+  <EventsOwnSection />,
 ];
 
 function EventsPage() {
-  const history = useHistory();
   const { role } = useContext(UserContext);
-  const match = useRouteMatch<{ category: string }>({
-    path: [EVENTS_CATEGORY_PATH, EVENTS_PATH],
-    strict: true,
-    sensitive: true,
-  });
+  const history = useHistory();
+  const location = useLocation();
+
   const activeIndex = useMemo(() => {
-    const category = match?.params?.category ?? eventCategoryPaths[0];
-    return eventCategoryPaths.indexOf(category);
-  }, [match]);
+    const activeIndex = eventCategoryPaths.indexOf(location.pathname);
 
-  const panes = useMemo(() => {
-    if (role && [Role.ORGANIZER, Role.ADMIN].includes(role)) {
-      return residentPanes.concat(organiserPanes);
-    }
-    return residentPanes;
-  }, [role]);
+    return activeIndex >= 0 ? activeIndex : 0;
+  }, [location]);
 
-  const onTabChange = useCallback(
-    (
-      e: React.MouseEvent<HTMLDivElement, MouseEvent>,
-      { activeIndex = 0 }: TabProps,
-    ) => {
-      const newCategory = eventCategoryPaths?.[activeIndex as number] ?? 0;
-      const newPath = EVENTS_CATEGORY_PATH.replace(
-        "/:category",
-        `${newCategory ? "/" : ""}${newCategory}`,
-      );
+  const activeSection = useMemo(() => eventSections[activeIndex], [
+    activeIndex,
+  ]);
 
-      if (newPath === window.location.pathname) {
+  const onChange = useCallback(
+    (selectedIndex: number) => {
+      const newPath = eventCategoryPaths?.[selectedIndex] ?? EVENTS_PATH;
+
+      if (selectedIndex === activeIndex) {
         return;
       }
+
       history.push(newPath);
     },
-    [history],
+    [history, activeIndex],
   );
 
   return (
     <>
-      <RoleRestrictedWrapper roles={[Role.ORGANIZER, Role.ADMIN]}>
+      <RoleRestrictedWrapper roles={[Role.Organizer, Role.Admin]}>
         <Button
           animated="vertical"
           fluid
@@ -116,13 +101,19 @@ function EventsPage() {
 
       <h1>{eventCategoryHeaders[activeIndex]}</h1>
 
-      <Tab
-        id="events-page"
-        menu={{ attached: false }}
-        panes={panes}
-        activeIndex={activeIndex}
-        onTabChange={onTabChange}
-      />
+      <div className="black-text">
+        <ResponsiveSelectorMenu
+          options={
+            role === Role.Resident
+              ? residentEventCategories
+              : organizerEventCategories
+          }
+          onChange={onChange}
+          activeIndex={activeIndex}
+        />
+
+        <Segment raised>{activeSection}</Segment>
+      </div>
     </>
   );
 }

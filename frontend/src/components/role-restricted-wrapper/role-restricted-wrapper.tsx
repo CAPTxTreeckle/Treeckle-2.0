@@ -13,7 +13,7 @@ function RoleRestrictedWrapper({
   roles,
   defaultRender = null,
 }: Props) {
-  const { role = Role.RESIDENT } = useContext(UserContext);
+  const { role = Role.Resident } = useContext(UserContext);
 
   return <>{roles.includes(role) ? children : defaultRender}</>;
 }

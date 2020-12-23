@@ -8,20 +8,25 @@ import {
 import { toast } from "react-toastify";
 import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from "axios";
 import { useHistory } from "react-router-dom";
-import { HOME_PATH, OPEN_ID_PATH } from "../../routes";
-import { AuthenticationData, NusnetAuthenticationData } from "../../types/auth";
+import { HOME_PATH, OPEN_ID_PATH } from "../../routes/paths";
+import { AuthenticationData, OpenIdAuthenticationData } from "../../types/auth";
 import { UserContext } from "../../context-providers";
 import { User } from "../../context-providers/user-provider";
+import { isForbiddenOrNotAuthenticated } from "../../utils/error-utils";
 
 function syncUserContext(
-  setUser: (user: User | null) => void,
+  updateUser: (user: User | null) => void,
   data: AuthenticationData,
 ) {
-  const { accessToken, refreshToken, user } = data;
-  setUser({
-    accessToken,
-    refreshToken,
-    ...user,
+  const { access, refresh, id, name, email, role, organization } = data;
+  updateUser({
+    accessToken: access,
+    refreshToken: refresh,
+    id,
+    name,
+    email,
+    role,
+    organization,
   });
 }
 
@@ -29,25 +34,28 @@ export function useAxiosWithTokenRefresh<T>(
   config: AxiosRequestConfig,
   options?: Options,
 ): [
-  ResponseValues<T>,
+  ResponseValues<T, Error>,
   (config?: AxiosRequestConfig, options?: RefetchOptions) => AxiosPromise<T>,
 ] {
-  const { accessToken, refreshToken, setUser } = useContext(UserContext);
+  const { accessToken, refreshToken, updateUser } = useContext(UserContext);
   const [responseValues, apiCall] = useAxios<T>(
     {
       ...config,
-      headers: { ...(config?.headers ?? {}), authorization: `${accessToken}` },
+      headers: {
+        ...config?.headers,
+        authorization: `Bearer ${accessToken}`,
+      },
     },
     {
-      ...(options ?? {}),
+      ...options,
       manual: true,
     },
   );
   const [, tokenRefresh] = useAxios<AuthenticationData>(
     {
-      url: "/login/token",
+      url: "/gateway/refresh",
       method: "post",
-      headers: { authorization: `${refreshToken}` },
+      data: { refresh: refreshToken },
     },
     { manual: true },
   );
@@ -58,58 +66,59 @@ export function useAxiosWithTokenRefresh<T>(
       config?: AxiosRequestConfig,
       options?: RefetchOptions,
     ): Promise<AxiosResponse<T>> => {
-      let attemptedTokenRefresh = false;
       try {
         setLoading(true);
         const response = await apiCall(config, options);
         return response;
       } catch (error) {
+        if (!isForbiddenOrNotAuthenticated(error)) {
+          throw error;
+        }
+
         try {
           console.log("Error before token refresh:", error, error?.response);
-          if (error?.toString() === "Cancel") {
-            throw error;
-          }
-          console.log("Attempting to refresh token");
-          attemptedTokenRefresh = true;
+
           const { data } = await tokenRefresh();
+
+          console.log("POST /gateway/refresh success:", data);
 
           const response = await apiCall(
             {
-              ...(config ?? {}),
-              headers: { authorization: `${data.accessToken}` },
+              ...config,
+              headers: { authorization: `Bearer ${data.access}` },
             },
             options,
           );
 
-          syncUserContext(setUser, data);
+          syncUserContext(updateUser, data);
           return response;
         } catch (error) {
-          attemptedTokenRefresh &&
-            console.log("Error after token refresh:", error, error?.response);
-          if (error?.response?.status >= 401) {
+          console.log("Error after token refresh:", error, error?.response);
+          if (isForbiddenOrNotAuthenticated(error)) {
             // kick user out
-            setUser(null);
-            toast.error(
+            updateUser(null);
+            throw new Error(
               "Your current session has expired. Please log in again.",
             );
+          } else {
+            throw error;
           }
-          throw error;
         }
       } finally {
         setLoading(false);
       }
     },
-    [apiCall, setUser, tokenRefresh],
+    [apiCall, updateUser, tokenRefresh],
   );
 
   return [{ ...responseValues, loading: isLoading }, apiCallWithTokenRefresh];
 }
 
 export function useGoogleAuth() {
-  const { setUser } = useContext(UserContext);
+  const { updateUser } = useContext(UserContext);
   const [{ loading }, login] = useAxios<AuthenticationData>(
     {
-      url: "/login/gmail",
+      url: "/gateway/gmail",
       method: "post",
     },
     { manual: true },
@@ -122,13 +131,13 @@ export function useGoogleAuth() {
       response: GoogleLoginResponse | GoogleLoginResponseOffline,
     ) => {
       try {
-        const { tokenId: idToken } = response as GoogleLoginResponse;
-        const { data } = await login({ data: { idToken } });
-        console.log("POST /login/gmail success:", data);
-        syncUserContext(setUser, data);
+        const { tokenId } = response as GoogleLoginResponse;
+        const { data } = await login({ data: { tokenId } });
+        console.log("POST /gateway/gmail success:", data);
+        syncUserContext(updateUser, data);
         toast.success("Signed in successfully.");
       } catch (error) {
-        console.log("POST /login/gmail error:", error, error?.response);
+        console.log("POST /gateway/gmail error:", error, error?.response);
         toast.error("Invalid user.");
       }
     },
@@ -142,11 +151,11 @@ export function useGoogleAuth() {
 }
 
 export function useOpenIdAuth() {
-  const { setUser } = useContext(UserContext);
+  const { updateUser } = useContext(UserContext);
   const history = useHistory();
   const [, login] = useAxios<AuthenticationData>(
     {
-      url: "/login/nusnet",
+      url: "/gateway/openid",
       method: "post",
     },
     { manual: true },
@@ -167,19 +176,21 @@ export function useOpenIdAuth() {
   }, []);
 
   const authenticate = useCallback(
-    async (nusnetData: NusnetAuthenticationData) => {
+    async (openIdData: OpenIdAuthenticationData) => {
       try {
-        const { data } = await login({ data: nusnetData });
-        console.log("POST /login/nusnet success:", data);
-        syncUserContext(setUser, data);
+        const { data } = await login({ data: openIdData });
+        console.log("POST /gateway/openid success:", data);
+        syncUserContext(updateUser, data);
         toast.success("Signed in successfully.");
       } catch (error) {
-        console.log("POST /login/nusnet error:", error, error?.response);
-        toast.error("Invalid user.");
+        console.log("POST /gateway/openid error:", error, error?.response);
+        toast.error(
+          error?.response?.data?.detail ?? "An unknown error has occurred.",
+        );
         history.push(HOME_PATH);
       }
     },
-    [login, setUser, history],
+    [login, updateUser, history],
   );
 
   return { startOpenIdAuth, authenticate };

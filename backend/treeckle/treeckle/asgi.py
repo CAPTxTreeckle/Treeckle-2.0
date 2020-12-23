@@ -13,8 +13,9 @@ from django.core.asgi import get_asgi_application
 
 # use for dev
 from dotenv import load_dotenv
+
 load_dotenv(".env.backend.dev")
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'treeckle.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "treeckle.settings")
 
 application = get_asgi_application()

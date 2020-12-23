@@ -4,51 +4,56 @@ import {
   FIELD_LABEL,
   FIELD_TYPE,
   PLACEHOLDER_TEXT,
-  RECOMMENDED_CAPACITY,
+  CAPACITY,
   REQUIRED_FIELD,
-  VENUE_DETAILS_CUSTOM_FORM_FIELDS_SECTION,
-  VENUE_IC_CONTACT_NUMBER,
-  VENUE_IC_EMAIL,
-  VENUE_IC_NAME,
-  VENUE_NAME,
+  CUSTOM_VENUE_BOOKING_FORM_FIELDS,
+  IC_CONTACT_NUMBER,
+  IC_EMAIL,
+  IC_NAME,
+  NAME,
+  FORM_FIELD_DATA,
 } from "../constants";
 
+export type VenueGetQueryParams = { [CATEGORY]?: string };
+
 export type VenuePostData = {
-  name: string;
-  formData: string;
-  category: string;
+  [NAME]: string;
+  [CATEGORY]: string;
+  [CAPACITY]: string | null;
+  [IC_NAME]: string;
+  [IC_EMAIL]: string;
+  [IC_CONTACT_NUMBER]: string;
+  [FORM_FIELD_DATA]: CustomVenueBookingFormFieldProps[];
 };
 
 export type VenuePutData = VenuePostData;
 
-type VenueMetaData = BaseData;
-
-export type VenueData = VenueMetaData & VenuePostData;
+export type VenueData = BaseData & VenuePostData;
 
 export enum FieldType {
-  TEXT = "text",
-  TEXT_AREA = "text-area",
-  NUMBER = "number",
-  BOOLEAN = "boolean",
+  Text = "TEXT",
+  TextArea = "TEXT_AREA",
+  Number = "NUMBER",
+  Boolean = "BOOLEAN",
 }
 
-export type VenueCustomFormFieldProps = {
+export type CustomVenueBookingFormFieldProps = {
   [FIELD_TYPE]: FieldType;
   [FIELD_LABEL]: string;
-  [PLACEHOLDER_TEXT]?: string;
-  [REQUIRED_FIELD]?: boolean;
+  [PLACEHOLDER_TEXT]: string;
+  [REQUIRED_FIELD]: boolean;
 };
 
 export type VenueFormProps = {
-  [VENUE_NAME]: string;
+  [NAME]: string;
   [CATEGORY]: string;
-  [RECOMMENDED_CAPACITY]?: string;
-  [VENUE_IC_NAME]?: string;
-  [VENUE_IC_EMAIL]?: string;
-  [VENUE_IC_CONTACT_NUMBER]?: string;
-  [VENUE_DETAILS_CUSTOM_FORM_FIELDS_SECTION]?: VenueCustomFormFieldProps[];
+  [CAPACITY]: string;
+  [IC_NAME]: string;
+  [IC_EMAIL]: string;
+  [IC_CONTACT_NUMBER]: string;
+  [CUSTOM_VENUE_BOOKING_FORM_FIELDS]?: CustomVenueBookingFormFieldProps[];
 };
 
-export type VenueViewProps = VenueMetaData & {
+export type VenueViewProps = BaseData & {
   venueFormProps: VenueFormProps;
 };

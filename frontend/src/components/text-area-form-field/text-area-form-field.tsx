@@ -1,7 +1,7 @@
-import get from "lodash.get";
 import React from "react";
+import get from "lodash.get";
 import { useFormContext } from "react-hook-form";
-import { Form, Label } from "semantic-ui-react";
+import { Form, Label, StrictFormFieldProps } from "semantic-ui-react";
 
 type Props = {
   className?: string;
@@ -13,6 +13,8 @@ type Props = {
   defaultValue?: string;
   readOnly?: boolean;
   rows?: number;
+  hidden?: boolean;
+  width?: StrictFormFieldProps["width"];
 };
 
 function TextAreaFormField({
@@ -25,12 +27,20 @@ function TextAreaFormField({
   defaultValue,
   readOnly = false,
   rows,
+  hidden = false,
+  width,
 }: Props) {
   const { errors, register } = useFormContext();
   const error = get(errors, inputName);
 
   return (
-    <Form.Field className={className} required={required} error={!!error}>
+    <Form.Field
+      className={className}
+      required={required}
+      error={!!error}
+      style={hidden ? { display: "none" } : undefined}
+      width={width}
+    >
       {label && <label>{label}</label>}
       {error && (
         <Label

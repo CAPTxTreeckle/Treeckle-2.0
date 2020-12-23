@@ -1,123 +1,181 @@
-import fastjsonschema
-import logging
-import traceback
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from django.core.validators import validate_email
 
-from users.logic import (
-    create_user_invitation,
-    delete_users_by_emails,
-    delete_user_invite_by_id,
+from treeckle.common.exceptions import BadRequest
+from email_service.logic import send_user_invite_emails
+from .logic import (
+    get_user_invites,
+    get_users,
+    user_invite_to_json,
     user_to_json,
-    get_users_of_organisation,
-    update_user_by_id,
+    get_valid_invitations,
+    create_user_invites,
+    update_user_invites,
+    update_users,
+    delete_user_invites,
+    delete_users,
 )
-from treeckle.models.user import Role, User
-from treeckle.strings.json_keys import (
-    EMAILS,
-    INVITED,
-    OBJECT,
-    PROPERTIES,
-    REJECTED,
-    REQUIRED,
-    ROLE,
-    STRING,
-    TYPE,
-    USER,
-    USERS,
+from .models import User, UserInvite, Role
+from .permission_middlewares import check_access
+from .serializers import (
+    PostUserInviteSerializer,
+    EmailListSerializer,
+    PatchUserSerializer,
+    PatchUserInviteSerializer,
 )
-from users.permission_middlewares import check_access
 
-logger = logging.getLogger("main")
+# Create your views here.
+class UserInvitesView(APIView):
+    @check_access(Role.ADMIN)
+    def get(self, request, requester: User):
+        same_organization_user_invites = get_user_invites(
+            organization=requester.organization
+        )
 
+        data = [
+            user_invite_to_json(user_invite)
+            for user_invite in same_organization_user_invites
+        ]
 
-validate_string = fastjsonschema.compile({TYPE: STRING})
+        return Response(data, status=status.HTTP_200_OK)
 
-
-class UserInviteView(APIView):
-    @check_access([Role.ADMIN])
+    @check_access(Role.ADMIN)
     def post(self, request, requester: User):
+        serializer = PostUserInviteSerializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+
+        ## shape: [{email:, role:}]
+        invitations = serializer.validated_data.get("invitations", [])
+
+        ## shape: [(email, role)]
+        valid_invitations = get_valid_invitations(invitations)
+
         try:
-            new_user_emails = request.data[EMAILS]
-            invited_list = []
-            rejected_list = []
-            for email in new_user_emails:
-                try:  
-                    validate_string(email)
-                    validate_email(email)
-                    create_user_invitation(email, requester.organisation)
-                    invited_list.append(email)
-                except Exception as e:
-                    traceback.print_exc()
-                    rejected_list.append(email)
-            data = {
-                INVITED: invited_list,
-                REJECTED: rejected_list,
+            new_user_invites = create_user_invites(
+                valid_invitations=valid_invitations,
+                organization=requester.organization,
+            )
+        except Exception as e:
+            raise BadRequest(e)
+
+        send_user_invite_emails(user_invites=new_user_invites)
+
+        data = [user_invite_to_json(user_invite) for user_invite in new_user_invites]
+
+        return Response(data, status=status.HTTP_201_CREATED)
+
+    @check_access(Role.ADMIN)
+    def patch(self, request, requester: User):
+        serializer = PatchUserInviteSerializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+
+        ## shape: [{id, role}]
+        user_invite_data_list = serializer.validated_data.get("users", [])
+
+        ## shape: {id: {role: }}
+        user_invite_data_dict = {
+            user_invite_data["id"]: {
+                field: field_value
+                for field, field_value in user_invite_data.items()
+                if field != "id"
             }
-            logger.info(data)
-            return Response(data,status=status.HTTP_200_OK)
-        except Exception as e:
-            traceback.print_exc()
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            for user_invite_data in user_invite_data_list
+        }
 
+        updated_user_invites = update_user_invites(
+            user_invite_data_dict,
+            organization=requester.organization,
+        )
 
-class SingleUserInviteView(APIView):
-    @check_access([Role.ADMIN])
-    def delete(self, request, requester: User, user_invite_id: int):
-        try:
-            delete_user_invite_by_id(user_invite_id)
-            return Response(status=status.HTTP_200_OK)
-        except Exception as e:
-            logger.info(e)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        data = [
+            user_invite_to_json(user_invite) for user_invite in updated_user_invites
+        ]
+
+        return Response(data, status=status.HTTP_200_OK)
+
+    @check_access(Role.ADMIN)
+    def delete(self, request, requester: User):
+        serializer = EmailListSerializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+
+        emails_to_be_deleted = serializer.validated_data.get("emails", [])
+        deleted_emails = delete_user_invites(
+            emails_to_be_deleted,
+            organization=requester.organization,
+        )
+
+        return Response(deleted_emails, status=status.HTTP_200_OK)
 
 
 class UsersView(APIView):
-    @check_access([Role.ADMIN])
+    @check_access(Role.ADMIN)
     def get(self, request, requester: User):
-        try:
-            organisation_users = get_users_of_organisation(
-                requester.organisation)
-            organisation_user_list = [user_to_json(user) for user in organisation_users]
-            data = {USERS: organisation_user_list}
-            return Response(data, status=status.HTTP_200_OK)
-        except Exception as e:
-            logger.info(e)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        same_organization_users = get_users(
+            organization=requester.organization
+        ).select_related("organization")
 
-    @check_access([Role.ADMIN])
+        data = [user_to_json(user) for user in same_organization_users]
+
+        return Response(data, status=status.HTTP_200_OK)
+
+    @check_access(Role.ADMIN)
+    def patch(self, request, requester: User):
+        serializer = PatchUserSerializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+
+        ## shape: [{id, name, email, role}]
+        user_data_list = serializer.validated_data.get("users", [])
+
+        ## shape: {id: {name: , email: , role: }}
+        user_data_dict = {
+            user_data["id"]: {
+                field: field_value
+                for field, field_value in user_data.items()
+                if field != "id"
+            }
+            for user_data in user_data_list
+        }
+
+        ## ensure user doesn't change own role
+        if "role" in user_data_dict.get(requester.id, {}):
+            del user_data_dict[requester.id]["role"]
+
+            if not user_data_dict[requester.id]:
+                del user_data_dict[requester.id]
+
+        updated_users = update_users(
+            user_data_dict,
+            organization=requester.organization,
+        )
+
+        data = [user_to_json(user) for user in updated_users]
+
+        return Response(data, status=status.HTTP_200_OK)
+
+    @check_access(Role.ADMIN)
     def delete(self, request, requester: User):
+        serializer = EmailListSerializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+
+        emails_to_be_deleted = serializer.validated_data.get("emails", [])
+
+        ## ensure user doesn't delete its own account
         try:
-            emails_of_users_to_delete = request.data[EMAILS]
-            for email in emails_of_users_to_delete:
-                validate_string(email)
-            delete_users_by_emails(emails_of_users_to_delete)
-            return Response(status=status.HTTP_200_OK)
-        except Exception as e:
-            logger.info(e)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            emails_to_be_deleted.remove(requester.email)
+        except ValueError as e:
+            ## self not in emails_to_be_deleted
+            pass
 
+        deleted_emails = delete_users(
+            emails_to_be_deleted,
+            organization=requester.organization,
+        )
 
-patch_user_data_validate = fastjsonschema.compile({
-    TYPE: OBJECT,
-    PROPERTIES: {ROLE: {TYPE: STRING}},
-    REQUIRED: [ROLE]
-})
-
-
-class SingleUserView(APIView):
-    @check_access([Role.ADMIN])
-    def patch(self, request, requester: User, user_id: int):
-        try:
-            request_data = request.data
-            patch_user_data_validate(request_data)
-            role = request_data[ROLE]
-            user = update_user_by_id(user_id, role)
-            data = {USER: user_to_json(user)}
-            return Response(data, status=status.HTTP_200_OK)
-        except Exception as e:
-            logger.info(e)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(deleted_emails, status=status.HTTP_200_OK)

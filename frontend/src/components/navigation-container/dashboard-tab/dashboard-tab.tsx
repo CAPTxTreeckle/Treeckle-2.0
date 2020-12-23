@@ -1,6 +1,6 @@
 import React from "react";
 import TabItem from "../tab-item";
-import { DASHBOARD_PATH } from "../../../routes";
+import { DASHBOARD_PATH } from "../../../routes/paths";
 
 type Props = {
   onTabClick?: () => void;

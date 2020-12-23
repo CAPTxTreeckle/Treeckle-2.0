@@ -16,15 +16,10 @@ function NavigationContainer({ children }: Props) {
       {accessToken ? (
         <>
           <Media lessThan="computer">
-            {(mediaClassNames, renderChildren) => (
-              <div className={mediaClassNames}>
-                {renderChildren ? (
-                  <MobileNavigationBar>{children}</MobileNavigationBar>
-                ) : (
-                  <DesktopNavigationBar>{children}</DesktopNavigationBar>
-                )}
-              </div>
-            )}
+            <MobileNavigationBar>{children}</MobileNavigationBar>
+          </Media>
+          <Media greaterThanOrEqual="computer">
+            <DesktopNavigationBar>{children}</DesktopNavigationBar>
           </Media>
         </>
       ) : (

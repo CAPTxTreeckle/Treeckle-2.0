@@ -1,10 +1,13 @@
 import React from "react";
+import BookingNotificationSubscriptionSection from "../../booking-notification-subscription-section";
 
 function AdminSettingsPage() {
   return (
-    <div>
-      <h1>This is the admin settings page</h1>
-    </div>
+    <>
+      <h1>Bookings Notification Subscriptions</h1>
+
+      <BookingNotificationSubscriptionSection />
+    </>
   );
 }
 

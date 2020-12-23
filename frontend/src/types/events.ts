@@ -1,109 +1,126 @@
 import {
-  ALLOW_SIGN_UP,
+  ACTION,
+  ACTIONS,
+  CAPACITY,
   CATEGORIES,
+  CATEGORY,
   DESCRIPTION,
   END_DATE_TIME,
-  ESTIMATED_CAPACITY,
-  EVENT_TITLE,
+  EVENT,
+  EVENT_ID,
   IMAGE,
-  ORGANISED_BY,
-  PUBLISH,
-  SIGN_UP_REQUIRE_APPROVAL,
+  IS_PUBLISHED,
+  IS_SIGN_UP_ALLOWED,
+  IS_SIGN_UP_APPROVAL_REQUIRED,
+  ORGANIZED_BY,
+  CREATOR,
+  SIGN_UPS,
+  SIGN_UP_COUNT,
+  SIGN_UP_STATUS,
   START_DATE_TIME,
+  STATUS,
+  TITLE,
+  USER,
+  USER_ID,
   VENUE_NAME,
+  SUBSCRIBED_CATEGORIES,
+  NON_SUBSCRIBED_CATEGORIES,
 } from "../constants";
 
 import { BaseData } from "./base";
 import { UserData } from "./users";
 
 export type EventPostData = {
-  title: string;
-  capacity?: number | null;
-  description: string;
-  organisedBy: string;
-  venueName: string;
-  startDate: Date;
-  endDate: Date;
-  image: string;
-  isPublished: boolean;
-  isSignUpAllowed: boolean;
-  isSignUpApprovalRequired: boolean;
-  categories: string[];
+  [TITLE]: string;
+  [ORGANIZED_BY]: string;
+  [VENUE_NAME]: string;
+  [CAPACITY]: string | null;
+  [DESCRIPTION]: string;
+  [START_DATE_TIME]: number;
+  [END_DATE_TIME]: number;
+  [IMAGE]: string;
+  [IS_PUBLISHED]: boolean;
+  [IS_SIGN_UP_ALLOWED]: boolean;
+  [IS_SIGN_UP_APPROVAL_REQUIRED]: boolean;
+  [CATEGORIES]: string[];
 };
 
 export type EventPutData = EventPostData;
 
 type EventMetaData = BaseData & {
-  organiser: UserData;
-  signUpCount: number;
-  signUpStatus: SignUpStatus | null;
+  [CREATOR]: UserData;
+  [SIGN_UP_COUNT]: number;
+  [SIGN_UP_STATUS]: SignUpStatus | null;
 };
 
 export type EventData = EventMetaData & EventPostData;
 
-export type EventWithSignUpsData = { event: EventData; signUps: SignUpData[] };
+export type EventWithSignUpsData = {
+  [EVENT]: EventData;
+  [SIGN_UPS]: SignUpData[];
+};
 
 export enum SignUpStatus {
-  PENDING = "PENDING",
-  CONFIRMED = "CONFIRMED",
-  ATTENDED = "ATTENDED",
+  Pending = "PENDING",
+  Confirmed = "CONFIRMED",
+  Attended = "ATTENDED",
 }
 
 export type SignUpData = BaseData & {
-  user: UserData;
-  eventId: number;
-  status: SignUpStatus;
+  [USER]: UserData;
+  [EVENT_ID]: number;
+  [STATUS]: SignUpStatus;
 };
 
 export enum SignUpActionType {
-  ATTEND = "ATTEND",
-  CONFIRM = "CONFIRM",
-  REJECT = "REJECT",
+  Attend = "ATTEND",
+  Confirm = "CONFIRM",
+  Reject = "REJECT",
 }
 
 export type SignUpAction = {
-  action: SignUpActionType;
-  userId: number;
+  [ACTION]: SignUpActionType;
+  [USER_ID]: number;
 };
 
 export type SignUpPatchData = {
-  actions: SignUpAction[];
+  [ACTIONS]: SignUpAction[];
 };
 
 export type EventFormProps = {
-  [EVENT_TITLE]: string;
-  [ORGANISED_BY]: string;
-  [VENUE_NAME]?: string;
-  [CATEGORIES]?: string[];
-  [ESTIMATED_CAPACITY]?: string;
-  [START_DATE_TIME]: Date;
-  [END_DATE_TIME]: Date;
-  [DESCRIPTION]?: string;
-  [IMAGE]?: string;
-  [ALLOW_SIGN_UP]: boolean;
-  [SIGN_UP_REQUIRE_APPROVAL]: boolean;
-  [PUBLISH]: boolean;
+  [TITLE]: string;
+  [ORGANIZED_BY]: string;
+  [VENUE_NAME]: string;
+  [CATEGORIES]: string[];
+  [CAPACITY]: string;
+  [START_DATE_TIME]: number;
+  [END_DATE_TIME]: number;
+  [DESCRIPTION]: string;
+  [IMAGE]: string;
+  [IS_SIGN_UP_ALLOWED]: boolean;
+  [IS_SIGN_UP_APPROVAL_REQUIRED]: boolean;
+  [IS_PUBLISHED]: boolean;
 };
 
-export type EventViewProps = EventMetaData & { signUps?: SignUpData[] } & {
+export type EventViewProps = EventMetaData & { [SIGN_UPS]?: SignUpData[] } & {
   eventFormProps: EventFormProps;
 };
 
-export enum SubscribeActionType {
-  SUBSCRIBE = "SUBSCRIBE",
-  UNSUBSCRIBE = "UNSUBSCRIBE",
+export enum SubscriptionActionType {
+  Subscribe = "SUBSCRIBE",
+  Unsubscribe = "UNSUBSCRIBE",
 }
 
-export type SubscribeAction = {
-  action: SubscribeActionType;
-  categoryName: string;
+export type EventCategorySubscriptionAction = {
+  [ACTION]: SubscriptionActionType;
+  [CATEGORY]: string;
 };
 
-export type SubscriptionPatchData = {
-  actions: SubscribeAction[];
+export type EventCategorySubscriptionPatchData = {
+  [ACTIONS]: EventCategorySubscriptionAction[];
 };
 
-export type SubscriptionData = {
-  subscribedCategories: string[];
-  notSubscribedCategories: string[];
+export type EventCategorySubscriptionData = {
+  [SUBSCRIBED_CATEGORIES]: string[];
+  [NON_SUBSCRIBED_CATEGORIES]: string[];
 };

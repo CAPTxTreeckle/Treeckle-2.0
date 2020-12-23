@@ -1,16 +1,16 @@
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import { Grid, Icon, Label, Popup, Table } from "semantic-ui-react";
 import { SingleEventContext } from "../../context-providers";
-import { EVENTS_QR_CODE_PATH } from "../../routes";
+import { EVENTS_QR_CODE_PATH } from "../../routes/paths";
 import { SignUpData, SignUpStatus } from "../../types/events";
-import { displayDatetime } from "../../utils/parser";
+import { displayDateTime } from "../../utils/parser-utils";
 import EventSignUpStatusButton from "../event-sign-up-status-button";
 import PlaceholderWrapper from "../placeholder-wrapper";
 
 function EventManagementView() {
   const { event, getSingleEvent } = useContext(SingleEventContext);
   const [isLoading, setLoading] = useState(false);
-  const { signUps = [], id: eventId = 0 } = event ?? {};
+  const { signUps = [], id: eventId = 0 } = { ...event };
 
   const refreshEvent = useCallback(async () => {
     setLoading(true);
@@ -24,7 +24,7 @@ function EventManagementView() {
         <Table.HeaderCell content="Name" />
         <Table.HeaderCell content="Email" />
         <Table.HeaderCell content="Signed up at" />
-        <Table.HeaderCell content="Status" />
+        <Table.HeaderCell textAlign="center" content="Status" />
       </Table.Row>
     ),
     [],
@@ -36,13 +36,13 @@ function EventManagementView() {
     let numAttended = 0;
     signUps.forEach((signUp) => {
       switch (signUp.status) {
-        case SignUpStatus.PENDING:
+        case SignUpStatus.Pending:
           numPending++;
           break;
-        case SignUpStatus.CONFIRMED:
+        case SignUpStatus.Confirmed:
           numAttending++;
           break;
-        case SignUpStatus.ATTENDED:
+        case SignUpStatus.Attended:
           numAttended++;
           break;
         default:
@@ -97,9 +97,10 @@ function EventManagementView() {
       <Table.Row key={id}>
         <Table.Cell content={name} />
         <Table.Cell content={email} />
-        <Table.Cell content={displayDatetime(createdAt)} />
+        <Table.Cell content={displayDateTime(createdAt)} />
         <Table.Cell
           collapsing
+          className="horizontal-space-margin"
           content={
             <EventSignUpStatusButton userId={userId} signUpStatus={status} />
           }
@@ -115,7 +116,7 @@ function EventManagementView() {
         Sign-Ups{" "}
         <Popup
           content="Refresh"
-          trigger={<Icon name="refresh" link onClick={refreshEvent} />}
+          trigger={<Icon name="redo" link onClick={refreshEvent} />}
           position="top center"
           on="hover"
         />{" "}
@@ -144,6 +145,7 @@ function EventManagementView() {
         inverted
       >
         <Table
+          selectable
           headerRow={headerRow}
           renderBodyRow={renderBodyRow}
           footerRow={footerRow}

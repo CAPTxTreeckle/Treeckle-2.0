@@ -1,13 +1,13 @@
+import { ACCESS, EMAIL, NAME, REFRESH, USER_ID } from "../constants";
 import { UserData } from "./users";
 
-export type AuthenticationData = {
-  user: UserData;
-  accessToken: string;
-  refreshToken: string;
+export type AuthenticationData = UserData & {
+  [ACCESS]: string;
+  [REFRESH]: string;
 };
 
-export type NusnetAuthenticationData = {
-  email: string;
-  name: string;
-  nusnetId: string;
+export type OpenIdAuthenticationData = {
+  [EMAIL]: string;
+  [NAME]: string;
+  [USER_ID]: string;
 };

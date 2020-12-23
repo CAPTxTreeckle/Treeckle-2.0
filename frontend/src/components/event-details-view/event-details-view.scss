@@ -1,4 +1,4 @@
-#event-details-view {
+.event-details-view {
   .sign-up-button-container {
     margin-top: 1rem;
   }
@@ -16,18 +16,5 @@
   .categories-label {
     margin-right: 0.5rem;
     white-space: nowrap;
-  }
-
-  .description {
-    white-space: pre-wrap;
-  }
-
-  a {
-    color: #f96332;
-    opacity: 0.85;
-  }
-
-  a:hover {
-    opacity: 1;
   }
 }

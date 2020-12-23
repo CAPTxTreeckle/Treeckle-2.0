@@ -1,29 +1,29 @@
 import React, { useContext } from "react";
 import { Grid, Icon, Image, Label } from "semantic-ui-react";
-import Linkify from "linkifyjs/react";
 import defaultEventPoster from "../../assets/default-event-poster.png";
-import { displayDatetime } from "../../utils/parser";
+import { displayDateTime } from "../../utils/parser-utils";
 import { SingleEventContext } from "../../context-providers";
 import EventSignUpButton from "../event-sign-up-button";
+import TextViewer from "../text-viewer";
 import "./event-details-view.scss";
 
 function EventDetailsView() {
   const { event } = useContext(SingleEventContext);
   const {
     image,
-    eventTitle,
-    organisedBy,
+    title,
+    organizedBy,
     categories,
     description,
-    estimatedCapacity,
+    capacity,
     startDateTime,
     endDateTime,
     venueName,
-  } = event?.eventFormProps ?? {};
+  } = { ...event?.eventFormProps };
 
   return (
     <Grid
-      id="event-details-view"
+      className="event-details-view"
       columns="2"
       stackable
       padded="vertically"
@@ -42,19 +42,19 @@ function EventDetailsView() {
         </div>
       </Grid.Column>
       <Grid.Column width="9">
-        {eventTitle && <h1 className="title">{eventTitle}</h1>}
+        {title && <h1 className="title">{title}</h1>}
 
-        {organisedBy && (
+        {organizedBy && (
           <p>
             <Icon name="user circle" /> <strong>Organised by:</strong>{" "}
-            {organisedBy}
+            {organizedBy}
           </p>
         )}
 
-        {estimatedCapacity && (
+        {capacity && (
           <p>
             <Icon name="users" /> <strong>Estimated capacity:</strong>{" "}
-            {estimatedCapacity}
+            {capacity}
           </p>
         )}
 
@@ -67,14 +67,14 @@ function EventDetailsView() {
         {startDateTime && (
           <p>
             <Icon name="calendar" /> <strong>Start:</strong>{" "}
-            {displayDatetime(startDateTime)}
+            {displayDateTime(startDateTime)}
           </p>
         )}
 
         {endDateTime && (
           <p>
             <Icon name="calendar" /> <strong>End:</strong>{" "}
-            {displayDatetime(endDateTime)}
+            {displayDateTime(endDateTime)}
           </p>
         )}
 
@@ -92,11 +92,7 @@ function EventDetailsView() {
           </div>
         )}
 
-        {description && (
-          <Linkify tagName="div">
-            <div className="description">{description}</div>
-          </Linkify>
-        )}
+        {description && <TextViewer>{description}</TextViewer>}
       </Grid.Column>
     </Grid>
   );

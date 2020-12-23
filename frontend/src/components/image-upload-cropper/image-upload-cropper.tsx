@@ -8,9 +8,15 @@ type Props = {
   onChange?: (value?: string) => void;
   value?: string;
   fixedAspectRatio?: number;
+  modal?: boolean;
 };
 
-function ImageUploadCropper({ onChange, value, fixedAspectRatio }: Props) {
+function ImageUploadCropper({
+  onChange,
+  value,
+  fixedAspectRatio,
+  modal,
+}: Props) {
   const {
     croppedImage,
     uploadedImageData,
@@ -45,6 +51,7 @@ function ImageUploadCropper({ onChange, value, fixedAspectRatio }: Props) {
           image={uploadedImageData}
           onCropImage={onClickCropImage}
           onCancel={onClickCancel}
+          modal={modal}
         />
       );
     }
@@ -52,6 +59,9 @@ function ImageUploadCropper({ onChange, value, fixedAspectRatio }: Props) {
       <FileUploader
         onAcceptFiles={onAcceptImageFile}
         accept={["image/jpeg", "image/png", "image/gif"]}
+        maxFileSize={2000000}
+        title="Drag and drop, or click here to upload image."
+        description="Maximum accepted image size is 2MB."
       />
     );
   };

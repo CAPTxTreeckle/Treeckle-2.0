@@ -1,16 +1,8 @@
 from django.urls import path
 
-from .views import (
-    SingleUserInviteView,
-    SingleUserView,
-    UserInviteView,
-    UsersView,
-)
-
+from .views import UserInvitesView, UsersView
 
 urlpatterns = [
-    path("", UsersView.as_view()),
-    path("<int:user_id>", SingleUserView.as_view()),
-    path("invite", UserInviteView.as_view()),
-    path("invite/<int:user_invite_id>", SingleUserInviteView.as_view()),
+    path("", UsersView.as_view(), name="users"),
+    path("invite", UserInvitesView.as_view(), name="user_invites"),
 ]

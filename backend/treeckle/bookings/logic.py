@@ -1,164 +1,276 @@
-import logging
+from typing import Iterable, Sequence, Optional
+from datetime import datetime
+from collections import namedtuple
 
+from django.db.models import QuerySet, Q
 from django.db import transaction
-from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.parsers import JSONParser
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from datetime import timedelta
 
-# Create your views here.
-from treeckle.models.booking import Booking
-from bookings.BookingSerializer import BookingSerializer
-from bookings.email.create_email_logic import send_creation_email
-from bookings.email.update_status_logic import send_update_email
-from bookings.email.cancellation_email_logic import send_cancellation_email
-from treeckle.models.user import User
-from treeckle.strings.json_keys import AUTHORIZATION
-from users.logic import get_user_by_id
-from authentication import jwt
-from login.views import token_login_data_validate
+from treeckle.common.constants import (
+    ID,
+    CREATED_AT,
+    UPDATED_AT,
+    TITLE,
+    VENUE_NAME,
+    BOOKER,
+    START_DATE_TIME,
+    END_DATE_TIME,
+    STATUS,
+    FORM_RESPONSE_DATA,
+)
+from treeckle.common.parsers import parse_datetime_to_ms_timestamp
+from organizations.models import Organization
+from users.logic import user_to_json
+from users.models import User, Role
+from venues.models import Venue
+from .models import Booking, BookingStatusAction, BookingStatus
 
-logger = logging.getLogger("main")
+DateTimeInterval = namedtuple(
+    "DateTimeInterval", ["start", "end", "is_new"], defaults=[True]
+)
 
-# TODO remove this method
-def get_user_id(request):
-    access_token = request.headers.get(AUTHORIZATION)
-    token_login_data_validate(access_token)
-    user_info = jwt.check_access_token(access_token)
-    return user_info[0]
 
-def get_bookings(id, offset, limit):    
-    return Booking.objects.get_bookings(id, offset, limit)
-    
-def create_bookings(user: User, bookings: list):
-    user_id = user.id
-    new_bookings = []
-    current_user = get_user_by_id(user_id)
-    logger.info(user_id)
-    logger.info(bookings)
-    for booking in bookings:
-        booking["booker"] = user_id
-        serializer = BookingSerializer(data=booking)
-                
-        if not serializer.is_valid():
-            logger.info(serializer.errors)
+def is_intersecting(interval_A: DateTimeInterval, interval_B: DateTimeInterval) -> bool:
+    return not (
+        interval_A.end <= interval_B.start or interval_A.start >= interval_B.end
+    )
+
+
+def get_non_overlapping_date_time_intervals(
+    date_time_intervals: Iterable[DateTimeInterval],
+) -> Sequence[DateTimeInterval]:
+    sorted_date_time_intervals = sorted(date_time_intervals)
+
+    non_overlapping_date_time_intervals = []
+
+    for date_time_interval in sorted_date_time_intervals:
+        while non_overlapping_date_time_intervals and is_intersecting(
+            non_overlapping_date_time_intervals[-1], date_time_interval
+        ):
+            if date_time_interval.is_new:
+                ## does not go to else clause
+                break
+
+            non_overlapping_date_time_intervals.pop()
+        else:
+            ## only adds non-overlapping intervals
+            non_overlapping_date_time_intervals.append(date_time_interval)
+
+    return non_overlapping_date_time_intervals
+
+
+def booking_to_json(booking: Booking):
+    return {
+        ID: booking.id,
+        CREATED_AT: parse_datetime_to_ms_timestamp(booking.created_at),
+        UPDATED_AT: parse_datetime_to_ms_timestamp(booking.updated_at),
+        TITLE: booking.title,
+        BOOKER: user_to_json(booking.booker),
+        VENUE_NAME: booking.venue.name,
+        START_DATE_TIME: parse_datetime_to_ms_timestamp(booking.start_date_time),
+        END_DATE_TIME: parse_datetime_to_ms_timestamp(booking.end_date_time),
+        STATUS: booking.status,
+        FORM_RESPONSE_DATA: booking.form_response_data,
+    }
+
+
+def get_bookings(*args, **kwargs) -> QuerySet[Booking]:
+    return Booking.objects.filter(*args, **kwargs)
+
+
+def get_requested_bookings(
+    organization: Organization,
+    user_id: Optional[int],
+    venue_name: Optional[str],
+    start_date_time: datetime,
+    end_date_time: datetime,
+    status: Optional[BookingStatus],
+) -> QuerySet[Booking]:
+    filtered_bookings = (
+        get_bookings(venue__organization=organization)
+        .exclude(end_date_time__lte=start_date_time)
+        .exclude(start_date_time__gte=end_date_time)
+    )
+
+    if user_id is not None:
+        filtered_bookings = filtered_bookings.filter(booker_id=user_id)
+
+    if venue_name is not None:
+        filtered_bookings = filtered_bookings.filter(venue__name=venue_name)
+
+    if status is not None:
+        filtered_bookings = filtered_bookings.filter(status=status)
+
+    return filtered_bookings.select_related("booker", "venue")
+
+
+def get_valid_new_date_time_intervals(
+    venue: Venue, new_date_time_intervals: Iterable[DateTimeInterval]
+) -> Sequence[DateTimeInterval]:
+    min_start_date_time = min(new_date_time_intervals).start
+    max_end_date_time = max(new_date_time_intervals).end
+
+    existing_bookings_within_range = (
+        get_bookings(venue=venue, status=BookingStatus.APPROVED)
+        .exclude(end_date_time__lte=min_start_date_time)
+        .exclude(start_date_time__gte=max_end_date_time)
+    )
+
+    existing_date_time_intervals = (
+        DateTimeInterval(booking.start_date_time, booking.end_date_time, False)
+        for booking in existing_bookings_within_range
+    )
+
+    date_time_intervals = set(existing_date_time_intervals) | set(
+        new_date_time_intervals
+    )
+
+    valid_date_time_intervals = get_non_overlapping_date_time_intervals(
+        date_time_intervals
+    )
+
+    valid_new_date_time_intervals = [
+        date_time_interval
+        for date_time_interval in valid_date_time_intervals
+        if date_time_interval.is_new
+    ]
+
+    return valid_new_date_time_intervals
+
+
+def create_bookings(
+    title: str,
+    booker: User,
+    venue: Venue,
+    new_date_time_intervals: Iterable[DateTimeInterval],
+    form_response_data: list[dict],
+) -> Sequence[Booking]:
+    if not new_date_time_intervals:
+        return []
+
+    valid_new_date_time_intervals = get_valid_new_date_time_intervals(
+        venue=venue, new_date_time_intervals=new_date_time_intervals
+    )
+    bookings_to_be_created = (
+        Booking(
+            title=title,
+            booker=booker,
+            venue=venue,
+            start_date_time=date_time_interval.start,
+            end_date_time=date_time_interval.end,
+            form_response_data=form_response_data,
+        )
+        for date_time_interval in valid_new_date_time_intervals
+    )
+
+    new_bookings = Booking.objects.bulk_create(bookings_to_be_created)
+
+    return new_bookings
+
+
+def update_booking_statuses(actions: Iterable[dict], user: User) -> Sequence[Booking]:
+    same_organization_bookings = get_bookings(venue__organization=user.organization)
+
+    bookings_to_be_updated = []
+    id_to_previous_booking_status_mapping = {}
+
+    for data in actions:
+        action = data.get("action")
+        booking_id = data.get("booking_id")
+
+        ## prevents multiple actions on same booking
+        if booking_id in id_to_previous_booking_status_mapping:
             continue
-                
-        booker = serializer.validated_data.get("booker")
-        venue = serializer.validated_data.get("venue")
-        form_data = serializer.validated_data.get("form_data")
-        start_date = serializer.validated_data.get("start_date") - timedelta(hours=8)
-        end_date = serializer.validated_data.get("end_date") - timedelta(hours=8)
-        status = serializer.validated_data.get("status")
 
-        if valid_new_booking(start_date, end_date, current_user):
-            new_bookings.append(Booking.objects.create(booker=booker, venue=venue, form_data=form_data, 
-                start_date=start_date, end_date=end_date, status=status))
+        booking_to_be_updated = same_organization_bookings.get(id=booking_id)
+        current_booking_status = booking_to_be_updated.status
 
-    if len(new_bookings) > 0:
-        send_creation_email(new_bookings, user)
+        ## cannot update status of cancelled booking
+        if current_booking_status == BookingStatus.CANCELLED:
+            continue
 
-    return BookingSerializer(new_bookings, many=True)
+        if action == BookingStatusAction.CANCEL:
+            booking_to_be_updated.status = BookingStatus.CANCELLED
+            bookings_to_be_updated.append(booking_to_be_updated)
+            id_to_previous_booking_status_mapping[booking_id] = current_booking_status
+            continue
 
-def delete_bookings(delete_ids: [], id: int):
-    current_user = get_user_by_id(id)
-    return Booking.objects.filter(booker__organisation=current_user.organisation, id__in=delete_ids).delete()
+        ## cannot update to other statuses if user is not admin
+        if user.role != Role.ADMIN:
+            continue
 
-def get_all_bookings(status_id, offset, limit, venue_id, user_id, start_date, end_date):    
-    return Booking.objects.get_all_bookings(status_id, start_date, end_date, offset, limit, venue_id, user_id)
+        if (
+            action == BookingStatusAction.APPROVE
+            and booking_to_be_updated.status != BookingStatus.APPROVED
+        ):
+            booking_to_be_updated.status = BookingStatus.APPROVED
 
-def change_booking_status(status_id, user_id, booking_id):
-    current_user = get_user_by_id(user_id)
+        elif (
+            action == BookingStatusAction.REVOKE
+            and booking_to_be_updated.status != BookingStatus.PENDING
+        ):
+            booking_to_be_updated.status = BookingStatus.PENDING
 
-    booking = Booking.objects.filter(booker__organisation=current_user.organisation).filter(id=booking_id)
+        elif (
+            action == BookingStatusAction.REJECT
+            and booking_to_be_updated.status != BookingStatus.REJECTED
+        ):
+            booking_to_be_updated.status = BookingStatus.REJECTED
+        else:
+            continue
 
-    if len(booking) == 0:
-        return Response({"Error": "Cannot find booking or user not from the same org!"}, status=status.HTTP_400_BAD_REQUEST)
-    
-    booking = booking[0]
-    previous_status = booking.status
+        bookings_to_be_updated.append(booking_to_be_updated)
+        id_to_previous_booking_status_mapping[booking_id] = current_booking_status
 
-     # if status is changed to confirmed -> need to find all pending and put them to rejected status
     with transaction.atomic():
-        prev_status = booking.status
-        booking.status = status_id
-        booking.save()
+        Booking.objects.bulk_update(bookings_to_be_updated, fields=["status"])
 
-    if prev_status != status_id and status_id == 1:
-        logger.info("Applying all changes")
-        update_booking_statuses(booking, current_user)
+        for booking in bookings_to_be_updated:
+            if booking.status != BookingStatus.APPROVED:
+                continue
 
-    response = [booking.to_json()]
+            ## update status value from db and test again
+            booking.refresh_from_db(fields=["status"])
 
-    if status_id == 3 and status_id != previous_status:
-        send_cancellation_email(booking, current_user)
-    else:
-        send_update_email(booking, previous_status) 
-           
-    return Response(response, status=status.HTTP_200_OK)
+            if booking.status != BookingStatus.APPROVED:
+                continue
 
-def update_booking_statuses(booking, current_user):
-    start_date = booking.start_date
-    end_date = booking.end_date
+            ## update all clashing pending/approved bookings to rejected
+            clashing_bookings = (
+                get_bookings(status=BookingStatus.PENDING, venue=booking.venue)
+                .exclude(id=booking.id)
+                .exclude(end_date_time__lte=booking.start_date_time)
+                .exclude(start_date_time__gte=booking.end_date_time)
+            )
 
-    affected_bookings_start = Booking.objects.filter(booker__organisation=current_user.organisation).filter(status=0).filter(start_date__range=(start_date, end_date))
-    affected_bookings_end = Booking.objects.filter(booker__organisation=current_user.organisation).filter(status=0).filter(end_date__range=(start_date, end_date))
-    
-    logger.info(affected_bookings_end)
-    logger.info(affected_bookings_start)
+            for clashing_booking in clashing_bookings:
+                if clashing_booking.id in id_to_previous_booking_status_mapping:
+                    continue
 
-    affected_bookings = get_affected_bookings(affected_bookings_start, affected_bookings_end, start_date, end_date)
+                id_to_previous_booking_status_mapping[
+                    clashing_booking.id
+                ] = clashing_booking.status
 
-    logger.info(affected_bookings)
+            clashing_bookings.update(status=BookingStatus.REJECTED)
 
-    for booking in affected_bookings:
-        booking.status = 2
-        booking.save()
+    updated_bookings = [
+        booking
+        for booking in get_bookings(
+            id__in=id_to_previous_booking_status_mapping
+        ).select_related("booker", "venue")
+    ]
 
-def get_affected_bookings(affected_bookings_start, affected_bookings_end, start_date, end_date) -> set:
-    inserted_bookings = set()
-    affected_bookings = []
+    return updated_bookings, id_to_previous_booking_status_mapping
 
-    for booking in affected_bookings_start:
-        if booking.start_date != end_date and booking.id not in inserted_bookings:
-            affected_bookings.append(booking)
-            inserted_bookings.add(booking.id)
-            
-    
-    for booking in affected_bookings_end:
-        if  booking.end_date != start_date and booking.id not in inserted_bookings:
-            affected_bookings.append(booking)
-            inserted_bookings.add(booking.id)
-    
-    return affected_bookings
 
-def positive_integer_validator(num: [int]) -> bool:
-    for i in num:
-        int_i = get_integer(i)
-        if int_i and int_i < 0:
-            return False
-    
-    return True
+def delete_bookings(
+    booking_ids_to_be_deleted: Iterable[int], organization: Organization
+) -> Sequence[Booking]:
+    bookings_to_be_deleted = get_bookings(
+        venue__organization=organization, id__in=booking_ids_to_be_deleted
+    ).select_related("booker", "venue")
 
-def get_integer(num) -> int:
-    try:
-        return int(num)
-    except:
-        return None
+    deleted_bookings = [booking for booking in bookings_to_be_deleted]
 
-def valid_new_booking(start_date, end_date, current_user):
-    affected_bookings_start = list(Booking.objects.filter(booker__organisation=current_user.organisation).filter(status=1).filter(start_date__range=(start_date, end_date)))
-    affected_bookings_end = list(Booking.objects.filter(booker__organisation=current_user.organisation).filter(status=1).filter(end_date__range=(start_date, end_date)))
+    bookings_to_be_deleted.delete()
 
-    for booking in affected_bookings_end:
-        if booking.end_date == start_date: # above query filters is inclusive, need to remove those
-            affected_bookings_end.remove(booking)
-    
-    for booking in affected_bookings_start:
-        if booking.start_date == end_date:
-            affected_bookings_start.remove(booking)
-
-    return len(affected_bookings_end) == 0 and len(affected_bookings_start) == 0 # both must be empty
+    return deleted_bookings

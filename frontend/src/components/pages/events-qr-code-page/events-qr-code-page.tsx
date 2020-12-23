@@ -13,7 +13,7 @@ function EventsQrCodePage() {
   const qrCodeData = useMemo(
     () =>
       JSON.stringify({
-        type: QrCodeType.EVENT_ATTENDANCE,
+        type: QrCodeType.EventAttendance,
         eventId,
       }),
     [eventId],
@@ -21,8 +21,7 @@ function EventsQrCodePage() {
 
   useEffect(() => {
     getSingleEvent(eventId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [eventId]);
+  }, [getSingleEvent, eventId]);
 
   return (
     <PlaceholderWrapper
@@ -33,8 +32,8 @@ function EventsQrCodePage() {
       inverted
       placeholder
     >
-      <div id="events-qr-code-page">
-        <h1>{event?.eventFormProps?.eventTitle}</h1>
+      <div className="events-qr-code-page">
+        <h1>{event?.eventFormProps?.title}</h1>
         <h2 className="subtitle">
           (Scan using Treeckle's in-app QR code scanner)
         </h2>

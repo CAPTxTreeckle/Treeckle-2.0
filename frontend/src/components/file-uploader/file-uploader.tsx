@@ -7,6 +7,11 @@ type Props = {
   accept?: string | string[];
   multiple?: boolean;
   onAcceptFiles: (files: File[]) => void;
+  maxFileSize?: number;
+  icon?: React.ReactNode;
+  title?: string;
+  description?: string;
+  disabled?: boolean;
 };
 
 const focusedStyle = {
@@ -21,7 +26,16 @@ const rejectStyle = {
   borderColor: "#ff1744",
 };
 
-function FileUploader({ accept, multiple = false, onAcceptFiles }: Props) {
+function FileUploader({
+  accept,
+  multiple = false,
+  onAcceptFiles,
+  maxFileSize,
+  icon = <Icon name="file alternate" />,
+  title = "Drag and drop, or click here to upload file.",
+  description,
+  disabled,
+}: Props) {
   const {
     getRootProps,
     getInputProps,
@@ -32,14 +46,15 @@ function FileUploader({ accept, multiple = false, onAcceptFiles }: Props) {
     accept,
     multiple,
     onDropAccepted: onAcceptFiles,
-    maxSize: 2097152,
+    maxSize: maxFileSize,
+    disabled,
   });
 
   const style = useMemo(
     () => ({
-      ...(isFocused ? focusedStyle : {}),
-      ...(isDragAccept ? acceptStyle : {}),
-      ...(isDragReject ? rejectStyle : {}),
+      ...(isFocused && focusedStyle),
+      ...(isDragAccept && acceptStyle),
+      ...(isDragReject && rejectStyle),
     }),
     [isDragAccept, isFocused, isDragReject],
   );
@@ -53,10 +68,10 @@ function FileUploader({ accept, multiple = false, onAcceptFiles }: Props) {
     >
       <input {...getInputProps()} />
       <Header icon>
-        <Icon name="image" />
-        Drag and Drop, or Click to upload an image.
+        {icon}
+        {title}
       </Header>
-      <p className="upload-prompt">Maximum accepted image size is 2MB.</p>
+      {description && <p className="upload-prompt">{description}</p>}
     </div>
   );
 }

@@ -1,0 +1,12 @@
+.event-gallery-card {
+  .info-container {
+    display: flex;
+    flex-direction: column;
+    .extra-container {
+      margin-top: auto;
+      .message {
+        padding: 0.6rem 1rem;
+      }
+    }
+  }
+}

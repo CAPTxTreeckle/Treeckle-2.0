@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Sidebar, Menu, Container } from "semantic-ui-react";
 import LogoTab from "../logo-tab";
 import DashboardTab from "../dashboard-tab";
@@ -9,6 +9,7 @@ import UserTab from "../user-tab";
 import "./mobile-navigation-bar.scss";
 import { Role } from "../../../types/users";
 import RoleRestrictedWrapper from "../../role-restricted-wrapper";
+import { PendingBookingCountContext } from "../../../context-providers";
 
 type Props = {
   children: React.ReactNode;
@@ -16,6 +17,7 @@ type Props = {
 
 function MobileNavigationBar({ children }: Props) {
   const [isSidebarOpened, setSidebarOpened] = useState(false);
+  const { getPendingBookingCount } = useContext(PendingBookingCountContext);
 
   const onTabClick = () => {
     setSidebarOpened(false);
@@ -23,8 +25,14 @@ function MobileNavigationBar({ children }: Props) {
 
   useEffect(() => () => setSidebarOpened(false), []);
 
+  useEffect(() => {
+    if (isSidebarOpened) {
+      getPendingBookingCount();
+    }
+  }, [isSidebarOpened, getPendingBookingCount]);
+
   return (
-    <Sidebar.Pushable id="mobile-navigation-bar">
+    <Sidebar.Pushable className="mobile-navigation-bar">
       <Sidebar
         as={Menu}
         animation="push"
@@ -36,7 +44,7 @@ function MobileNavigationBar({ children }: Props) {
         <DashboardTab onTabClick={onTabClick} />
         <BookingsTab onTabClick={onTabClick} />
         <EventsTab onTabClick={onTabClick} />
-        <RoleRestrictedWrapper roles={[Role.ADMIN]}>
+        <RoleRestrictedWrapper roles={[Role.Admin]}>
           <MobileAdminTab onTabClick={onTabClick} />
         </RoleRestrictedWrapper>
       </Sidebar>

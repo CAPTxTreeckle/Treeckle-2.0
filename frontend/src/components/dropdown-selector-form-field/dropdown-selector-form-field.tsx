@@ -3,7 +3,7 @@ import { Controller, useFormContext } from "react-hook-form";
 import { DropdownProps, Form } from "semantic-ui-react";
 import get from "lodash.get";
 import { useOptionsState } from "../../custom-hooks";
-import { sanitiseArray } from "../../utils/parser";
+import { sanitizeArray } from "../../utils/parser-utils";
 
 type Props = {
   className?: string;
@@ -23,6 +23,7 @@ type Props = {
     e: React.SyntheticEvent<HTMLElement, Event>,
     data: DropdownProps,
   ) => void;
+  hidden?: boolean;
 };
 
 function DropdownSelectorFormField({
@@ -40,6 +41,7 @@ function DropdownSelectorFormField({
   search = false,
   clearable = false,
   onChangeEffect,
+  hidden = false,
 }: Props) {
   const { options, onSelect } = useOptionsState(defaultOptions);
   const { errors, getValues } = useFormContext();
@@ -52,6 +54,7 @@ function DropdownSelectorFormField({
       rules={{ required }}
       render={({ onChange, onBlur, value }) => (
         <Form.Select
+          style={hidden ? { display: "none" } : undefined}
           className={className}
           loading={isLoadingOptions}
           placeholder={placeholder}
@@ -65,7 +68,7 @@ function DropdownSelectorFormField({
           clearable={clearable}
           onChange={(event, data) => {
             const { value } = data;
-            const trimmedValue = sanitiseArray(
+            const trimmedValue = sanitizeArray(
               Array.isArray(value) ? (value as string[]) : [value as string],
             );
 

@@ -9,8 +9,6 @@ const appMedia = createMedia({
   breakpoints: {
     base: 0,
     mobile: 320,
-    mobileM: 480,
-    mobileL: 640,
     tablet: 768,
     computer: 992,
     largeScreen: 1200,

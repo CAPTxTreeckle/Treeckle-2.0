@@ -2,34 +2,34 @@ import React, { useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Dropdown, Menu, Image } from "semantic-ui-react";
 import { toast } from "react-toastify";
-import { PROFILE_PATH } from "../../../routes";
+import { PROFILE_PATH } from "../../../routes/paths";
 import defaultAvatarImage from "../../../assets/avatar.png";
 import { UserContext } from "../../../context-providers";
 import "./user-tab.scss";
 import QrCodeScannerButton from "../../qr-code-scanner-button";
 
 function UserTab() {
-  const { name, setUser } = useContext(UserContext);
+  const { name, updateUser } = useContext(UserContext);
   const { pathname } = useLocation();
 
   const onSignOut = () => {
-    setUser(null);
+    updateUser(null);
     toast.success("Signed out successfully.");
   };
 
   return (
-    <Menu.Menu id="user-tab" position="right">
+    <Menu.Menu className="user-tab" position="right">
       <QrCodeScannerButton />
       <Menu.Item content={<strong>{name}</strong>} />
 
       <Dropdown
-        active={pathname.startsWith(PROFILE_PATH)}
+        className={pathname.startsWith(PROFILE_PATH) ? "active" : undefined}
         trigger={
           <Image src={defaultAvatarImage} alt="" avatar bordered size="mini" />
         }
-        as={Menu.Item}
         icon={null}
         floating
+        item
       >
         <Dropdown.Menu>
           <Dropdown.Item

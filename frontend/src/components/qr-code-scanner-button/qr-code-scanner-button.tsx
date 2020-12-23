@@ -14,7 +14,23 @@ import { QrCodeType } from "../../types/qr-code";
 
 function QrCodeScannerButton() {
   const [isQrScannerOpened, setQrScannerOpened] = useState(false);
-  const { attendEvent, isLoading } = useAttendEvent();
+  const { attendEvent: _attendEvent, isLoading } = useAttendEvent();
+
+  const attendEvent = useCallback(
+    async (eventId: number) => {
+      try {
+        await _attendEvent(eventId);
+        toast.success("Your attendance for the event has been recorded.", {
+          position: "top-center",
+        });
+      } catch (error) {
+        toast.error("Your attendance for the event cannot be recorded.", {
+          position: "top-center",
+        });
+      }
+    },
+    [_attendEvent],
+  );
 
   const onError = useCallback((error: Error) => {
     toast.error(error?.message ?? "QR code cannot be read.", {
@@ -32,7 +48,7 @@ function QrCodeScannerButton() {
         const data = JSON.parse(dataString);
         const { type }: { type: QrCodeType } = data;
 
-        if (type === QrCodeType.EVENT_ATTENDANCE) {
+        if (type === QrCodeType.EventAttendance) {
           const { eventId }: { eventId: number } = data;
           await attendEvent(eventId);
           return;

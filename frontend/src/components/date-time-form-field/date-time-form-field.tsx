@@ -2,8 +2,7 @@ import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { DateTimeInput } from "semantic-ui-calendar-react";
 import get from "lodash.get";
-import { DATE_TIME_FORMAT } from "../../constants";
-import { displayDatetime, parseDatetime } from "../../utils/parser";
+import { displayDateTime, parseDateTime } from "../../utils/parser-utils";
 
 type Props = {
   className?: string;
@@ -43,12 +42,12 @@ function DateTimeFormField({
               pointing: "below",
             }
           }
-          value={displayDatetime(value)}
-          onChange={(event, { value }) => onChange(parseDatetime(value))}
+          value={displayDateTime(value)}
+          onChange={(event, { value }) => onChange(parseDateTime(value))}
           onBlur={onBlur}
           hideMobileKeyboard
           popupPosition="bottom left"
-          dateTimeFormat={DATE_TIME_FORMAT}
+          dateTimeFormat="DD/MM/YYYY h.mm A"
           preserveViewMode={false}
           closable
         />

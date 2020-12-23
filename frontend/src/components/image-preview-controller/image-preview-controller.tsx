@@ -18,7 +18,7 @@ function ImagePreviewController({
   onChange,
 }: Props) {
   return (
-    <div id="image-preview-controller">
+    <div className="image-preview-controller">
       <Image
         className="preview-image"
         fluid
@@ -31,7 +31,7 @@ function ImagePreviewController({
       {(showBackControl || showChangeControl) && (
         <>
           <Divider />
-          <div className="action-button-container justify-center">
+          <div className="action-container justify-center">
             {showBackControl && (
               <Button
                 type="button"

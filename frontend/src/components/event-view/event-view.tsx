@@ -5,23 +5,23 @@ import { EventViewProps } from "../../types/events";
 import EventDetailsView from "../event-details-view";
 import EventManagementView from "../event-management-view";
 import { Role } from "../../types/users";
-import { parseUserToUserData } from "../../utils/parser";
+import { parseUserToUserData } from "../../utils/parser-utils";
 
 type Props = EventViewProps;
 
 function EventView(props: Props) {
-  const { organiser } = props;
+  const { creator } = props;
   const user = useContext(UserContext);
-  const isValidEventOrganiser = useMemo(
+  const isValidEventOrganizer = useMemo(
     () =>
-      isEqual(organiser, parseUserToUserData(user)) || user.role === Role.ADMIN,
-    [organiser, user],
+      isEqual(creator, parseUserToUserData(user)) || user.role === Role.Admin,
+    [creator, user],
   );
 
   return (
     <SingleEventProvider eventViewProps={props}>
       <EventDetailsView />
-      {isValidEventOrganiser && <EventManagementView />}
+      {isValidEventOrganizer && <EventManagementView />}
     </SingleEventProvider>
   );
 }

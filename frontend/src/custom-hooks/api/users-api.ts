@@ -1,137 +1,217 @@
-import { useCallback, useContext } from "react";
-import { toast } from "react-toastify";
-import { UserContext } from "../../context-providers";
+import { useCallback, useMemo } from "react";
 import { useAxiosWithTokenRefresh } from "./auth-api";
-import { UserData } from "../../types/users";
+import {
+  UserData,
+  UserInviteData,
+  UserInvitePatchData,
+  UserInvitePostData,
+  UserPatchData,
+} from "../../types/users";
+import { errorHandlerWrapper, resolveApiError } from "../../utils/error-utils";
 
-export function useGetUsersFromSameOrganisation() {
-  const { accessToken } = useContext(UserContext);
+export function useGetAllUserInvites() {
   const [
-    {
-      data = {
-        users: [],
-      },
-      loading,
-    },
+    { data: userInvites = [], loading },
     apiCall,
-  ] = useAxiosWithTokenRefresh<{ users: UserData[] }>(
+  ] = useAxiosWithTokenRefresh<UserInviteData[]>(
     {
-      url: "/users/",
+      url: "/users/invite",
       method: "get",
-      headers: { authorization: `${accessToken}` },
     },
     { manual: true },
   );
-  const { users } = data;
 
-  const getUsers = useCallback(async () => {
+  const getAllUserInvites = useCallback(async () => {
     try {
-      const { data = { users: [] } } = await apiCall();
-      console.log("GET /users success:", data.users);
+      return await errorHandlerWrapper(async () => {
+        const { data: userInvites = [] } = await apiCall();
+        console.log("GET /users/invite success:", userInvites);
+        return userInvites;
+      }, "GET /users/invite error:")();
     } catch (error) {
-      console.log("GET /users error:", error, error?.response);
+      resolveApiError(error);
+
+      return [];
     }
   }, [apiCall]);
 
-  return { users, isLoading: loading, getUsers };
+  return { userInvites, isLoading: loading, getAllUserInvites };
 }
 
-export function useDeleteUser() {
-  const { accessToken } = useContext(UserContext);
+export function useCreateUserInvites() {
+  const [{ loading }, apiCall] = useAxiosWithTokenRefresh<UserInviteData[]>(
+    {
+      url: "/users/invite",
+      method: "post",
+    },
+    { manual: true },
+  );
+
+  const createUserInvites = useMemo(
+    () =>
+      errorHandlerWrapper(async (invitations: UserInvitePostData[]) => {
+        const { data: userInvites = [] } = await apiCall({
+          data: { invitations },
+        });
+        console.log("POST /users/invite success:", userInvites);
+
+        if (userInvites.length === 0) {
+          throw new Error("No new users were created.");
+        }
+        return userInvites;
+      }, "POST /users/invite error:"),
+    [apiCall],
+  );
+
+  return {
+    isLoading: loading,
+    createUserInvites,
+  };
+}
+
+export function useUpdateUserInvites() {
+  const [{ loading }, apiCall] = useAxiosWithTokenRefresh<UserInviteData[]>(
+    {
+      url: "/users/invite",
+      method: "patch",
+    },
+    { manual: true },
+  );
+
+  const updateUserInvites = useMemo(
+    () =>
+      errorHandlerWrapper(async (users: UserInvitePatchData[]) => {
+        const { data: updatedUserInvites = [] } = await apiCall({
+          data: { users },
+        });
+        console.log("PATCH /users/invite success:", updatedUserInvites);
+
+        if (updatedUserInvites.length === 0) {
+          throw new Error("No pending registration users were updated.");
+        }
+
+        return updatedUserInvites;
+      }, "PATCH /users/invite error:"),
+    [apiCall],
+  );
+
+  return { isLoading: loading, updateUserInvites };
+}
+
+export function useDeleteUserInvites() {
+  const [{ loading }, apiCall] = useAxiosWithTokenRefresh<string[]>(
+    {
+      url: "/users/invite",
+      method: "delete",
+    },
+    { manual: true },
+  );
+
+  const deleteUserInvites = useMemo(
+    () =>
+      errorHandlerWrapper(async (emails: string[]) => {
+        const { data: deletedEmails = [] } = await apiCall({
+          data: { emails },
+        });
+
+        console.log("DELETE /users/invite success:", deletedEmails);
+
+        if (deletedEmails.length === 0) {
+          throw new Error("No pending registration users were deleted.");
+        }
+
+        return deletedEmails;
+      }, "DELETE /users/invite error:"),
+    [apiCall],
+  );
+
+  return { isLoading: loading, deleteUserInvites };
+}
+
+export function useGetAllExistingUsers() {
+  const [
+    { data: existingUsers = [], loading },
+    apiCall,
+  ] = useAxiosWithTokenRefresh<UserData[]>(
+    {
+      url: "/users/",
+      method: "get",
+    },
+    { manual: true },
+  );
+
+  const getAllExistingUsers = useCallback(async () => {
+    try {
+      return await errorHandlerWrapper(async () => {
+        const { data: existingUsers = [] } = await apiCall();
+        console.log("GET /users/ success:", existingUsers);
+        return existingUsers;
+      }, "GET /users/ error:")();
+    } catch (error) {
+      resolveApiError(error);
+
+      return [];
+    }
+  }, [apiCall]);
+
+  return { existingUsers, isLoading: loading, getAllExistingUsers };
+}
+
+export function useUpdateExistingUsers() {
+  const [{ loading }, apiCall] = useAxiosWithTokenRefresh<UserData[]>(
+    {
+      url: "/users/",
+      method: "patch",
+    },
+    { manual: true },
+  );
+
+  const updateExistingUsers = useMemo(
+    () =>
+      errorHandlerWrapper(async (users: UserPatchData[]) => {
+        const { data: updatedExistingUsers = [] } = await apiCall({
+          data: { users },
+        });
+        console.log("PATCH /users/ success:", updatedExistingUsers);
+
+        if (updatedExistingUsers.length === 0) {
+          throw new Error("No existing users were updated.");
+        }
+
+        return updatedExistingUsers;
+      }, "PATCH /users/ error:"),
+    [apiCall],
+  );
+
+  return { isLoading: loading, updateExistingUsers };
+}
+
+export function useDeleteExistingUsers() {
   const [{ loading }, apiCall] = useAxiosWithTokenRefresh<string[]>(
     {
       url: "/users/",
       method: "delete",
-      headers: { authorization: `${accessToken}` },
     },
     { manual: true },
   );
 
-  const deleteUser = useCallback(
-    async (email: string) => {
-      try {
-        const data = { emails: email };
-        const response = await apiCall({
-          url: `/users/`,
-          data,
+  const deleteExistingUsers = useMemo(
+    () =>
+      errorHandlerWrapper(async (emails: string[]) => {
+        const { data: deletedEmails = [] } = await apiCall({
+          data: { emails },
         });
-        console.log(`DELETE /users/ success:`, response);
-        toast.success("The user has been deleted successfully.");
-        return true;
-      } catch (error) {
-        console.log(`DELETE /users/ fail:`, error, error?.response);
-        toast.error("An unknown error has occurred.");
-        return false;
-      }
-    },
+
+        console.log("DELETE /users/ success:", deletedEmails);
+
+        if (deletedEmails.length === 0) {
+          throw new Error("No existing users were deleted.");
+        }
+
+        return deletedEmails;
+      }, "DELETE /users/ error:"),
     [apiCall],
   );
 
-  return { isLoading: loading, deleteUser };
-}
-
-export function usePatchUserRole() {
-  const { accessToken } = useContext(UserContext);
-  const [{ loading }, apiCall] = useAxiosWithTokenRefresh<string[]>(
-    {
-      method: "patch",
-      headers: { authorization: `${accessToken}` },
-    },
-    { manual: true },
-  );
-
-  const patchUserRole = useCallback(
-    async (id: number, role: string) => {
-      try {
-        const data = { role };
-        const response = await apiCall({
-          url: `/users/${id}`,
-          data,
-        });
-        console.log(`PATCH /users/${id} success:`, response);
-        toast.success("The user has been updated successfully.");
-        return true;
-      } catch (error) {
-        console.log(`PATCH /users/${id} fail:`, error, error?.response);
-        toast.error("An unknown error has occurred.");
-        return false;
-      }
-    },
-    [apiCall],
-  );
-
-  return { isLoading: loading, patchUserRole };
-}
-
-export function useInviteUsers() {
-  const { accessToken } = useContext(UserContext);
-  const [{ loading }, apiCall] = useAxiosWithTokenRefresh<string[]>(
-    {
-      method: "post",
-      headers: { authorization: `${accessToken}` },
-    },
-    { manual: true },
-  );
-
-  const inviteUsers = useCallback(
-    async (emails: string[]) => {
-      try {
-        const data = { emails };
-        const response = await apiCall({
-          url: `/users/invite`,
-          data,
-        });
-        console.log(`POST /users/invite success:`, response);
-        toast.success("An invitation email has been sent to these users.");
-        return true;
-      } catch (error) {
-        console.log(`POST /users/invite fail:`, error, error?.response);
-        toast.error("An unknown error has occurred.");
-        return false;
-      }
-    },
-    [apiCall],
-  );
-
-  return { isLoading: loading, inviteUsers };
+  return { isLoading: loading, deleteExistingUsers };
 }

@@ -24,13 +24,15 @@ import {
   EventsSingleViewPage,
   EventsEditPage,
   EventsQrCodePage,
+  AdminUsersCreationPage,
+  BookingsCreationPage,
 } from "../components/pages";
 import {
   DASHBOARD_PATH,
   BOOKINGS_PATH,
   EVENTS_PATH,
   EVENTS_SIGNED_UP_PATH,
-  EVENTS_RECOMMENDATIONS_PATH,
+  // EVENTS_RECOMMENDATIONS_PATH,
   EVENTS_SUBSCRIPTIONS_PATH,
   EVENTS_OWN_PATH,
   EVENTS_CREATION_PATH,
@@ -46,171 +48,181 @@ import {
   ADMIN_VENUES_PATH,
   ADMIN_VENUES_CREATION_PATH,
   ADMIN_VENUES_EDIT_PATH,
-} from "./index";
-import {
-  AllBookingRequestsProvider,
-  UserContext,
-  VenuesProvider,
-} from "../context-providers";
+  ADMIN_USERS_CREATION_PATH,
+  ADMIN_USERS_PENDING_REGISTRATION_PATH,
+  BOOKINGS_CREATION_PATH,
+} from "./paths";
+import { UserContext, VenuesProvider } from "../context-providers";
 import RoleRestrictedRoute from "./role-restricted-route";
 import { Role } from "../types/users";
-import OwnBookingRequestsProvider from "../context-providers/own-booking-requests-provider";
+import ScrollToTopWrapper from "../components/scroll-to-top-wrapper";
 
 function Routes() {
   const { accessToken } = useContext(UserContext);
 
   return (
     <Router>
-      <LastLocationProvider>
-        <NavigationContainer>
-          <Switch>
-            <Route path={HOME_PATH} exact>
-              {accessToken ? <Redirect to={DASHBOARD_PATH} /> : <HomePage />}
-            </Route>
-
-            {!accessToken && (
-              <Route path={OPEN_ID_PATH}>
-                <OpenIdPage />
+      <ScrollToTopWrapper>
+        <LastLocationProvider>
+          <NavigationContainer>
+            <Switch>
+              <Route path={HOME_PATH} exact>
+                {accessToken ? <Redirect to={DASHBOARD_PATH} /> : <HomePage />}
               </Route>
-            )}
 
-            {!accessToken && (
+              {!accessToken && (
+                <Route path={OPEN_ID_PATH}>
+                  <OpenIdPage />
+                </Route>
+              )}
+
+              {!accessToken && (
+                <Route>
+                  <Redirect to={HOME_PATH} />
+                </Route>
+              )}
+
+              <Route path={DASHBOARD_PATH} exact strict>
+                <DashboardPage />
+              </Route>
+
+              <Route path={BOOKINGS_PATH} exact strict>
+                <BookingsPage />
+              </Route>
+
+              <Route path={BOOKINGS_CREATION_PATH} exact strict>
+                <BookingsCreationPage />
+              </Route>
+
+              <Route path={PROFILE_PATH} exact strict>
+                <ProfilePage />
+              </Route>
+
+              <Route
+                path={[
+                  EVENTS_PATH,
+                  EVENTS_SIGNED_UP_PATH,
+                  // EVENTS_RECOMMENDATIONS_PATH,
+                  EVENTS_SUBSCRIPTIONS_PATH,
+                ]}
+                exact
+                strict
+              >
+                <EventsPage />
+              </Route>
+
+              <RoleRestrictedRoute
+                roles={[Role.Organizer, Role.Admin]}
+                path={EVENTS_OWN_PATH}
+                exact
+                strict
+              >
+                <EventsPage />
+              </RoleRestrictedRoute>
+
+              <RoleRestrictedRoute
+                roles={[Role.Organizer, Role.Admin]}
+                path={EVENTS_CREATION_PATH}
+                exact
+                strict
+              >
+                <EventsCreationPage />
+              </RoleRestrictedRoute>
+
+              <Route path={EVENTS_SINGLE_VIEW_PATH} exact strict>
+                <EventsSingleViewPage />
+              </Route>
+
+              <RoleRestrictedRoute
+                roles={[Role.Organizer, Role.Admin]}
+                path={EVENTS_EDIT_PATH}
+                exact
+                strict
+              >
+                <EventsEditPage />
+              </RoleRestrictedRoute>
+
+              <RoleRestrictedRoute
+                roles={[Role.Organizer, Role.Admin]}
+                path={EVENTS_QR_CODE_PATH}
+                exact
+                strict
+              >
+                <EventsQrCodePage />
+              </RoleRestrictedRoute>
+
+              <RoleRestrictedRoute
+                roles={[Role.Admin]}
+                path={ADMIN_BOOKINGS_PATH}
+                exact
+                strict
+              >
+                <AdminBookingsPage />
+              </RoleRestrictedRoute>
+
+              <RoleRestrictedRoute
+                roles={[Role.Admin]}
+                path={ADMIN_VENUES_PATH}
+                exact
+                strict
+              >
+                <VenuesProvider>
+                  <AdminVenuesPage />
+                </VenuesProvider>
+              </RoleRestrictedRoute>
+
+              <RoleRestrictedRoute
+                roles={[Role.Admin]}
+                path={ADMIN_VENUES_CREATION_PATH}
+                exact
+                strict
+              >
+                <AdminVenuesCreationPage />
+              </RoleRestrictedRoute>
+
+              <RoleRestrictedRoute
+                roles={[Role.Admin]}
+                path={ADMIN_VENUES_EDIT_PATH}
+                exact
+                strict
+              >
+                <AdminVenuesEditPage />
+              </RoleRestrictedRoute>
+
+              <RoleRestrictedRoute
+                roles={[Role.Admin]}
+                path={[ADMIN_USERS_PATH, ADMIN_USERS_PENDING_REGISTRATION_PATH]}
+                exact
+                strict
+              >
+                <AdminUsersPage />
+              </RoleRestrictedRoute>
+
+              <RoleRestrictedRoute
+                roles={[Role.Admin]}
+                path={ADMIN_USERS_CREATION_PATH}
+                exact
+                strict
+              >
+                <AdminUsersCreationPage />
+              </RoleRestrictedRoute>
+
+              <RoleRestrictedRoute
+                roles={[Role.Admin]}
+                path={ADMIN_SETTINGS_PATH}
+                exact
+                strict
+              >
+                <AdminSettingsPage />
+              </RoleRestrictedRoute>
+
               <Route>
                 <Redirect to={HOME_PATH} />
               </Route>
-            )}
-
-            <Route path={DASHBOARD_PATH} exact strict>
-              <DashboardPage />
-            </Route>
-
-            <Route path={BOOKINGS_PATH} exact strict>
-              <OwnBookingRequestsProvider>
-                <BookingsPage />
-              </OwnBookingRequestsProvider>
-            </Route>
-
-            <Route path={PROFILE_PATH} exact strict>
-              <ProfilePage />
-            </Route>
-
-            <Route
-              path={[
-                EVENTS_PATH,
-                EVENTS_SIGNED_UP_PATH,
-                EVENTS_RECOMMENDATIONS_PATH,
-                EVENTS_SUBSCRIPTIONS_PATH,
-              ]}
-              exact
-              strict
-            >
-              <EventsPage />
-            </Route>
-
-            <RoleRestrictedRoute
-              roles={[Role.ORGANIZER, Role.ADMIN]}
-              path={EVENTS_OWN_PATH}
-              exact
-              strict
-            >
-              <EventsPage />
-            </RoleRestrictedRoute>
-
-            <RoleRestrictedRoute
-              roles={[Role.ORGANIZER, Role.ADMIN]}
-              path={EVENTS_CREATION_PATH}
-              exact
-              strict
-            >
-              <EventsCreationPage />
-            </RoleRestrictedRoute>
-
-            <Route path={EVENTS_SINGLE_VIEW_PATH} exact strict>
-              <EventsSingleViewPage />
-            </Route>
-
-            <RoleRestrictedRoute
-              roles={[Role.ORGANIZER, Role.ADMIN]}
-              path={EVENTS_EDIT_PATH}
-              exact
-              strict
-            >
-              <EventsEditPage />
-            </RoleRestrictedRoute>
-
-            <RoleRestrictedRoute
-              roles={[Role.ORGANIZER, Role.ADMIN]}
-              path={EVENTS_QR_CODE_PATH}
-              exact
-              strict
-            >
-              <EventsQrCodePage />
-            </RoleRestrictedRoute>
-
-            <RoleRestrictedRoute
-              roles={[Role.ADMIN]}
-              path={ADMIN_BOOKINGS_PATH}
-              exact
-              strict
-            >
-              <AllBookingRequestsProvider>
-                <AdminBookingsPage />
-              </AllBookingRequestsProvider>
-            </RoleRestrictedRoute>
-
-            <RoleRestrictedRoute
-              roles={[Role.ADMIN]}
-              path={ADMIN_VENUES_PATH}
-              exact
-              strict
-            >
-              <VenuesProvider>
-                <AdminVenuesPage />
-              </VenuesProvider>
-            </RoleRestrictedRoute>
-
-            <RoleRestrictedRoute
-              roles={[Role.ADMIN]}
-              path={ADMIN_VENUES_CREATION_PATH}
-              exact
-              strict
-            >
-              <AdminVenuesCreationPage />
-            </RoleRestrictedRoute>
-
-            <RoleRestrictedRoute
-              roles={[Role.ADMIN]}
-              path={ADMIN_VENUES_EDIT_PATH}
-              exact
-              strict
-            >
-              <AdminVenuesEditPage />
-            </RoleRestrictedRoute>
-
-            <RoleRestrictedRoute
-              roles={[Role.ADMIN]}
-              path={ADMIN_USERS_PATH}
-              exact
-              strict
-            >
-              <AdminUsersPage />
-            </RoleRestrictedRoute>
-
-            <RoleRestrictedRoute
-              roles={[Role.ADMIN]}
-              path={ADMIN_SETTINGS_PATH}
-              exact
-              strict
-            >
-              <AdminSettingsPage />
-            </RoleRestrictedRoute>
-
-            <Route>
-              <Redirect to={HOME_PATH} />
-            </Route>
-          </Switch>
-        </NavigationContainer>
-      </LastLocationProvider>
+            </Switch>
+          </NavigationContainer>
+        </LastLocationProvider>
+      </ScrollToTopWrapper>
     </Router>
   );
 }

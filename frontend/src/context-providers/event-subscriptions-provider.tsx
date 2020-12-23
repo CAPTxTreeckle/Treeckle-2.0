@@ -1,42 +1,43 @@
 import React, { useCallback, useEffect, useState } from "react";
 import {
   useGetSubscribedEvents,
-  useGetSubscriptions,
-  useUpdateSubscriptions,
+  useGetEventCategorySubscriptions,
+  useUpdateEventCategorySubscriptions,
 } from "../custom-hooks/api";
 import {
   EventViewProps,
-  SubscribeAction,
-  SubscriptionData,
+  EventCategorySubscriptionAction,
+  EventCategorySubscriptionData,
 } from "../types/events";
+import { resolveApiError } from "../utils/error-utils";
 
 type EventSubscriptionsContextType = {
   subscribedEvents: EventViewProps[];
-  getSubscriptions: () => Promise<SubscriptionData>;
-  updateSubscriptions: (
-    actions: SubscribeAction[],
-  ) => Promise<SubscriptionData>;
+  getEventCategorySubscriptions: () => Promise<EventCategorySubscriptionData>;
+  updateEventCategorySubscriptions: (
+    actions: EventCategorySubscriptionAction[],
+  ) => Promise<EventCategorySubscriptionData>;
   isLoadingSubscribedEvents: boolean;
   isLoadingEventCategories: boolean;
   subscribedCategories: string[];
-  notSubscribedCategories: string[];
+  nonSubscribedCategories: string[];
 };
 
-export const EventSubscriptionsContext = React.createContext<
-  EventSubscriptionsContextType
->({
-  subscribedEvents: [],
-  getSubscriptions: () => {
-    throw new Error("getSubcriptions not defined");
+export const EventSubscriptionsContext = React.createContext<EventSubscriptionsContextType>(
+  {
+    subscribedEvents: [],
+    getEventCategorySubscriptions: () => {
+      throw new Error("getEventCategorySubscriptions not defined.");
+    },
+    updateEventCategorySubscriptions: () => {
+      throw new Error("updateEventCategorySubscriptions not defined.");
+    },
+    isLoadingSubscribedEvents: false,
+    isLoadingEventCategories: false,
+    subscribedCategories: [],
+    nonSubscribedCategories: [],
   },
-  updateSubscriptions: () => {
-    throw new Error("updateSubscriptions not defined");
-  },
-  isLoadingSubscribedEvents: false,
-  isLoadingEventCategories: false,
-  subscribedCategories: [],
-  notSubscribedCategories: [],
-});
+);
 
 type Props = {
   children: React.ReactNode;
@@ -46,7 +47,7 @@ function EventSubscriptionsProvider({ children }: Props) {
   const [subscribedCategories, setSubscribedCategories] = useState<string[]>(
     [],
   );
-  const [notSubscribedCategories, setNotSubscribedCategories] = useState<
+  const [nonSubscribedCategories, setNonSubscribedCategories] = useState<
     string[]
   >([]);
 
@@ -58,48 +59,60 @@ function EventSubscriptionsProvider({ children }: Props) {
 
   const {
     subscribedCategories: _subscribedCategories,
-    notSubscribedCategories: _notSubscribedCategories,
-    getSubscriptions: _getSubscriptions,
+    nonSubscribedCategories: _nonSubscribedCategories,
+    getEventCategorySubscriptions: _getEventCategorySubscriptions,
     isLoading: isLoadingEventCategories,
-  } = useGetSubscriptions();
+  } = useGetEventCategorySubscriptions();
 
-  const getSubscriptions = useCallback(
-    () => _getSubscriptions(getSubscribedEvents),
-    [_getSubscriptions, getSubscribedEvents],
-  );
+  const getEventCategorySubscriptions = useCallback(async () => {
+    const eventCategorySubscriptions = await _getEventCategorySubscriptions();
+    getSubscribedEvents();
+    return eventCategorySubscriptions;
+  }, [_getEventCategorySubscriptions, getSubscribedEvents]);
 
   useEffect(() => {
     setSubscribedCategories(_subscribedCategories);
-    setNotSubscribedCategories(_notSubscribedCategories);
-  }, [_subscribedCategories, _notSubscribedCategories]);
+    setNonSubscribedCategories(_nonSubscribedCategories);
+  }, [_subscribedCategories, _nonSubscribedCategories]);
 
   const {
-    updateSubscriptions: _updateSubscriptions,
-    subscribedCategories: updatedSubscribedCategories,
-    notSubscribedCategories: updatedNotSubscribedCategories,
-  } = useUpdateSubscriptions();
+    updateEventCategorySubscriptions: _updateEventCategorySubscriptions,
+  } = useUpdateEventCategorySubscriptions();
 
-  const updateSubscriptions = useCallback(
-    (actions: SubscribeAction[]) =>
-      _updateSubscriptions(actions, getSubscribedEvents),
-    [_updateSubscriptions, getSubscribedEvents],
+  const updateEventCategorySubscriptions = useCallback(
+    async (actions: EventCategorySubscriptionAction[]) => {
+      try {
+        const eventCategorySubscriptions = await _updateEventCategorySubscriptions(
+          actions,
+        );
+        const {
+          subscribedCategories: updatedSubscribedCategories,
+          nonSubscribedCategories: updatedNonSubscriptedCategories,
+        } = eventCategorySubscriptions;
+
+        setSubscribedCategories(updatedSubscribedCategories);
+        setNonSubscribedCategories(updatedNonSubscriptedCategories);
+        getSubscribedEvents();
+
+        return eventCategorySubscriptions;
+      } catch (error) {
+        resolveApiError(error);
+        return { subscribedCategories: [], nonSubscribedCategories: [] };
+      }
+    },
+    [_updateEventCategorySubscriptions, getSubscribedEvents],
   );
-
-  useEffect(() => {
-    setSubscribedCategories(updatedSubscribedCategories);
-    setNotSubscribedCategories(updatedNotSubscribedCategories);
-  }, [updatedSubscribedCategories, updatedNotSubscribedCategories]);
 
   return (
     <EventSubscriptionsContext.Provider
       value={{
         subscribedEvents,
-        getSubscriptions,
-        updateSubscriptions,
+        getEventCategorySubscriptions,
+        updateEventCategorySubscriptions,
         isLoadingSubscribedEvents,
         isLoadingEventCategories,
         subscribedCategories,
-        notSubscribedCategories,
+        nonSubscribedCategories,
       }}
     >
       {children}

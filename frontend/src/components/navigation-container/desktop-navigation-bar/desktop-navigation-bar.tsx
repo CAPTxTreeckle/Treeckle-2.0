@@ -22,7 +22,7 @@ function DesktopNavigationBar({ children }: Props) {
         <DashboardTab />
         <BookingsTab />
         <EventsTab />
-        <RoleRestrictedWrapper roles={[Role.ADMIN]}>
+        <RoleRestrictedWrapper roles={[Role.Admin]}>
           <DesktopAdminTab />
         </RoleRestrictedWrapper>
         <UserTab />

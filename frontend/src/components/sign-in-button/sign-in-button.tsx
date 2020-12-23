@@ -15,9 +15,10 @@ function SignInButton() {
   const [isSignInOptionsOpened, setSignInOptionsOpened] = useState(false);
 
   return (
-    <>
+    <div className="sign-in-button-container">
       <Button
-        id="sign-in-button"
+        fluid
+        className="sign-in-button"
         content="Sign In"
         onClick={() => setSignInOptionsOpened(true)}
       />
@@ -35,12 +36,17 @@ function SignInButton() {
             Sign In Options
           </Modal.Header>
           <Modal.Content>
-            <Grid columns="2" textAlign="center" verticalAlign="middle">
+            <Grid
+              columns="2"
+              textAlign="center"
+              verticalAlign="middle"
+              stretched
+            >
               <Grid.Column>
                 <Button
                   onClick={startOpenIdAuth}
                   content="Sign in with NUSNET"
-                  primary
+                  color="blue"
                   fluid
                 />
               </Grid.Column>
@@ -56,7 +62,7 @@ function SignInButton() {
           </Modal.Content>
         </Modal>
       </TransitionablePortal>
-    </>
+    </div>
   );
 }
 

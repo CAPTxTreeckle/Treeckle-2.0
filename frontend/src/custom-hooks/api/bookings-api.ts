@@ -1,155 +1,112 @@
-import { useCallback, useContext } from "react";
-import { toast } from "react-toastify";
-import dayjs from "dayjs";
-import { UserContext } from "../../context-providers";
-import { useAxiosWithTokenRefresh } from "./auth-api";
+import useAxios from "axios-hooks";
+import { useCallback, useMemo, useState } from "react";
+import { useAxiosWithTokenRefresh } from ".";
 import {
-  BookingRequestData,
-  BookingRequestPostData,
+  BookingData,
+  BookingDeleteData,
+  BookingGetQueryParams,
+  BookingPatchData,
+  BookingPostData,
+  BookingStatusAction,
+  BookingViewProps,
 } from "../../types/bookings";
-import { CreateBookingRequestData } from "../../context-providers/create-booking-request-provider";
+import { errorHandlerWrapper, resolveApiError } from "../../utils/error-utils";
+import { parseQueryParamsToUrl } from "../../utils/parser-utils";
 
-interface GetAllBookingRequestsParams {
-  limit?: number;
-  offset?: number;
-  status?: number;
-  start?: number;
-  end?: number;
-  venue?: number;
-}
-
-export function useGetAllBookingRequests() {
-  const { accessToken } = useContext(UserContext);
-  const [
-    { data: bookingRequests = [], loading },
-    apiCall,
-  ] = useAxiosWithTokenRefresh<BookingRequestData[]>(
+export function useGetTotalBookingCount() {
+  const [{ data: totalBookingCount = 0, loading }, apiCall] = useAxios<number>(
     {
-      url: "/bookings/all/",
+      url: "/bookings/totalcount",
       method: "get",
-      headers: { authorization: `${accessToken}` },
     },
     { manual: true },
   );
 
-  const getBookingRequests = useCallback(
-    async (params?: GetAllBookingRequestsParams) => {
-      try {
-        const { data: bookingRequests } = await apiCall({
-          params,
-        });
-        console.log("GET /bookings/all success:", bookingRequests);
-      } catch (error) {
-        console.log("GET /bookings/all error:", error, error?.response);
-      }
-    },
-    [apiCall],
-  );
-
-  return { bookingRequests, isLoading: loading, getBookingRequests };
-}
-
-export function useGetOwnBookingRequests() {
-  const { accessToken } = useContext(UserContext);
-  const [
-    { data: bookingRequests = [], loading },
-    apiCall,
-  ] = useAxiosWithTokenRefresh<BookingRequestData[]>(
-    {
-      url: "/bookings/",
-      method: "get",
-      headers: { authorization: `${accessToken}` },
-    },
-    { manual: true },
-  );
-
-  const getBookingRequests = useCallback(async () => {
+  const getTotalBookingCount = useCallback(async () => {
     try {
-      const { data: bookingRequests } = await apiCall();
-      console.log("GET /bookings/ success:", bookingRequests);
+      const { data: totalBookingCount } = await apiCall();
+
+      console.log(`GET /bookings/totalcount success:`, totalBookingCount);
+
+      return totalBookingCount;
     } catch (error) {
-      console.log("GET /bookings/ error:", error, error?.response);
+      console.log(`GET /bookings/totalcount error:`, error, error?.response);
+
+      return 0;
     }
   }, [apiCall]);
 
-  return { bookingRequests, isLoading: loading, getBookingRequests };
+  return { totalBookingCount, isLoading: loading, getTotalBookingCount };
 }
 
-export function usePatchBookingStatus() {
-  const { accessToken } = useContext(UserContext);
-  const [{ loading }, apiCall] = useAxiosWithTokenRefresh<string[]>(
+export function useGetPendingBookingCount() {
+  const [
+    { data: pendingCount = 0, loading },
+    apiCall,
+  ] = useAxiosWithTokenRefresh<number>(
     {
-      method: "patch",
-      headers: { authorization: `${accessToken}` },
+      url: "/bookings/pendingcount",
+      method: "get",
     },
     { manual: true },
   );
 
-  const patchBookingStatus = useCallback(
-    async (id: number, status: number) => {
+  const getPendingBookingCount = useCallback(async () => {
+    try {
+      return await errorHandlerWrapper(async () => {
+        const { data: pendingCount } = await apiCall();
+
+        console.log("GET /bookings/pendingcount success:", pendingCount);
+
+        return pendingCount;
+      }, "GET /bookings/pendingcount error:")();
+    } catch (error) {
+      resolveApiError(error);
+
+      return 0;
+    }
+  }, [apiCall]);
+
+  return { pendingCount, isLoading: loading, getPendingBookingCount };
+}
+
+export function useGetBookings() {
+  const [bookings, setBookings] = useState<BookingViewProps[]>([]);
+  const [{ loading }, apiCall] = useAxiosWithTokenRefresh<BookingData[]>(
+    {
+      method: "get",
+    },
+    { manual: true },
+  );
+
+  const getBookings = useCallback(
+    async (queryParams?: BookingGetQueryParams) => {
+      const url = parseQueryParamsToUrl("/bookings/", queryParams);
+
       try {
-        const data = { id, status };
-        const response = await apiCall({
-          url: `/bookings/`,
-          data,
-        });
-        console.log(`PATCH /bookings success:`, response);
-        toast.success("The booking request has been updated successfully.");
-        return true;
+        return await errorHandlerWrapper(async () => {
+          const { data: bookings = [] } = await apiCall({ url });
+
+          console.log(`GET ${url} success:`, bookings);
+
+          setBookings(bookings);
+          return bookings;
+        }, `GET ${url} error:`)();
       } catch (error) {
-        console.log(`PATCH /bookings fail:`, error, error?.response);
-        toast.error("An unknown error has occurred.");
-        return false;
+        resolveApiError(error);
+
+        setBookings([]);
+        return [];
       }
     },
     [apiCall],
   );
 
-  return { isLoading: loading, patchBookingStatus };
+  return { bookings, isLoading: loading, getBookings };
 }
 
-function parseBookingRequestFormData(
-  bookingRequestFormData: CreateBookingRequestData,
-  booker: number,
-): BookingRequestPostData[] {
-  const {
-    venueId,
-    startTime,
-    endTime,
-    isOvernight,
-    dates,
-    formData,
-  } = bookingRequestFormData;
-  const data = dates.map((date) => {
-    const start_date = `${dayjs(date).format("YYYY-MM-DD")} ${dayjs(
-      startTime,
-    ).format("HH:mm")}:00`;
-
-    const processedEndDate = isOvernight
-      ? dayjs(date).add(1, "day")
-      : dayjs(date);
-    const end_date = `${processedEndDate.format("YYYY-MM-DD")} ${dayjs(
-      endTime,
-    ).format("HH:mm")}:00`;
-
-    return {
-      venue: venueId,
-      start_date,
-      end_date,
-      status: 0,
-      form_data: JSON.stringify(formData),
-      booker,
-    };
-  });
-
-  console.log(data);
-
-  return data;
-}
-
-export function useCreateBookingRequest() {
-  const { id } = useContext(UserContext);
-  const [{ loading }, apiCall] = useAxiosWithTokenRefresh<BookingRequestData>(
+export function useCreateBookings() {
+  const [{ loading }, apiCall] = useAxiosWithTokenRefresh<BookingData[]>(
     {
       url: "/bookings/",
       method: "post",
@@ -157,27 +114,89 @@ export function useCreateBookingRequest() {
     { manual: true },
   );
 
-  const createBookingRequest = useCallback(
-    async (bookingRequestFormData: CreateBookingRequestData) => {
-      try {
-        const data: BookingRequestPostData[] = parseBookingRequestFormData(
-          bookingRequestFormData,
-          id as number,
-        );
-        const { data: bookingRequest } = await apiCall({
-          data,
+  const createBookings = useMemo(
+    () =>
+      errorHandlerWrapper(async (bookingPostData: BookingPostData) => {
+        console.log("POST /bookings/ data:", bookingPostData);
+
+        const { data: bookings = [] } = await apiCall({
+          data: bookingPostData,
         });
-        console.log("POST /bookings/ success:", bookingRequest);
-        toast.success("Your booking request has been created successfully.");
-        return true;
-      } catch (error) {
-        console.log("POST /bookings/ error:", error, error?.response);
-        toast.error("An unknown error has occurred.");
-        return false;
-      }
-    },
-    [apiCall, id],
+
+        console.log("POST /bookings/ success:", bookings);
+
+        if (bookings.length === 0) {
+          throw new Error("No bookings were created.");
+        }
+
+        return bookings;
+      }, "POST /bookings/ error:"),
+    [apiCall],
   );
 
-  return { createBookingRequest, isLoading: loading };
+  return { isLoading: loading, createBookings };
+}
+
+export function useUpdateBookingStatuses() {
+  const [{ loading }, apiCall] = useAxiosWithTokenRefresh<BookingData[]>(
+    {
+      url: "/bookings/",
+      method: "patch",
+    },
+    { manual: true },
+  );
+
+  const updateBookingStatuses = useMemo(
+    () =>
+      errorHandlerWrapper(async (actions: BookingStatusAction[]) => {
+        const bookingPatchData: BookingPatchData = { actions };
+
+        const { data: bookings = [] } = await apiCall({
+          data: bookingPatchData,
+        });
+
+        console.log(`PATCH /bookings/ success:`, bookings);
+
+        if (bookings.length === 0) {
+          throw new Error("No booking statuses were updated.");
+        }
+
+        return bookings;
+      }, "PATCH /bookings/ error:"),
+    [apiCall],
+  );
+
+  return { updateBookingStatuses, isLoading: loading };
+}
+
+export function useDeleteBookings() {
+  const [{ loading }, apiCall] = useAxiosWithTokenRefresh<BookingData[]>(
+    {
+      url: "/bookings/",
+      method: "delete",
+    },
+    { manual: true },
+  );
+
+  const deleteBookings = useMemo(
+    () =>
+      errorHandlerWrapper(async (ids: number[]) => {
+        const bookingDeleteData: BookingDeleteData = { ids };
+
+        const { data: deletedBookings = [] } = await apiCall({
+          data: bookingDeleteData,
+        });
+
+        console.log(`DELETE /bookings/ success:`, deletedBookings);
+
+        if (deletedBookings.length === 0) {
+          throw new Error("No booking requests were deleted.");
+        }
+
+        return deletedBookings;
+      }, "DELETE /bookings/ error:"),
+    [apiCall],
+  );
+
+  return { deleteBookings, isLoading: loading };
 }

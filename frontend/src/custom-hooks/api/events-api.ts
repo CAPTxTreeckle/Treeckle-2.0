@@ -1,7 +1,4 @@
-import dayjs from "dayjs";
-import { useCallback, useState } from "react";
-import { useHistory } from "react-router-dom";
-import { toast } from "react-toastify";
+import { useCallback, useMemo, useState } from "react";
 import { useAxiosWithTokenRefresh } from ".";
 import {
   EventData,
@@ -10,47 +7,45 @@ import {
   EventPostData,
   EventPutData,
   SignUpData,
-  SignUpStatus,
   EventWithSignUpsData,
   SignUpAction,
   SignUpPatchData,
-  SubscriptionData,
-  SubscribeAction,
+  EventCategorySubscriptionData,
+  EventCategorySubscriptionAction,
 } from "../../types/events";
-import { parseStringToInt } from "../../utils/parser";
-import { defaultArray } from "./default";
+import { errorHandlerWrapper, resolveApiError } from "../../utils/error-utils";
 
 function parseEventFormProps(
   eventFormProps: EventFormProps,
 ): EventPostData | EventPutData {
   const {
-    eventTitle,
-    organisedBy,
+    title,
+    organizedBy,
     venueName,
     categories,
-    estimatedCapacity,
+    capacity,
     startDateTime,
     endDateTime,
     description,
     image,
-    allowSignUp,
-    signUpRequireApproval,
-    publish,
+    isSignUpAllowed,
+    isSignUpApprovalRequired,
+    isPublished,
   } = eventFormProps;
 
   const data: EventPostData | EventPutData = {
-    title: eventTitle,
-    organisedBy,
-    venueName: venueName ?? "",
-    categories: categories ?? [],
-    capacity: parseStringToInt(estimatedCapacity),
-    startDate: dayjs(startDateTime).toDate(),
-    endDate: dayjs(endDateTime).toDate(),
-    description: description ?? "",
-    image: image ?? "",
-    isSignUpAllowed: allowSignUp,
-    isSignUpApprovalRequired: signUpRequireApproval,
-    isPublished: publish,
+    title,
+    organizedBy,
+    venueName,
+    categories,
+    capacity: capacity || null,
+    startDateTime,
+    endDateTime,
+    description,
+    image,
+    isSignUpAllowed,
+    isSignUpApprovalRequired,
+    isPublished,
   };
 
   return data;
@@ -59,12 +54,12 @@ function parseEventFormProps(
 function parseEventData(eventData: EventData): EventViewProps {
   const {
     title,
-    organisedBy,
+    organizedBy,
     venueName,
     categories,
     capacity,
-    startDate,
-    endDate,
+    startDateTime,
+    endDateTime,
     description,
     image,
     isSignUpAllowed,
@@ -75,29 +70,29 @@ function parseEventData(eventData: EventData): EventViewProps {
     id,
     signUpCount,
     signUpStatus,
-    organiser,
+    creator,
   } = eventData;
 
   const eventFormProps: EventFormProps = {
-    eventTitle: title,
-    organisedBy,
+    title,
+    organizedBy,
     venueName,
     categories,
-    estimatedCapacity: capacity ? capacity.toString() : "",
-    startDateTime: new Date(startDate),
-    endDateTime: new Date(endDate),
+    capacity: capacity ?? "",
+    startDateTime,
+    endDateTime,
     description,
-    image: image ?? "",
-    allowSignUp: isSignUpAllowed,
-    signUpRequireApproval: isSignUpApprovalRequired,
-    publish: isPublished,
+    image,
+    isSignUpAllowed,
+    isSignUpApprovalRequired,
+    isPublished,
   };
 
   const eventViewProps: EventViewProps = {
     id,
-    createdAt: new Date(createdAt),
-    updatedAt: new Date(updatedAt),
-    organiser,
+    createdAt,
+    updatedAt,
+    creator,
     signUpCount,
     signUpStatus,
     eventFormProps,
@@ -118,7 +113,7 @@ function parseEventWithSignUpsData(
 
 export function useGetEventCategories() {
   const [
-    { data: eventCategories = defaultArray as string[], loading },
+    { data: eventCategories = [], loading },
     apiCall,
   ] = useAxiosWithTokenRefresh<string[]>(
     {
@@ -130,11 +125,14 @@ export function useGetEventCategories() {
 
   const getEventCategories = useCallback(async () => {
     try {
-      const { data: eventCategories = [] } = await apiCall();
-      console.log("GET /events/categories success:", eventCategories);
-      return eventCategories;
+      return await errorHandlerWrapper(async () => {
+        const { data: eventCategories = [] } = await apiCall();
+        console.log("GET /events/categories success:", eventCategories);
+        return eventCategories;
+      }, "GET /events/categories error:")();
     } catch (error) {
-      console.log("GET /events/categories error:", error, error?.response);
+      resolveApiError(error);
+
       return [];
     }
   }, [apiCall]);
@@ -154,13 +152,17 @@ export function useGetAllEvents() {
 
   const getAllEvents = useCallback(async () => {
     try {
-      const { data: events = [] } = await apiCall();
-      console.log("GET /events/ success:", events);
-      const parsedEvents = events.map((event) => parseEventData(event));
-      setEvents(parsedEvents);
-      return parsedEvents;
+      return await errorHandlerWrapper(async () => {
+        const { data: events = [] } = await apiCall();
+        console.log("GET /events/ success:", events);
+        const parsedEvents = events.map((event) => parseEventData(event));
+        setEvents(parsedEvents);
+        return parsedEvents;
+      }, "GET /events/ error:")();
     } catch (error) {
-      console.log("GET /events/ error:", error, error?.response);
+      resolveApiError(error);
+
+      setEvents([]);
       return [];
     }
   }, [apiCall]);
@@ -168,11 +170,41 @@ export function useGetAllEvents() {
   return { events, isLoading: loading, getAllEvents };
 }
 
+export function useGetPublishedEvents() {
+  const [events, setEvents] = useState<EventViewProps[]>([]);
+  const [{ loading }, apiCall] = useAxiosWithTokenRefresh<EventData[]>(
+    {
+      url: "/events/published",
+      method: "get",
+    },
+    { manual: true },
+  );
+
+  const getPublishedEvents = useCallback(async () => {
+    try {
+      return await errorHandlerWrapper(async () => {
+        const { data: events = [] } = await apiCall();
+        console.log("GET /events/published success:", events);
+        const parsedEvents = events.map((event) => parseEventData(event));
+        setEvents(parsedEvents);
+        return parsedEvents;
+      }, "GET /events/published error:")();
+    } catch (error) {
+      resolveApiError(error);
+
+      setEvents([]);
+      return [];
+    }
+  }, [apiCall]);
+
+  return { events, isLoading: loading, getPublishedEvents };
+}
+
 export function useGetOwnEvents() {
   const [events, setEvents] = useState<EventViewProps[]>([]);
   const [{ loading }, apiCall] = useAxiosWithTokenRefresh<EventData[]>(
     {
-      url: "/events/self",
+      url: "/events/own",
       method: "get",
     },
     { manual: true },
@@ -180,13 +212,17 @@ export function useGetOwnEvents() {
 
   const getOwnEvents = useCallback(async () => {
     try {
-      const { data: events = [] } = await apiCall();
-      console.log("GET /events/self success:", events);
-      const parsedEvents = events.map((event) => parseEventData(event));
-      setEvents(parsedEvents);
-      return parsedEvents;
+      return await errorHandlerWrapper(async () => {
+        const { data: events = [] } = await apiCall();
+        console.log("GET /events/own success:", events);
+        const parsedEvents = events.map((event) => parseEventData(event));
+        setEvents(parsedEvents);
+        return parsedEvents;
+      }, "GET /events/own error:")();
     } catch (error) {
-      console.log("GET /events/self error:", error, error?.response);
+      resolveApiError(error);
+
+      setEvents([]);
       return [];
     }
   }, [apiCall]);
@@ -198,7 +234,7 @@ export function useGetSignedUpEvents() {
   const [events, setEvents] = useState<EventViewProps[]>([]);
   const [{ loading }, apiCall] = useAxiosWithTokenRefresh<EventData[]>(
     {
-      url: "/events/signed_up",
+      url: "/events/signedup",
       method: "get",
     },
     { manual: true },
@@ -206,13 +242,17 @@ export function useGetSignedUpEvents() {
 
   const getSignedUpEvents = useCallback(async () => {
     try {
-      const { data: events = [] } = await apiCall();
-      console.log("GET /events/signed_up success:", events);
-      const parsedEvents = events.map((event) => parseEventData(event));
-      setEvents(parsedEvents);
-      return parsedEvents;
+      return await errorHandlerWrapper(async () => {
+        const { data: events = [] } = await apiCall();
+        console.log("GET /events/signedup success:", events);
+        const parsedEvents = events.map((event) => parseEventData(event));
+        setEvents(parsedEvents);
+        return parsedEvents;
+      }, "GET /events/signedup error:")();
     } catch (error) {
-      console.log("GET /events/signed_up error:", error, error?.response);
+      resolveApiError(error);
+
+      setEvents([]);
       return [];
     }
   }, [apiCall]);
@@ -221,8 +261,6 @@ export function useGetSignedUpEvents() {
 }
 
 export function useCreateEvent() {
-  const history = useHistory();
-
   const [{ loading }, apiCall] = useAxiosWithTokenRefresh<EventData>(
     {
       url: "/events/",
@@ -231,9 +269,9 @@ export function useCreateEvent() {
     { manual: true },
   );
 
-  const createEvent = useCallback(
-    async (eventFormProps: EventFormProps, redirectPath?: string) => {
-      try {
+  const createEvent = useMemo(
+    () =>
+      errorHandlerWrapper(async (eventFormProps: EventFormProps) => {
         const data: EventPostData = parseEventFormProps(eventFormProps);
         console.log("POST /events/ data:", data);
         const { data: event } = await apiCall({
@@ -241,16 +279,10 @@ export function useCreateEvent() {
         });
 
         console.log("POST /events/ success:", event);
-        toast.success("A new event has been created successfully.");
-        redirectPath && history.push(redirectPath);
-        return true;
-      } catch (error) {
-        console.log("POST /events/ error:", error, error?.response);
-        toast.error("An unknown error has occurred.");
-        return false;
-      }
-    },
-    [apiCall, history],
+
+        return event;
+      }, "POST /events/ error:"),
+    [apiCall],
   );
 
   return { createEvent, isLoading: loading };
@@ -264,22 +296,14 @@ export function useDeleteEvent() {
     { manual: true },
   );
 
-  const deleteEvent = useCallback(
-    async (id: number, onSuccess?: () => Promise<unknown> | unknown) => {
-      try {
+  const deleteEvent = useMemo(
+    () =>
+      errorHandlerWrapper(async (eventId: number) => {
         const response = await apiCall({
-          url: `/events/${id}`,
+          url: `/events/${eventId}`,
         });
-        console.log(`DELETE /events/${id} success:`, response);
-        onSuccess?.();
-        toast.success("The event has been deleted successfully.");
-        return true;
-      } catch (error) {
-        console.log(`DELETE /events/${id} error:`, error, error?.response);
-        toast.error("An unknown error has occurred.");
-        return false;
-      }
-    },
+        console.log(`DELETE /events/${eventId} success:`, response);
+      }, "DELETE /events/:eventId error:"),
     [apiCall],
   );
 
@@ -296,18 +320,22 @@ export function useGetSingleEvent() {
   );
 
   const getSingleEvent = useCallback(
-    async (id: number) => {
+    async (eventId: number) => {
       try {
-        const { data: eventWithSignUpsData } = await apiCall({
-          url: `/events/${id}`,
-        });
-        console.log(`GET /events/${id} success:`, eventWithSignUpsData);
-        const parsedEvent = parseEventWithSignUpsData(eventWithSignUpsData);
-        setEvent(parsedEvent);
-        return parsedEvent;
+        return await errorHandlerWrapper(async () => {
+          const { data: eventWithSignUps } = await apiCall({
+            url: `/events/${eventId}`,
+          });
+          console.log(`GET /events/${eventId} success:`, eventWithSignUps);
+          const parsedEvent = parseEventWithSignUpsData(eventWithSignUps);
+          setEvent(parsedEvent);
+          return parsedEvent;
+        }, `GET /events/${eventId} error:`)();
       } catch (error) {
-        console.log(`GET /events/${id} error:`, error, error?.response);
+        resolveApiError(error);
+
         setEvent(undefined);
+        return undefined;
       }
     },
     [apiCall],
@@ -317,7 +345,6 @@ export function useGetSingleEvent() {
 }
 
 export function useUpdateEvent() {
-  const history = useHistory();
   const [{ loading }, apiCall] = useAxiosWithTokenRefresh<EventData>(
     {
       method: "put",
@@ -325,137 +352,90 @@ export function useUpdateEvent() {
     { manual: true },
   );
 
-  const updateEvent = useCallback(
-    async (
-      id: number,
-      eventFormProps: EventFormProps,
-      redirectPath?: string,
-    ) => {
-      try {
-        const data: EventPutData = parseEventFormProps(eventFormProps);
-        const { data: event } = await apiCall({
-          url: `/events/${id}`,
-          data,
-        });
-        console.log(`PUT /events/${id} success:`, event);
-        toast.success("The event has been updated successfully.");
-        redirectPath && history.push(redirectPath);
-        return true;
-      } catch (error) {
-        console.log(`PUT /events/${id} error:`, error, error?.response);
-        toast.error("An unknown error has occurred.");
-        return false;
-      }
-    },
-    [apiCall, history],
+  const updateEvent = useMemo(
+    () =>
+      errorHandlerWrapper(
+        async (eventId: number, eventFormProps: EventFormProps) => {
+          const data: EventPutData = parseEventFormProps(eventFormProps);
+          const { data: event } = await apiCall({
+            url: `/events/${eventId}`,
+            data,
+          });
+          console.log(`PUT /events/${eventId} success:`, event);
+
+          return event;
+        },
+        "PUT /events/:eventId error:",
+      ),
+    [apiCall],
   );
 
   return { updateEvent, isLoading: loading };
 }
 
 export function useSignUpForEvent() {
-  const [, apiCall] = useAxiosWithTokenRefresh<SignUpData>(
+  const [{ loading }, apiCall] = useAxiosWithTokenRefresh<SignUpData>(
     {
       method: "post",
     },
     { manual: true },
   );
-  const [isLoading, setLoading] = useState(false);
 
-  const signUpForEvent = useCallback(
-    async (id: number, onSuccess?: () => Promise<unknown> | unknown) => {
-      try {
-        setLoading(true);
-        const { data: signUpData } = await apiCall({
-          url: `/events/${id}/self_sign_up`,
+  const signUpForEvent = useMemo(
+    () =>
+      errorHandlerWrapper(async (eventId: number) => {
+        const { data: signUp } = await apiCall({
+          url: `/events/${eventId}/selfsignup`,
         });
-        console.log(`POST /events/${id}/self_sign_up success:`, signUpData);
-        const { status } = signUpData;
-        await onSuccess?.();
-        toast.success(
-          status === SignUpStatus.PENDING
-            ? "You have requested to sign up for the event."
-            : "You have successfully signed up for the event.",
-        );
-      } catch (error) {
-        console.log(
-          `POST /events/${id}/self_sign_up error:`,
-          error,
-          error?.response,
-        );
-        toast.error("An unknown error has occurred.");
-      } finally {
-        setLoading(false);
-      }
-    },
+        console.log(`POST /events/${eventId}/selfsignup success:`, signUp);
+
+        return signUp;
+      }, "POST /events/:eventId/selfsignup error:"),
     [apiCall],
   );
 
-  return { signUpForEvent, isLoading };
+  return { signUpForEvent, isLoading: loading };
 }
 
 export function useWithdrawFromEvent() {
-  const [, apiCall] = useAxiosWithTokenRefresh(
+  const [{ loading }, apiCall] = useAxiosWithTokenRefresh(
     {
       method: "delete",
     },
     { manual: true },
   );
-  const [isLoading, setLoading] = useState(false);
 
-  const withdrawFromEvent = useCallback(
-    async (id: number, onSuccess?: () => Promise<unknown> | unknown) => {
-      try {
-        setLoading(true);
-        const response = await apiCall({ url: `/events/${id}/self_sign_up` });
-        console.log(`DELETE /events/${id}/self_sign_up success:`, response);
-        await onSuccess?.();
-        toast.success("You have successfully withdrawn from the event.");
-      } catch (error) {
-        console.log(
-          `DELETE /events/${id}/self_sign_up error:`,
-          error,
-          error?.response,
-        );
-        toast.error("An unknown error has occurred.");
-      } finally {
-        setLoading(false);
-      }
-    },
+  const withdrawFromEvent = useMemo(
+    () =>
+      errorHandlerWrapper(async (eventId: number) => {
+        const response = await apiCall({
+          url: `/events/${eventId}/selfsignup`,
+        });
+        console.log(`DELETE /events/${eventId}/selfsignup success:`, response);
+      }, "DELETE /events/:eventId/selfsignup error:"),
     [apiCall],
   );
 
-  return { withdrawFromEvent, isLoading };
+  return { withdrawFromEvent, isLoading: loading };
 }
 
 export function useAttendEvent() {
-  const [{ loading }, apiCall] = useAxiosWithTokenRefresh(
+  const [{ loading }, apiCall] = useAxiosWithTokenRefresh<SignUpData>(
     {
       method: "patch",
     },
     { manual: true },
   );
 
-  const attendEvent = useCallback(
-    async (id: number, onSuccess?: () => Promise<unknown> | unknown) => {
-      try {
-        const response = await apiCall({ url: `/events/${id}/self_sign_up` });
-        console.log(`PATCH /events/${id}/self_sign_up success:`, response);
-        onSuccess?.();
-        toast.success("Your attendance for the event has been recorded.", {
-          position: "top-center",
+  const attendEvent = useMemo(
+    () =>
+      errorHandlerWrapper(async (eventId: number) => {
+        const { data: signUp } = await apiCall({
+          url: `/events/${eventId}/selfsignup`,
         });
-      } catch (error) {
-        console.log(
-          `PATCH /events/${id}/self_sign_up error:`,
-          error,
-          error?.response,
-        );
-        toast.error("Your attendance for the event cannot be recorded.", {
-          position: "top-center",
-        });
-      }
-    },
+        console.log(`PATCH /events/${eventId}/selfsignup success:`, signUp);
+        return signUp;
+      }, "PATCH /events/:eventId/selfsignup error:"),
     [apiCall],
   );
 
@@ -463,47 +443,29 @@ export function useAttendEvent() {
 }
 
 export function useUpdateSignUpsForEvent() {
-  const [, apiCall] = useAxiosWithTokenRefresh(
+  const [{ loading }, apiCall] = useAxiosWithTokenRefresh<SignUpData[]>(
     {
       method: "patch",
     },
     { manual: true },
   );
-  const [isLoading, setLoading] = useState(false);
 
-  const updateSignUpsForEvent = useCallback(
-    async (
-      eventId: number,
-      actions: SignUpAction[],
-      onSuccess?: () => Promise<unknown> | unknown,
-    ) => {
-      try {
-        setLoading(true);
+  const updateSignUpsForEvent = useMemo(
+    () =>
+      errorHandlerWrapper(async (eventId: number, actions: SignUpAction[]) => {
         const data: SignUpPatchData = { actions };
-        const response = await apiCall({
-          url: `/events/${eventId}/sign_up`,
+        const { data: signUps = [] } = await apiCall({
+          url: `/events/${eventId}/signup`,
           data,
         });
-        console.log(`PATCH /events/${eventId}/sign_up success:`, response);
-        await onSuccess?.();
-        toast.success("Event sign-ups updated successfully.");
-        return true;
-      } catch (error) {
-        console.log(
-          `PATCH /events/${eventId}/sign_up error:`,
-          error,
-          error?.response,
-        );
-        toast.error("An unknown error has occurred.");
-        return false;
-      } finally {
-        setLoading(false);
-      }
-    },
+        console.log(`PATCH /events/${eventId}/signup success:`, signUps);
+
+        return signUps;
+      }, "PATCH /events/:eventId/signup error:"),
     [apiCall],
   );
 
-  return { updateSignUpsForEvent, isLoading };
+  return { updateSignUpsForEvent, isLoading: loading };
 }
 
 export function useGetRecommendedEvents() {
@@ -518,13 +480,16 @@ export function useGetRecommendedEvents() {
 
   const getRecommendedEvents = useCallback(async () => {
     try {
-      const { data: events = [] } = await apiCall();
-      console.log("GET /events/recommended success:", events);
-      const parsedEvents = events.map((event) => parseEventData(event));
-      setEvents(parsedEvents);
-      return parsedEvents;
+      return await errorHandlerWrapper(async () => {
+        const { data: events = [] } = await apiCall();
+        console.log("GET /events/recommended success:", events);
+        const parsedEvents = events.map((event) => parseEventData(event));
+        setEvents(parsedEvents);
+        return parsedEvents;
+      }, "GET /events/recommended error:")();
     } catch (error) {
-      console.log("GET /events/recommended error:", error, error?.response);
+      resolveApiError(error);
+
       return [];
     }
   }, [apiCall]);
@@ -532,17 +497,17 @@ export function useGetRecommendedEvents() {
   return { events, isLoading: loading, getRecommendedEvents };
 }
 
-export function useGetSubscriptions() {
+export function useGetEventCategorySubscriptions() {
+  const [subscribedCategories, setSubscribedCategories] = useState<string[]>(
+    [],
+  );
+  const [nonSubscribedCategories, setNonSubscribedCategories] = useState<
+    string[]
+  >([]);
   const [
-    {
-      data: {
-        subscribedCategories = defaultArray as string[],
-        notSubscribedCategories = defaultArray as string[],
-      } = {},
-      loading,
-    },
+    { loading },
     apiCall,
-  ] = useAxiosWithTokenRefresh<SubscriptionData>(
+  ] = useAxiosWithTokenRefresh<EventCategorySubscriptionData>(
     {
       url: "/events/categories/subscriptions",
       method: "get",
@@ -550,38 +515,41 @@ export function useGetSubscriptions() {
     { manual: true },
   );
 
-  const getSubscriptions = useCallback(
-    async (onSuccess?: () => Promise<unknown> | unknown) => {
-      try {
+  const getEventCategorySubscriptions = useCallback(async () => {
+    try {
+      return await errorHandlerWrapper(async () => {
         const {
-          data: subscriptions = {
+          data: eventCategorySubscriptions = {
             subscribedCategories: [],
-            notSubscribedCategories: [],
+            nonSubscribedCategories: [],
           },
         } = await apiCall();
         console.log(
           "GET /events/categories/subscriptions success:",
-          subscriptions,
+          eventCategorySubscriptions,
         );
-        onSuccess?.();
-        return subscriptions;
-      } catch (error) {
-        console.log(
-          "GET /events/categories/subscriptions error:",
-          error,
-          error?.response,
+
+        setSubscribedCategories(
+          eventCategorySubscriptions.subscribedCategories,
         );
-        return { subscribedCategories: [], notSubscribedCategories: [] };
-      }
-    },
-    [apiCall],
-  );
+        setNonSubscribedCategories(
+          eventCategorySubscriptions.nonSubscribedCategories,
+        );
+
+        return eventCategorySubscriptions;
+      }, "GET /events/categories/subscriptions error:")();
+    } catch (error) {
+      resolveApiError(error);
+
+      return { subscribedCategories: [], nonSubscribedCategories: [] };
+    }
+  }, [apiCall]);
 
   return {
     subscribedCategories,
-    notSubscribedCategories,
+    nonSubscribedCategories,
     isLoading: loading,
-    getSubscriptions,
+    getEventCategorySubscriptions,
   };
 }
 
@@ -597,13 +565,17 @@ export function useGetSubscribedEvents() {
 
   const getSubscribedEvents = useCallback(async () => {
     try {
-      const { data: events = [] } = await apiCall();
-      console.log("GET /events/subscribed success:", events);
-      const parsedEvents = events.map((event) => parseEventData(event));
-      setEvents(parsedEvents);
-      return parsedEvents;
+      return await errorHandlerWrapper(async () => {
+        const { data: events = [] } = await apiCall();
+        console.log("GET /events/subscribed success:", events);
+        const parsedEvents = events.map((event) => parseEventData(event));
+        setEvents(parsedEvents);
+        return parsedEvents;
+      }, "GET /events/subscribed error:")();
     } catch (error) {
-      console.log("GET /events/subscribed error:", error, error?.response);
+      resolveApiError(error);
+
+      setEvents([]);
       return [];
     }
   }, [apiCall]);
@@ -611,17 +583,17 @@ export function useGetSubscribedEvents() {
   return { events, isLoading: loading, getSubscribedEvents };
 }
 
-export function useUpdateSubscriptions() {
+export function useUpdateEventCategorySubscriptions() {
+  const [subscribedCategories, setSubscribedCategories] = useState<string[]>(
+    [],
+  );
+  const [nonSubscribedCategories, setNonSubscribedCategories] = useState<
+    string[]
+  >([]);
   const [
-    {
-      data: {
-        subscribedCategories = defaultArray as string[],
-        notSubscribedCategories = defaultArray as string[],
-      } = {},
-      loading,
-    },
+    { loading },
     apiCall,
-  ] = useAxiosWithTokenRefresh<SubscriptionData>(
+  ] = useAxiosWithTokenRefresh<EventCategorySubscriptionData>(
     {
       url: "/events/categories/subscriptions",
       method: "patch",
@@ -629,40 +601,39 @@ export function useUpdateSubscriptions() {
     { manual: true },
   );
 
-  const updateSubscriptions = useCallback(
-    async (
-      actions: SubscribeAction[],
-      onSuccess?: () => Promise<unknown> | unknown,
-    ) => {
-      try {
-        const {
-          data: subscriptions = {
-            subscribedCategories: [],
-            notSubscribedCategories: [],
-          },
-        } = await apiCall({ data: { actions } });
-        console.log(
-          "PATCH /events/categories/subscriptions success:",
-          subscriptions,
-        );
-        onSuccess?.();
-        return subscriptions;
-      } catch (error) {
-        console.log(
-          "PATCH /events/categories/subscriptions error:",
-          error,
-          error?.response,
-        );
-        return { subscribedCategories: [], notSubscribedCategories: [] };
-      }
-    },
+  const updateEventCategorySubscriptions = useMemo(
+    () =>
+      errorHandlerWrapper(
+        async (actions: EventCategorySubscriptionAction[]) => {
+          const {
+            data: eventCategorySubscriptions = {
+              subscribedCategories: [],
+              nonSubscribedCategories: [],
+            },
+          } = await apiCall({ data: { actions } });
+          console.log(
+            "PATCH /events/categories/subscriptions success:",
+            eventCategorySubscriptions,
+          );
+
+          setSubscribedCategories(
+            eventCategorySubscriptions.subscribedCategories,
+          );
+          setNonSubscribedCategories(
+            eventCategorySubscriptions.nonSubscribedCategories,
+          );
+
+          return eventCategorySubscriptions;
+        },
+        "PATCH /events/categories/subscriptions error:",
+      ),
     [apiCall],
   );
 
   return {
     subscribedCategories,
-    notSubscribedCategories,
+    nonSubscribedCategories,
     isLoading: loading,
-    updateSubscriptions,
+    updateEventCategorySubscriptions,
   };
 }

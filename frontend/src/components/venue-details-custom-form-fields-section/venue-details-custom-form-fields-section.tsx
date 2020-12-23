@@ -7,12 +7,21 @@ import {
 } from "react-beautiful-dnd";
 import { useFieldArray } from "react-hook-form";
 import { Button, Form, Popup } from "semantic-ui-react";
-import { VENUE_DETAILS_CUSTOM_FORM_FIELDS_SECTION } from "../../constants";
+import { CUSTOM_VENUE_BOOKING_FORM_FIELDS } from "../../constants";
+import {
+  FieldType,
+  CustomVenueBookingFormFieldProps,
+} from "../../types/venues";
 import VenueDetailsCustomFormField from "../venue-details-custom-form-field";
 
 function VenueDetailsCustomFormFieldsSection() {
-  const { fields, append, remove, move } = useFieldArray({
-    name: VENUE_DETAILS_CUSTOM_FORM_FIELDS_SECTION,
+  const {
+    fields,
+    append,
+    remove,
+    move,
+  } = useFieldArray<CustomVenueBookingFormFieldProps>({
+    name: CUSTOM_VENUE_BOOKING_FORM_FIELDS,
   });
 
   const onDragEnd = ({ destination, source }: DropResult) => {
@@ -34,45 +43,46 @@ function VenueDetailsCustomFormFieldsSection() {
     <>
       <Form.Field>
         <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable droppableId={VENUE_DETAILS_CUSTOM_FORM_FIELDS_SECTION}>
-            {(provided) => (
-              <div ref={provided.innerRef} {...provided.droppableProps}>
-                {fields.map((field, index) => {
-                  const {
-                    id,
-                    fieldLabel = "",
-                    placeholderText = "",
-                    fieldType = "text",
-                    requiredField = false,
-                  } = field;
-                  return (
-                    <Draggable
-                      key={id}
-                      index={index}
-                      draggableId={id ?? `${index}`}
-                    >
-                      {(provided) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                        >
-                          <VenueDetailsCustomFormField
-                            index={index}
-                            onDeleteField={() => remove(index)}
-                            defaultValues={{
-                              fieldLabel,
-                              placeholderText,
-                              fieldType,
-                              requiredField,
-                            }}
-                            dragHandleProps={provided.dragHandleProps}
-                          />
-                        </div>
-                      )}
-                    </Draggable>
-                  );
-                })}
-                {provided.placeholder}
+          <Droppable droppableId={CUSTOM_VENUE_BOOKING_FORM_FIELDS}>
+            {({ innerRef, droppableProps, placeholder }) => (
+              <div ref={innerRef} {...droppableProps}>
+                {fields.map(
+                  (
+                    {
+                      id,
+                      fieldLabel = "",
+                      placeholderText = "",
+                      fieldType = FieldType.Text,
+                      requiredField = false,
+                    },
+                    index,
+                  ) => {
+                    return (
+                      <Draggable
+                        key={id}
+                        index={index}
+                        draggableId={id ?? `${index}`}
+                      >
+                        {({ innerRef, draggableProps, dragHandleProps }) => (
+                          <div ref={innerRef} {...draggableProps}>
+                            <VenueDetailsCustomFormField
+                              index={index}
+                              onDeleteField={() => remove(index)}
+                              defaultValues={{
+                                fieldLabel,
+                                placeholderText,
+                                fieldType,
+                                requiredField,
+                              }}
+                              dragHandleProps={dragHandleProps}
+                            />
+                          </div>
+                        )}
+                      </Draggable>
+                    );
+                  },
+                )}
+                {placeholder}
               </div>
             )}
           </Droppable>
