@@ -1,23 +1,34 @@
-import logging
+from rest_framework.exceptions import NotFound, PermissionDenied
 
-from rest_framework import status
-from rest_framework.response import Response
-
-from treeckle.models.user import User
-from venues.logic import get_venue_by_id
+from users.models import User
+from .models import Venue
+from .logic import get_venues
 
 
-logger = logging.getLogger("main")
-
-def validate_venue_same_organisation(view_method):
-    def _arguments_wrapper(instance, request, requester: User, venue_id: int, *args, **kwargs) :
+def check_user_venue_same_organization(view_method):
+    def _arguments_wrapper(
+        instance, request, requester: User, venue_id: int, *args, **kwargs
+    ):
         try:
-            venue = get_venue_by_id(venue_id)
-            if venue.organisation != requester.organisation:
-                return Response(status=status.HTTP_401_UNAUTHORIZED)
-        except Exception as e:
-            logger.info(e)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            venue = (
+                get_venues(id=venue_id).select_related("category", "organization").get()
+            )
 
-        return view_method(instance, request, requester=requester, venue_id=venue_id, *args, **kwargs)
+            if venue.organization != requester.organization:
+                raise PermissionDenied(
+                    "User and venue are in different organization.",
+                    code="wrong_organization",
+                )
+
+        except (
+            Venue.DoesNotExist,
+            Venue.MultipleObjectsReturned,
+            PermissionDenied,
+        ) as e:
+            raise NotFound("No venue found.", code="no_venue_found")
+
+        return view_method(
+            instance, request, requester=requester, venue=venue, *args, **kwargs
+        )
+
     return _arguments_wrapper

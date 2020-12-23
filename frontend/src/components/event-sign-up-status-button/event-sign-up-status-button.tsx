@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo } from "react";
+import React, { useContext, useMemo } from "react";
 import { Button } from "semantic-ui-react";
 import { SingleEventContext } from "../../context-providers";
 import { SignUpActionType, SignUpStatus } from "../../types/events";
@@ -18,36 +18,46 @@ function SignUpStatusButton({ userId, signUpStatus }: Props) {
     userId,
   ]);
 
-  const onAttend = useCallback(
-    () => updateSignUpsForEvent([{ action: SignUpActionType.Attend, userId }]),
-    [updateSignUpsForEvent, userId],
-  );
-
-  const onApprove = useCallback(
-    () => updateSignUpsForEvent([{ action: SignUpActionType.Confirm, userId }]),
-    [updateSignUpsForEvent, userId],
-  );
-
-  const onReject = useCallback(
-    () => updateSignUpsForEvent([{ action: SignUpActionType.Reject, userId }]),
-    [updateSignUpsForEvent, userId],
-  );
-
   const attendButton = useMemo(
-    () => <Button key={0} content="Attend" color="teal" onClick={onAttend} />,
-    [onAttend],
+    () => (
+      <Button
+        key="attend"
+        content="Attend"
+        color="teal"
+        onClick={() =>
+          updateSignUpsForEvent([{ action: SignUpActionType.Attend, userId }])
+        }
+      />
+    ),
+    [updateSignUpsForEvent, userId],
   );
 
   const approveButton = useMemo(
     () => (
-      <Button key={1} content="Approve" color="green" onClick={onApprove} />
+      <Button
+        key="approve"
+        content="Approve"
+        color="green"
+        onClick={() =>
+          updateSignUpsForEvent([{ action: SignUpActionType.Confirm, userId }])
+        }
+      />
     ),
-    [onApprove],
+    [updateSignUpsForEvent, userId],
   );
 
   const rejectButton = useMemo(
-    () => <Button key={2} content="Reject" color="red" onClick={onReject} />,
-    [onReject],
+    () => (
+      <Button
+        key="reject"
+        content="Reject"
+        color="red"
+        onClick={() =>
+          updateSignUpsForEvent([{ action: SignUpActionType.Reject, userId }])
+        }
+      />
+    ),
+    [updateSignUpsForEvent, userId],
   );
 
   const actionButtons = useMemo(() => {

@@ -24,7 +24,7 @@ function EventManagementView() {
         <Table.HeaderCell content="Name" />
         <Table.HeaderCell content="Email" />
         <Table.HeaderCell content="Signed up at" />
-        <Table.HeaderCell content="Status" />
+        <Table.HeaderCell textAlign="center" content="Status" />
       </Table.Row>
     ),
     [],
@@ -100,6 +100,7 @@ function EventManagementView() {
         <Table.Cell content={displayDateTime(createdAt)} />
         <Table.Cell
           collapsing
+          className="horizontal-space-margin"
           content={
             <EventSignUpStatusButton userId={userId} signUpStatus={status} />
           }
@@ -115,7 +116,7 @@ function EventManagementView() {
         Sign-Ups{" "}
         <Popup
           content="Refresh"
-          trigger={<Icon name="refresh" link onClick={refreshEvent} />}
+          trigger={<Icon name="redo" link onClick={refreshEvent} />}
           position="top center"
           on="hover"
         />{" "}
@@ -144,6 +145,7 @@ function EventManagementView() {
         inverted
       >
         <Table
+          selectable
           headerRow={headerRow}
           renderBodyRow={renderBodyRow}
           footerRow={footerRow}

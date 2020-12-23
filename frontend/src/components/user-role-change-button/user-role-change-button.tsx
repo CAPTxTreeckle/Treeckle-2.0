@@ -1,4 +1,11 @@
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Button, Popup } from "semantic-ui-react";
 import {
   Role,
@@ -22,60 +29,61 @@ function UserRoleChangeButton({ userId, currentRole, updateUsers }: Props) {
     PopUpActionsWrapperContext,
   );
   const [isUpdating, setUpdating] = useState(false);
+  const isMounted = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   const updateExistingUserRole = useCallback(
     async (newRole: Role) => {
       setUpdating(true);
       await updateUsers([{ id: userId, role: newRole }]);
-      setUpdating(false);
-      closePopUp();
+
+      if (isMounted.current) {
+        setUpdating(false);
+        closePopUp();
+      }
     },
     [userId, updateUsers, closePopUp],
   );
 
-  const onMakeAdmin = useCallback(() => updateExistingUserRole(Role.Admin), [
-    updateExistingUserRole,
-  ]);
-
-  const onMakeOrganizer = useCallback(
-    () => updateExistingUserRole(Role.Organizer),
-    [updateExistingUserRole],
-  );
-
-  const onMakeResident = useCallback(
-    () => updateExistingUserRole(Role.Resident),
-    [updateExistingUserRole],
-  );
-
   const makeAdminButton = useMemo(
     () => (
-      <Button key={0} content="Make Admin" color="blue" onClick={onMakeAdmin} />
+      <Button
+        key="make admin"
+        content="Make Admin"
+        color="blue"
+        onClick={() => updateExistingUserRole(Role.Admin)}
+      />
     ),
-    [onMakeAdmin],
+    [updateExistingUserRole],
   );
 
   const makeOrganizerButton = useMemo(
     () => (
       <Button
-        key={1}
+        key="make organizer"
         content="Make Organizer"
         color="blue"
-        onClick={onMakeOrganizer}
+        onClick={() => updateExistingUserRole(Role.Organizer)}
       />
     ),
-    [onMakeOrganizer],
+    [updateExistingUserRole],
   );
 
   const makeResidentButton = useMemo(
     () => (
       <Button
-        key={2}
+        key="make resident"
         content="Make Resident"
         color="blue"
-        onClick={onMakeResident}
+        onClick={() => updateExistingUserRole(Role.Resident)}
       />
     ),
-    [onMakeResident],
+    [updateExistingUserRole],
   );
 
   const actionButtons = useMemo(() => {
@@ -87,7 +95,7 @@ function UserRoleChangeButton({ userId, currentRole, updateUsers }: Props) {
       case Role.Resident:
         return [makeAdminButton, makeOrganizerButton];
       default:
-        return [makeAdminButton, makeOrganizerButton, makeResidentButton];
+        return [];
     }
   }, [currentRole, makeAdminButton, makeOrganizerButton, makeResidentButton]);
 
@@ -100,8 +108,8 @@ function UserRoleChangeButton({ userId, currentRole, updateUsers }: Props) {
           loading={isUpdating}
           onClick={() =>
             setExtraContent(
-              extraContent ? null : (
-                <Button.Group compact vertical>
+              extraContent || actionButtons.length === 0 ? null : (
+                <Button.Group fluid vertical>
                   {actionButtons}
                 </Button.Group>
               ),

@@ -9,10 +9,7 @@ import UserTab from "../user-tab";
 import "./mobile-navigation-bar.scss";
 import { Role } from "../../../types/users";
 import RoleRestrictedWrapper from "../../role-restricted-wrapper";
-import {
-  PendingBookingCountContext,
-  UserContext,
-} from "../../../context-providers";
+import { PendingBookingCountContext } from "../../../context-providers";
 
 type Props = {
   children: React.ReactNode;
@@ -21,7 +18,6 @@ type Props = {
 function MobileNavigationBar({ children }: Props) {
   const [isSidebarOpened, setSidebarOpened] = useState(false);
   const { getPendingBookingCount } = useContext(PendingBookingCountContext);
-  const { role } = useContext(UserContext);
 
   const onTabClick = () => {
     setSidebarOpened(false);
@@ -30,10 +26,10 @@ function MobileNavigationBar({ children }: Props) {
   useEffect(() => () => setSidebarOpened(false), []);
 
   useEffect(() => {
-    if (role === Role.Admin && isSidebarOpened) {
+    if (isSidebarOpened) {
       getPendingBookingCount();
     }
-  }, [isSidebarOpened, role, getPendingBookingCount]);
+  }, [isSidebarOpened, getPendingBookingCount]);
 
   return (
     <Sidebar.Pushable className="mobile-navigation-bar">

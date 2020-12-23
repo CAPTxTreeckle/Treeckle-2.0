@@ -1,22 +1,16 @@
 import useAxios from "axios-hooks";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useAxiosWithTokenRefresh } from ".";
-import {
-  END_DATE_TIME,
-  START_DATE_TIME,
-  STATUS,
-  USER_ID,
-  VENUE_NAME,
-} from "../../constants";
 import {
   BookingData,
   BookingDeleteData,
+  BookingGetQueryParams,
   BookingPatchData,
   BookingPostData,
-  BookingStatus,
   BookingStatusAction,
+  BookingViewProps,
 } from "../../types/bookings";
-import { errorHandlerWrapper } from "../../utils/error-utils";
+import { errorHandlerWrapper, resolveApiError } from "../../utils/error-utils";
 import { parseQueryParamsToUrl } from "../../utils/parser-utils";
 
 export function useGetTotalBookingCount() {
@@ -59,13 +53,15 @@ export function useGetPendingBookingCount() {
 
   const getPendingBookingCount = useCallback(async () => {
     try {
-      const { data: pendingCount } = await apiCall();
+      return await errorHandlerWrapper(async () => {
+        const { data: pendingCount } = await apiCall();
 
-      console.log(`GET /bookings/pendingcount success:`, pendingCount);
+        console.log("GET /bookings/pendingcount success:", pendingCount);
 
-      return pendingCount;
+        return pendingCount;
+      }, "GET /bookings/pendingcount error:")();
     } catch (error) {
-      console.log(`GET /bookings/pendingcount error:`, error, error?.response);
+      resolveApiError(error);
 
       return 0;
     }
@@ -75,9 +71,8 @@ export function useGetPendingBookingCount() {
 }
 
 export function useGetBookings() {
-  const [{ data: bookings = [], loading }, apiCall] = useAxiosWithTokenRefresh<
-    BookingData[]
-  >(
+  const [bookings, setBookings] = useState<BookingViewProps[]>([]);
+  const [{ loading }, apiCall] = useAxiosWithTokenRefresh<BookingData[]>(
     {
       method: "get",
     },
@@ -85,26 +80,22 @@ export function useGetBookings() {
   );
 
   const getBookings = useCallback(
-    async (
-      queryParams: {
-        [USER_ID]?: number;
-        [VENUE_NAME]?: string;
-        [START_DATE_TIME]?: number;
-        [END_DATE_TIME]?: number;
-        [STATUS]?: BookingStatus;
-      } = {},
-    ) => {
+    async (queryParams?: BookingGetQueryParams) => {
       const url = parseQueryParamsToUrl("/bookings/", queryParams);
 
       try {
-        const { data: bookings = [] } = await apiCall({ url });
+        return await errorHandlerWrapper(async () => {
+          const { data: bookings = [] } = await apiCall({ url });
 
-        console.log(`GET ${url} success:`, bookings);
+          console.log(`GET ${url} success:`, bookings);
 
-        return bookings;
+          setBookings(bookings);
+          return bookings;
+        }, `GET ${url} error:`)();
       } catch (error) {
-        console.log(`GET ${url} error:`, error, error?.response);
+        resolveApiError(error);
 
+        setBookings([]);
         return [];
       }
     },
@@ -115,9 +106,7 @@ export function useGetBookings() {
 }
 
 export function useCreateBookings() {
-  const [{ data: bookings = [], loading }, apiCall] = useAxiosWithTokenRefresh<
-    BookingData[]
-  >(
+  const [{ loading }, apiCall] = useAxiosWithTokenRefresh<BookingData[]>(
     {
       url: "/bookings/",
       method: "post",
@@ -136,12 +125,16 @@ export function useCreateBookings() {
 
         console.log("POST /bookings/ success:", bookings);
 
+        if (bookings.length === 0) {
+          throw new Error("No bookings were created.");
+        }
+
         return bookings;
       }, "POST /bookings/ error:"),
     [apiCall],
   );
 
-  return { bookings, isLoading: loading, createBookings };
+  return { isLoading: loading, createBookings };
 }
 
 export function useUpdateBookingStatuses() {
@@ -164,6 +157,10 @@ export function useUpdateBookingStatuses() {
 
         console.log(`PATCH /bookings/ success:`, bookings);
 
+        if (bookings.length === 0) {
+          throw new Error("No booking statuses were updated.");
+        }
+
         return bookings;
       }, "PATCH /bookings/ error:"),
     [apiCall],
@@ -173,7 +170,7 @@ export function useUpdateBookingStatuses() {
 }
 
 export function useDeleteBookings() {
-  const [{ loading }, apiCall] = useAxiosWithTokenRefresh(
+  const [{ loading }, apiCall] = useAxiosWithTokenRefresh<BookingData[]>(
     {
       url: "/bookings/",
       method: "delete",
@@ -186,10 +183,17 @@ export function useDeleteBookings() {
       errorHandlerWrapper(async (ids: number[]) => {
         const bookingDeleteData: BookingDeleteData = { ids };
 
-        const response = await apiCall({
+        const { data: deletedBookings = [] } = await apiCall({
           data: bookingDeleteData,
         });
-        console.log(`DELETE /bookings/ success:`, response);
+
+        console.log(`DELETE /bookings/ success:`, deletedBookings);
+
+        if (deletedBookings.length === 0) {
+          throw new Error("No booking requests were deleted.");
+        }
+
+        return deletedBookings;
       }, "DELETE /bookings/ error:"),
     [apiCall],
   );

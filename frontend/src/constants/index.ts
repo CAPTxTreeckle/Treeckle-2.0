@@ -65,3 +65,5 @@ export const VENUE_ID = "venueId";
 export const VENUE_NAME = "venueName";
 export const START = "start";
 export const END = "end";
+export const START_DATE_TIME_STRING = "startDateTimeString";
+export const END_DATE_TIME_STRING = "endDateTimeString";

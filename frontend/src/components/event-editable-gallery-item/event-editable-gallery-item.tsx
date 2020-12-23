@@ -41,10 +41,10 @@ function EventEditableGalleryItem(props: Props) {
 
   const actionButtons = useMemo(
     () => [
-      <Button key={0} content="View" onClick={onView} color="blue" />,
-      <Button key={1} content="Edit" onClick={onEdit} color="black" />,
+      <Button key="view" content="View" onClick={onView} color="blue" />,
+      <Button key="edit" content="Edit" onClick={onEdit} color="black" />,
       <Button
-        key={2}
+        key="delete"
         content="Delete"
         onClick={onDelete}
         color="red"

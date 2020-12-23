@@ -64,7 +64,7 @@ const schema = yup.object().shape({
             .trim()
             .required("Please enter a field label"),
           [PLACEHOLDER_TEXT]: yup.string().trim().notRequired(),
-          [REQUIRED_FIELD]: yup.boolean().required("An error as occurred"),
+          [REQUIRED_FIELD]: yup.boolean().required("An error has occurred"),
         })
         .required(),
     )
@@ -92,7 +92,7 @@ function VenueDetailsForm({
   onSubmit,
   submitButtonProps,
 }: Props) {
-  const isUnmounted = useRef(false);
+  const isMounted = useRef(true);
   const methods = useForm<VenueFormProps>({
     resolver: yupResolver(schema),
     defaultValues,
@@ -107,10 +107,13 @@ function VenueDetailsForm({
   const [isSubmitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    getVenueCategories();
     return () => {
-      isUnmounted.current = true;
+      isMounted.current = false;
     };
+  }, []);
+
+  useEffect(() => {
+    getVenueCategories();
   }, [getVenueCategories]);
 
   const _onSubmit = useCallback(
@@ -118,9 +121,7 @@ function VenueDetailsForm({
       setSubmitting(true);
       await onSubmit?.(deepTrim(formData));
 
-      if (!isUnmounted.current) {
-        setSubmitting(false);
-      }
+      isMounted.current && setSubmitting(false);
     },
     [onSubmit],
   );

@@ -15,7 +15,7 @@ import {
   getVisibleRange,
   mergeDateRanges,
 } from "../utils/calendar-utils";
-import { BookingData, DateTimeRange } from "../types/bookings";
+import { BookingViewProps, DateTimeRange } from "../types/bookings";
 import { EMAIL, NAME, TITLE, START, END, IS_NEW } from "../constants";
 
 export type CalendarBooking = {
@@ -30,7 +30,7 @@ export type CalendarBooking = {
 const NEW_BOOKING = "New booking";
 
 export default function useBookingCreationCalendarState(
-  approvedBookings: BookingData[],
+  approvedBookings: BookingViewProps[],
   newBookingDateTimeRanges: DateTimeRange[],
 ) {
   const today = useMemo(() => startOfToday(), []);

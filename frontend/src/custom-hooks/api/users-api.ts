@@ -7,12 +7,11 @@ import {
   UserInvitePostData,
   UserPatchData,
 } from "../../types/users";
-import { errorHandlerWrapper } from "../../utils/error-utils";
-import { defaultArray } from "./default";
+import { errorHandlerWrapper, resolveApiError } from "../../utils/error-utils";
 
 export function useGetAllUserInvites() {
   const [
-    { data: userInvites = defaultArray as UserInviteData[], loading },
+    { data: userInvites = [], loading },
     apiCall,
   ] = useAxiosWithTokenRefresh<UserInviteData[]>(
     {
@@ -24,11 +23,14 @@ export function useGetAllUserInvites() {
 
   const getAllUserInvites = useCallback(async () => {
     try {
-      const { data: userInvites = [] } = await apiCall();
-      console.log("GET /users/invite success:", userInvites);
-      return userInvites;
+      return await errorHandlerWrapper(async () => {
+        const { data: userInvites = [] } = await apiCall();
+        console.log("GET /users/invite success:", userInvites);
+        return userInvites;
+      }, "GET /users/invite error:")();
     } catch (error) {
-      console.log("GET /users/invite error:", error, error?.response);
+      resolveApiError(error);
+
       return [];
     }
   }, [apiCall]);
@@ -128,7 +130,7 @@ export function useDeleteUserInvites() {
 
 export function useGetAllExistingUsers() {
   const [
-    { data: existingUsers = defaultArray as UserData[], loading },
+    { data: existingUsers = [], loading },
     apiCall,
   ] = useAxiosWithTokenRefresh<UserData[]>(
     {
@@ -140,11 +142,14 @@ export function useGetAllExistingUsers() {
 
   const getAllExistingUsers = useCallback(async () => {
     try {
-      const { data: existingUsers = [] } = await apiCall();
-      console.log("GET /users/ success:", existingUsers);
-      return existingUsers;
+      return await errorHandlerWrapper(async () => {
+        const { data: existingUsers = [] } = await apiCall();
+        console.log("GET /users/ success:", existingUsers);
+        return existingUsers;
+      }, "GET /users/ error:")();
     } catch (error) {
-      console.log("GET /users/ error:", error, error?.response);
+      resolveApiError(error);
+
       return [];
     }
   }, [apiCall]);

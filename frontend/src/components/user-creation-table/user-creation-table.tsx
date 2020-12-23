@@ -27,7 +27,7 @@ import { useCreateUserInvites } from "../../custom-hooks/api";
 import { EMAIL, ROLE, STATUS, UUID } from "../../constants";
 import { resolveApiError } from "../../utils/error-utils";
 
-const UserCreationTableStateOptions: VirtualizedTableStateOptions = {
+const userCreationTableStateOptions: VirtualizedTableStateOptions = {
   searchIndex: UUID,
   searchKeys: [EMAIL, ROLE, STATUS],
 };
@@ -52,7 +52,7 @@ function UserCreationTable() {
     onSearchValueChange,
   } = useVirtualizedTableState(
     pendingCreationUsers,
-    UserCreationTableStateOptions,
+    userCreationTableStateOptions,
   );
 
   const [isSubmitting, setSubmitting] = useState(false);

@@ -1,28 +1,76 @@
-import logging
+from rest_framework.exceptions import NotFound, PermissionDenied
 
-from rest_framework import status
-from rest_framework.response import Response
-
-from treeckle.models.user import Role, User
-from events.logic.event import get_event_by_id
-from users.logic import has_user_role
+from users.models import User, Role
+from events.models import Event
+from events.logic.event import get_events
 
 
-logger = logging.getLogger("main")
-
-def validate_event_edit_access(view_method):
-    def _arguments_wrapper(instance, request, requester: User, event_id: int, *args, **kwargs) :
+def check_user_event_same_organization(view_method):
+    def _arguments_wrapper(
+        instance, request, requester: User, event_id: int, *args, **kwargs
+    ):
         try:
-            event = get_event_by_id(event_id)
-            is_same_organisation = event.organiser.organisation == requester.organisation
-            has_admin_role = has_user_role(requester, [Role.ADMIN])
-            is_event_creator = event.organiser == requester
-            has_permission = is_same_organisation and (has_admin_role or is_event_creator)
-            if not has_permission:
-                return Response(status=status.HTTP_401_UNAUTHORIZED)
-        except Exception as e:
-            logger.info(e)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            event = (
+                get_events(id=event_id).select_related("creator__organization").get()
+            )
 
-        return view_method(instance, request, requester=requester, event_id=event_id, *args, **kwargs)
+            if event.creator.organization != requester.organization:
+                raise PermissionDenied(
+                    "User and event are in different organization.",
+                    code="wrong_organization",
+                )
+
+        except (
+            Event.DoesNotExist,
+            Event.MultipleObjectsReturned,
+            PermissionDenied,
+        ) as e:
+            raise NotFound("No event found.", code="no_event_found")
+
+        return view_method(
+            instance, request, requester=requester, event=event, *args, **kwargs
+        )
+
+    return _arguments_wrapper
+
+
+def check_event_viewer(view_method):
+    def _arguments_wrapper(
+        instance, request, requester: User, event: Event, *args, **kwargs
+    ):
+        is_admin = requester.role == Role.ADMIN
+        is_event_creator = requester == event.creator
+        has_view_event_permission = event.is_published or is_admin or is_event_creator
+
+        if not has_view_event_permission:
+            raise PermissionDenied(
+                "No permission to view event.",
+                code="no_view_event_permission",
+            )
+
+        return view_method(
+            instance, request, requester=requester, event=event, *args, **kwargs
+        )
+
+    return _arguments_wrapper
+
+
+def check_event_modifier(view_method):
+    def _arguments_wrapper(
+        instance, request, requester: User, event: Event, *args, **kwargs
+    ):
+        is_admin = requester.role == Role.ADMIN
+        is_event_creator = requester == event.creator
+        has_modify_event_permission = is_admin or is_event_creator
+
+        if not has_modify_event_permission:
+            raise PermissionDenied(
+                "No permission to modify event.",
+                code="no_modify_event_permission",
+            )
+
+        return view_method(
+            instance, request, requester=requester, event=event, *args, **kwargs
+        )
+
     return _arguments_wrapper

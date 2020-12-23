@@ -9,8 +9,9 @@ import { VirtualizedTableStateOptions } from "../../custom-hooks/use-virtualized
 import { EMAIL, ID, NAME, ROLE } from "../../constants";
 import { ExistingUsersContext } from "../../context-providers";
 
-const UsersTableStateOptions: VirtualizedTableStateOptions = {
+const userTableStateOptions: VirtualizedTableStateOptions = {
   defaultSortBy: ROLE,
+  defaultSortDirection: "ASC",
   searchIndex: ID,
   searchKeys: [NAME, EMAIL, ROLE],
 };
@@ -31,7 +32,7 @@ function UserTable() {
     setSortParams,
     searchValue,
     onSearchValueChange,
-  } = useVirtualizedTableState(existingUsers, UsersTableStateOptions);
+  } = useVirtualizedTableState(existingUsers, userTableStateOptions);
 
   return (
     <Segment.Group raised>
@@ -46,11 +47,7 @@ function UserTable() {
           <Popup
             content="Refresh"
             trigger={
-              <Button
-                icon="refresh"
-                color="blue"
-                onClick={getAllExistingUsers}
-              />
+              <Button icon="redo" color="blue" onClick={getAllExistingUsers} />
             }
             position="top center"
             on="hover"

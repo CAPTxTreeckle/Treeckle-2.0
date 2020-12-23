@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Label } from "semantic-ui-react";
+import { Form, Label, StrictFormFieldProps } from "semantic-ui-react";
 import get from "lodash.get";
 import { useFormContext } from "react-hook-form";
 
@@ -14,6 +14,7 @@ type Props = {
   defaultValue?: string;
   readOnly?: boolean;
   hidden?: boolean;
+  width?: StrictFormFieldProps["width"];
 };
 
 function FormField({
@@ -27,6 +28,7 @@ function FormField({
   defaultValue,
   readOnly = false,
   hidden = false,
+  width,
 }: Props) {
   const { errors, register } = useFormContext();
   const error = get(errors, inputName);
@@ -37,6 +39,7 @@ function FormField({
       required={required}
       error={!!error}
       style={hidden ? { display: "none" } : undefined}
+      width={width}
     >
       {label && <label>{label}</label>}
       {error && (

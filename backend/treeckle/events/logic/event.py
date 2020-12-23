@@ -1,243 +1,226 @@
+from typing import Optional, Iterable, Sequence
 from datetime import datetime
-import logging
-from typing import Optional, Sequence
-import uuid
 
-from django.db import transaction
-from django.core.exceptions import ObjectDoesNotExist
-from django.core.validators import URLValidator
+from django.db.models import QuerySet
+from django.db import transaction, IntegrityError
 
-from content_delivery_network.images import (
-    delete_image,
-    upload_image,
-)
-from treeckle.models.event import (
-    Category,
-    Event,
-    EventCategory,
-    EventSignUp,
-    Subscription,
-)
-from users.logic import user_to_json
-from treeckle.models.organisation import Organisation
-from treeckle.models.user import User
-from treeckle.strings.json_keys import (
-    CAPACITY,
-    CATEGORIES,
-    END_DATE,
-    DESCRIPTION,
+from treeckle.common.constants import (
     ID,
+    CREATED_AT,
+    UPDATED_AT,
+    TITLE,
+    CREATOR,
+    ORGANIZED_BY,
+    VENUE_NAME,
+    DESCRIPTION,
+    CAPACITY,
+    START_DATE_TIME,
+    END_DATE_TIME,
     IMAGE,
+    CATEGORIES,
     IS_PUBLISHED,
     IS_SIGN_UP_ALLOWED,
     IS_SIGN_UP_APPROVAL_REQUIRED,
-    ORGANISER,
-    ORGANISED_BY,
     SIGN_UP_COUNT,
-    START_DATE,
-    TITLE,
-    VENUE_NAME,
-    CREATED_AT,
-    UPDATED_AT,
-    SIGN_UP_STATUS
+    SIGN_UP_STATUS,
 )
-
-
-logger = logging.getLogger("main")
-validate_url = URLValidator()
-
-
-def create_event(
-    title: str,
-    description: str,
-    organiser: User,
-    organised_by: str,
-    venue_name: str,
-    capacity: Optional[int],
-    start_date: datetime,
-    end_date: datetime,
-    categories: Sequence[str],
-    image: str,
-    is_sign_up_allowed: bool,
-    is_sign_up_approval_required: bool,
-    is_published: bool,
-) -> Event:
-    with transaction.atomic():
-        filename = _generate_random_filename()
-        image_id, image_url = upload_image(filename, image)
-        event = Event.objects.create(
-            title=title,
-            description=description,
-            organiser=organiser,
-            organised_by=organised_by,
-            venue_name=venue_name,
-            capacity=capacity,
-            start_date=start_date,
-            end_date=end_date,
-            image_id=image_id,
-            image_url=image_url,
-            is_sign_up_allowed=is_sign_up_allowed,
-            is_sign_up_approval_required=is_sign_up_approval_required,
-            is_published=is_published,
-        )
-        for category_name in categories:
-            category, _ = Category.objects.get_or_create(
-                organisation=organiser.organisation,
-                name=category_name,
-            )
-            EventCategory.objects.create(event=event, category=category)
-
-    return event
-
-
-def delete_event_by_id(id: int) -> None:
-    with transaction.atomic():
-        event = Event.objects.get(id=id)
-        image_id =  event.image_id
-        event.delete()
-        delete_image(image_id)
-
-
-def delete_category_by_id(id: int) -> None:
-    Category.objects.filter(id=id).delete()
+from treeckle.common.parsers import parse_datetime_to_ms_timestamp
+from treeckle.common.validators import is_url
+from content_delivery_service.logic.image import delete_image, upload_image
+from organizations.models import Organization
+from users.models import User
+from users.logic import user_to_json
+from events.models import Event, EventCategory, EventCategoryType, EventSignUp
 
 
 def event_to_json(event: Event, user: User) -> dict:
-    event_categories = EventCategory.objects.filter(event=event)
-    category_ids = [e.category_id for e in event_categories]
-    categories = Category.objects.filter(id__in=category_ids)
+    ##categories = EventCategory.objects.select_related("category").filter(event=event)
 
     try:
         sign_up_status = EventSignUp.objects.get(event=event, user=user).status
-    except ObjectDoesNotExist:
+    except EventSignUp.DoesNotExist as e:
         sign_up_status = None
 
     return {
         ID: event.id,
-        CREATED_AT: round(event.created_at.timestamp() * 1000),
-        UPDATED_AT: round(event.updated_at.timestamp() * 1000),
+        CREATED_AT: parse_datetime_to_ms_timestamp(event.created_at),
+        UPDATED_AT: parse_datetime_to_ms_timestamp(event.updated_at),
         TITLE: event.title,
-        DESCRIPTION: event.description,
-        ORGANISER: user_to_json(event.organiser),
-        ORGANISED_BY: event.organised_by,
-        CAPACITY: event.capacity,
-        IMAGE: event.image_url,
+        ORGANIZED_BY: event.organized_by,
+        CREATOR: user_to_json(event.creator),
         VENUE_NAME: event.venue_name,
-        START_DATE: event.start_date,
-		END_DATE: event.end_date,
-        CATEGORIES: [c.name for c in categories],
+        CAPACITY: str(event.capacity) if event.capacity else None,
+        DESCRIPTION: event.description,
+        CATEGORIES: [
+            event_category.category.name
+            for event_category in event.eventcategory_set.all()
+        ],
+        START_DATE_TIME: parse_datetime_to_ms_timestamp(event.start_date_time),
+        END_DATE_TIME: parse_datetime_to_ms_timestamp(event.end_date_time),
+        IMAGE: event.image_url,
         IS_PUBLISHED: event.is_published,
         IS_SIGN_UP_ALLOWED: event.is_sign_up_allowed,
         IS_SIGN_UP_APPROVAL_REQUIRED: event.is_sign_up_approval_required,
         SIGN_UP_COUNT: event.eventsignup_set.count(),
-        SIGN_UP_STATUS: sign_up_status
+        SIGN_UP_STATUS: sign_up_status,
     }
 
 
-def get_category_by_id(id: int) -> Category:
-    return Category.objects.get(id=id)
+def get_events(*args, **kwargs) -> QuerySet[Event]:
+    return Event.objects.filter(*args, **kwargs)
 
 
-def get_event_by_id(id: int) -> Event:
-    return Event.objects.get(id=id)
+def get_event_category_types(*args, **kwargs) -> QuerySet[EventCategoryType]:
+    return EventCategoryType.objects.filter(*args, **kwargs)
 
 
-def get_event_sign_ups(event: Event) -> Sequence[EventSignUp]:
-    return EventSignUp.objects.filter(event=event).select_related("user")
+def get_event_categories(*args, **kwargs) -> QuerySet[EventCategory]:
+    return EventCategory.objects.filter(*args, **kwargs)
 
 
-def get_events_by_organisation(organisation: Organisation):
-    return get_events_with_associations().filter(organiser__organisation=organisation)
+def get_or_create_event_category_type(
+    name: str, organization: Organization
+) -> EventCategoryType:
+    event_category_type, _ = EventCategoryType.objects.get_or_create(
+        name=name, organization=organization
+    )
+    return event_category_type
 
 
-def get_events_by_organiser(organiser: User) -> Sequence[Event]:
-    return get_events_with_associations().filter(organiser=organiser)
+def delete_unused_event_category_types(organization: Organization) -> None:
+    organization.eventcategorytype_set.filter(eventcategory=None).delete()
 
 
-def get_events_with_associations():
-    return Event.objects.all()\
-        .select_related("organiser")\
-        .prefetch_related(
-            "eventcategory_set",
-            "eventsignup_set",
-            "eventcategory_set__category",
+def create_event_categories(
+    categories: Iterable[str], event: Event, organization: Organization
+) -> Sequence[EventCategory]:
+    event_categories_to_be_created = (
+        EventCategory(
+            event=event,
+            category=get_or_create_event_category_type(
+                name=category, organization=organization
+            ),
         )
+        for category in categories
+    )
+
+    new_event_categories = EventCategory.objects.bulk_create(
+        event_categories_to_be_created, ignore_conflicts=True
+    )
+
+    return new_event_categories
 
 
-def get_events_with_user_sign_up(user: User) -> Sequence[Event]:
-    sign_ups = EventSignUp.objects.filter(user=user)
-    event_ids = [s.event_id for s in sign_ups]
-    return get_events_with_associations().filter(id__in=event_ids)
+def create_event(
+    creator: User,
+    title: str,
+    organized_by: str,
+    venue_name: str,
+    description: str,
+    capacity: Optional[int],
+    start_date_time: datetime,
+    end_date_time: datetime,
+    image: str,
+    is_published: bool,
+    is_sign_up_allowed: bool,
+    is_sign_up_approval_required: bool,
+    categories: list[str],
+) -> Event:
+    image_id, image_url = upload_image(image)
 
+    try:
+        with transaction.atomic():
+            new_event = Event.objects.create(
+                title=title,
+                creator=creator,
+                organized_by=organized_by,
+                venue_name=venue_name,
+                description=description,
+                capacity=capacity,
+                start_date_time=start_date_time,
+                end_date_time=end_date_time,
+                image_url=image_url,
+                image_id=image_id,
+                is_published=is_published,
+                is_sign_up_allowed=is_sign_up_allowed,
+                is_sign_up_approval_required=is_sign_up_approval_required,
+            )
+            create_event_categories(
+                categories=categories,
+                event=new_event,
+                organization=creator.organization,
+            )
 
-def get_subscribed_events(subscriptions: Sequence[Subscription]) -> Sequence[Event]:
-    categories = [s.category for s in subscriptions]
-    event_ids = EventCategory.objects.filter(category__in=categories).values_list("event_id", flat=True)
-    return get_events_with_associations().filter(id__in=event_ids)
+    except IntegrityError as e:
+        delete_image(image_id)
+        raise e
+
+    return new_event
 
 
 def update_event(
-    id: int,
+    current_event: Event,
     title: str,
-    description: str,
-    organiser: User,
-    organised_by: str,
+    organized_by: str,
     venue_name: str,
+    description: str,
     capacity: Optional[int],
-    start_date: datetime,
-    end_date: datetime,
-    categories: Sequence[str],
+    start_date_time: datetime,
+    end_date_time: datetime,
     image: str,
+    is_published: bool,
     is_sign_up_allowed: bool,
     is_sign_up_approval_required: bool,
-    is_published: bool,
+    categories: list[str],
 ) -> Event:
-    event = get_event_by_id(id)
-    with transaction.atomic():
-        EventCategory.objects.filter(event=event).delete()
-        for category_name in categories:
-            category, _ = Category.objects.get_or_create(
-                organisation=organiser.organisation,
-                name=category_name,
+
+    current_image_id, current_image_url = (
+        current_event.image_id,
+        current_event.image_url,
+    )
+
+    if is_url(image):
+        new_image_id, new_image_url = current_image_id, current_image_url
+    else:
+        new_image_id, new_image_url = upload_image(image)
+
+    try:
+        with transaction.atomic():
+            ## delete existing event categories and re-populate with latest categories
+            get_event_categories(event=current_event).delete()
+            create_event_categories(
+                categories=categories,
+                event=current_event,
+                organization=current_event.creator.organization,
             )
-            EventCategory.objects.create(event=event, category=category)
-        
-        image_id = event.image_id
-        try:
-            validate_url(image)
-            image_url = event.image_url
-        except Exception as e:
-            logger.info(e)
-            delete_image(image_id)
+            delete_unused_event_category_types(
+                organization=current_event.creator.organization
+            )
 
-            if image == "":
-                image_id = image_url = ""
-            else:
-                filename = _generate_random_filename()
-                image_id, image_url = upload_image(filename, image)
-                
+            current_event.update_from_dict(
+                {
+                    "title": title,
+                    "organized_by": organized_by,
+                    "venue_name": venue_name,
+                    "description": description,
+                    "capacity": capacity,
+                    "start_date_time": start_date_time,
+                    "end_date_time": end_date_time,
+                    "image_url": new_image_url,
+                    "image_id": new_image_id,
+                    "is_published": is_published,
+                    "is_sign_up_allowed": is_sign_up_allowed,
+                    "is_sign_up_approval_required": is_sign_up_approval_required,
+                },
+                commit=True,
+            )
 
-        Event.objects.filter(id=id).update(
-            title=title,
-            description=description,
-            organised_by=organised_by,
-            venue_name=venue_name,
-            capacity=capacity,
-            start_date=start_date,
-            end_date=end_date,
-            image_id=image_id,
-            image_url=image_url,
-            is_sign_up_allowed=is_sign_up_allowed,
-            is_sign_up_approval_required=is_sign_up_approval_required,
-            is_published=is_published,
-        )
+    except IntegrityError as e:
+        if current_image_id != new_image_id:
+            delete_image(new_image_id)
+        raise e
 
-    return get_event_by_id(id)
+    if current_image_id != new_image_id:
+        delete_image(current_image_id)
 
-
-def get_event_categories_by_organisation(organisation: Organisation) -> Sequence[Category]:
-    return Category.objects.filter(organisation=organisation)
-
-
-def _generate_random_filename() -> str:
-    return str(uuid.uuid4())
+    return current_event

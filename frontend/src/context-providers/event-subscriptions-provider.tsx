@@ -47,7 +47,7 @@ function EventSubscriptionsProvider({ children }: Props) {
   const [subscribedCategories, setSubscribedCategories] = useState<string[]>(
     [],
   );
-  const [nonSubscribedCategories, setNotSubscribedCategories] = useState<
+  const [nonSubscribedCategories, setNonSubscribedCategories] = useState<
     string[]
   >([]);
 
@@ -72,13 +72,11 @@ function EventSubscriptionsProvider({ children }: Props) {
 
   useEffect(() => {
     setSubscribedCategories(_subscribedCategories);
-    setNotSubscribedCategories(_nonSubscribedCategories);
+    setNonSubscribedCategories(_nonSubscribedCategories);
   }, [_subscribedCategories, _nonSubscribedCategories]);
 
   const {
     updateEventCategorySubscriptions: _updateEventCategorySubscriptions,
-    subscribedCategories: updatedSubscribedCategories,
-    nonSubscribedCategories: updatedNotSubscribedCategories,
   } = useUpdateEventCategorySubscriptions();
 
   const updateEventCategorySubscriptions = useCallback(
@@ -87,7 +85,15 @@ function EventSubscriptionsProvider({ children }: Props) {
         const eventCategorySubscriptions = await _updateEventCategorySubscriptions(
           actions,
         );
+        const {
+          subscribedCategories: updatedSubscribedCategories,
+          nonSubscribedCategories: updatedNonSubscriptedCategories,
+        } = eventCategorySubscriptions;
+
+        setSubscribedCategories(updatedSubscribedCategories);
+        setNonSubscribedCategories(updatedNonSubscriptedCategories);
         getSubscribedEvents();
+
         return eventCategorySubscriptions;
       } catch (error) {
         resolveApiError(error);
@@ -96,11 +102,6 @@ function EventSubscriptionsProvider({ children }: Props) {
     },
     [_updateEventCategorySubscriptions, getSubscribedEvents],
   );
-
-  useEffect(() => {
-    setSubscribedCategories(updatedSubscribedCategories);
-    setNotSubscribedCategories(updatedNotSubscribedCategories);
-  }, [updatedSubscribedCategories, updatedNotSubscribedCategories]);
 
   return (
     <EventSubscriptionsContext.Provider

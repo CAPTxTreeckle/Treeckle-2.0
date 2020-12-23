@@ -1,32 +1,33 @@
-from http import HTTPStatus
-import logging
-from typing import List
+from django.utils.translation import gettext_lazy as _
 
-from django.http import HttpResponse
+from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
 
-from authentication import jwt
-from users.logic import get_user_by_id, has_user_role
-from treeckle.models.user import Role
-from treeckle.strings.json_keys import AUTHORIZATION
-
-logger = logging.getLogger("main")
+from .models import User, Role
+from .logic import get_users
 
 
-def check_access(allowed_roles: List[Role]):
+def check_access(*allowed_roles: Role):
     def _method_wrapper(view_method):
-        def _arguments_wrapper(instance, request, *args, **kwargs) :
-            try:
-                access_token = request.headers[AUTHORIZATION]
-                user_id, is_valid = jwt.check_access_token(access_token)
-                user = get_user_by_id(user_id)
-                is_allowed = is_valid and has_user_role(user, allowed_roles)
-                if not is_allowed:
-                    raise Exception("No permission to access route")
-            except Exception as e:
-                logger.info(e)
-                return HttpResponse(status=HTTPStatus.UNAUTHORIZED)
+        def _arguments_wrapper(instance, request, *args, **kwargs):
+            requester_id = request.user.id
 
-            return view_method(instance, request, requester=user, *args, **kwargs)
+            try:
+                requester = (
+                    get_users(id=requester_id).select_related("organization").get()
+                )
+
+            except (User.DoesNotExist, User.MultipleObjectsReturned) as e:
+                raise AuthenticationFailed(
+                    _("Invalid user."),
+                    code="invalid_user",
+                )
+
+            if requester.role not in allowed_roles:
+                raise PermissionDenied(
+                    _("No permission to access route"), code="invalid_permission"
+                )
+
+            return view_method(instance, request, requester=requester, *args, **kwargs)
 
         return _arguments_wrapper
 

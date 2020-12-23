@@ -14,6 +14,8 @@ import {
   FORM_FIELD_DATA,
 } from "../constants";
 
+export type VenueGetQueryParams = { [CATEGORY]?: string };
+
 export type VenuePostData = {
   [NAME]: string;
   [CATEGORY]: string;

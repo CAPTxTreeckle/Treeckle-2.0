@@ -78,11 +78,15 @@ export function parseLowerCamelCaseToSnakeCase(str: string) {
 
 export function parseQueryParamsToUrl(
   baseUrl: string,
-  queryParams: Partial<Record<string, unknown>>,
+  queryParams?: Partial<Record<string, unknown>>,
 ) {
+  if (queryParams === undefined) {
+    return baseUrl;
+  }
+
   const queryString = Object.entries(queryParams)
     .flatMap(([key, value]) =>
-      value
+      value !== undefined && value !== ""
         ? [[parseLowerCamelCaseToSnakeCase(key), String(value)].join("=")]
         : [],
     )

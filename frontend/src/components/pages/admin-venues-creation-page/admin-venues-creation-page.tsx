@@ -16,7 +16,7 @@ function AdminVenuesCreationPage() {
     async (venueFormProps: VenueFormProps) => {
       try {
         await createVenue(venueFormProps);
-        toast.success("A new venue has been created successfully.");
+        toast.success("The new venue has been created successfully.");
         history.push(ADMIN_VENUES_PATH);
       } catch (error) {
         resolveApiError(error);

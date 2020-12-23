@@ -1,227 +1,219 @@
-from datetime import datetime
-from dateutil import parser
-import fastjsonschema
-import logging
+from django.db import IntegrityError
+from django.db.models import Prefetch
 
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from events.middlewares import validate_event_edit_access
-from events.logic.sign_up import sign_up_to_json
-from events.logic.event import (
-    create_event,
-    delete_event_by_id,
-    delete_category_by_id,
-    event_to_json,
-    update_event,
-    get_category_by_id,
-    get_event_by_id,
-    get_event_sign_ups,
-    get_events_by_organisation,
-    get_events_by_organiser,
-    get_events_with_user_sign_up,
-    get_event_categories_by_organisation,
-)
-from treeckle.models.user import Role, User
-from treeckle.strings.json_keys import (
-    BOOLEAN,
-    CAPACITY,
-    CATEGORIES,
-    DESCRIPTION,
-    END_DATE,
-    EVENT,
-    IMAGE,
-    IS_PUBLISHED,
-    IS_SIGN_UP_ALLOWED,
-    IS_SIGN_UP_APPROVAL_REQUIRED,
-    NUMBER,
-    OBJECT,
-    ORGANISED_BY,
-    PROPERTIES,
-    REQUIRED,
-    SIGN_UPS,
-    START_DATE,
-    STRING,
-    TITLE,
-    TYPE,
-    VENUE_NAME,
-)
+from treeckle.common.exceptions import BadRequest
+from treeckle.common.parsers import parse_ms_timestamp_to_datetime
+from treeckle.common.constants import EVENT, SIGN_UPS
 from users.permission_middlewares import check_access
+from users.models import Role, User
+from events.serializers import EventSerializer
+from events.logic.event import (
+    get_events,
+    event_to_json,
+    create_event,
+    delete_unused_event_category_types,
+    update_event,
+    get_event_category_types,
+)
+from events.logic.sign_up import get_event_sign_ups, event_sign_up_to_json
+from events.models import Event, EventCategory
+from events.middlewares import (
+    check_user_event_same_organization,
+    check_event_viewer,
+    check_event_modifier,
+)
 
-logger = logging.getLogger("main")
 
-validate_number = fastjsonschema.compile({TYPE: NUMBER})
+class EventCategoryTypesView(APIView):
+    @check_access(Role.RESIDENT, Role.ORGANIZER, Role.ADMIN)
+    def get(self, request, requester: User):
+        same_organization_event_category_types = get_event_category_types(
+            organization=requester.organization
+        )
 
-post_event_data_validate = fastjsonschema.compile({
-    TYPE: OBJECT,
-    PROPERTIES: {
-        TITLE: {TYPE: STRING},
-        DESCRIPTION: {TYPE: STRING},
-        ORGANISED_BY: {TYPE: STRING},
-        VENUE_NAME: {TYPE: STRING},
-        START_DATE: {TYPE: STRING},
-        END_DATE: {TYPE: STRING},
-        IMAGE: {TYPE: STRING},
-        IS_SIGN_UP_ALLOWED: {TYPE: BOOLEAN},
-        IS_SIGN_UP_APPROVAL_REQUIRED: {TYPE: BOOLEAN},
-        IS_PUBLISHED: {TYPE: BOOLEAN},
+        data = [
+            event_category_type.name
+            for event_category_type in same_organization_event_category_types
+        ]
 
-    },
-    REQUIRED: [TITLE, DESCRIPTION, VENUE_NAME, END_DATE, START_DATE, IS_SIGN_UP_ALLOWED, IS_SIGN_UP_APPROVAL_REQUIRED, IS_PUBLISHED]
-})
-
-put_event_data_validate = post_event_data_validate
+        return Response(data, status=status.HTTP_200_OK)
 
 
 class EventsView(APIView):
-    @check_access([Role.ORGANIZER, Role.ADMIN])
-    def post(self, request, requester: User):
-        try:
-            request_data = request.data
-            post_event_data_validate(request_data)
-            start_date = _convert_to_datetime(request_data[START_DATE])
-            end_date = _convert_to_datetime(request_data[END_DATE])
-            event = create_event(
-                title=request_data[TITLE],
-                description=request_data[DESCRIPTION],
-                organiser=requester,
-                organised_by=request_data[ORGANISED_BY],
-                venue_name=request_data[VENUE_NAME],
-                capacity=request_data[CAPACITY],
-                start_date=start_date,
-                end_date=end_date,
-                categories=request_data[CATEGORIES],
-                image=request_data[IMAGE],
-                is_sign_up_allowed=request_data[IS_SIGN_UP_ALLOWED],
-                is_sign_up_approval_required=request_data[IS_SIGN_UP_APPROVAL_REQUIRED],
-                is_published=request_data[IS_PUBLISHED],
-            )   
-            data = event_to_json(event, requester)
-            return Response(data, status=status.HTTP_200_OK)
-        except Exception as e:
-            logger.info(e)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
-    @check_access([Role.RESIDENT, Role.ORGANIZER, Role.ADMIN])
+    @check_access(Role.ADMIN)
     def get(self, request, requester: User):
+        same_organization_events = (
+            get_events(creator__organization=requester.organization)
+            .prefetch_related(
+                "eventsignup_set",
+                Prefetch(
+                    "eventcategory_set",
+                    queryset=EventCategory.objects.select_related("category"),
+                ),
+            )
+            .select_related("creator")
+        )
+
+        data = [event_to_json(event, requester) for event in same_organization_events]
+
+        return Response(data, status=status.HTTP_200_OK)
+
+    @check_access(Role.ORGANIZER, Role.ADMIN)
+    def post(self, request, requester: User):
+        serializer = EventSerializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+        validated_data = serializer.validated_data
+
         try:
-            events = get_events_by_organisation(requester.organisation)
-            data = [event_to_json(event, requester) for event in events]
-            return Response(data, status=status.HTTP_200_OK)
+            new_event = create_event(
+                creator=requester,
+                title=validated_data.get("title", ""),
+                organized_by=validated_data.get("organized_by", ""),
+                venue_name=validated_data.get("venue_name", ""),
+                description=validated_data.get("description", ""),
+                capacity=validated_data.get("capacity", None),
+                start_date_time=parse_ms_timestamp_to_datetime(
+                    validated_data.get("start_date_time", 0)
+                ),
+                end_date_time=parse_ms_timestamp_to_datetime(
+                    validated_data.get("end_date_time", 0)
+                ),
+                image=validated_data.get("image", ""),
+                is_published=validated_data.get("is_published", False),
+                is_sign_up_allowed=validated_data.get("is_sign_up_allowed", False),
+                is_sign_up_approval_required=validated_data.get(
+                    "is_sign_up_approval_required", False
+                ),
+                categories=validated_data.get("categories", []),
+            )
         except Exception as e:
-            logger.info(e)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise BadRequest(e)
+
+        data = event_to_json(new_event, requester)
+
+        return Response(data, status=status.HTTP_201_CREATED)
 
 
 class OwnEventsView(APIView):
-    @check_access([Role.ORGANIZER, Role.ADMIN])
+    @check_access(Role.ORGANIZER, Role.ADMIN)
     def get(self, request, requester: User):
-        try:
-            events = get_events_by_organiser(requester)
-            data = [event_to_json(event, requester) for event in events]
-            return Response(data, status=status.HTTP_200_OK)
-        except Exception as e:
-            logger.info(e)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        same_creator_events = (
+            get_events(creator=requester)
+            .prefetch_related(
+                "eventsignup_set",
+                Prefetch(
+                    "eventcategory_set",
+                    queryset=EventCategory.objects.select_related("category"),
+                ),
+            )
+            .select_related("creator")
+        )
+
+        data = [event_to_json(event, requester) for event in same_creator_events]
+
+        return Response(data, status=status.HTTP_200_OK)
 
 
 class SignedUpEventsView(APIView):
-    @check_access([Role.RESIDENT, Role.ORGANIZER, Role.ADMIN])
+    @check_access(Role.RESIDENT, Role.ORGANIZER, Role.ADMIN)
     def get(self, request, requester: User):
-        try:
-            events = get_events_with_user_sign_up(requester)
-            data = [event_to_json(event, requester) for event in events]
-            return Response(data, status=status.HTTP_200_OK)
-        except Exception as e:
-            logger.info(e)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        user_published_event_sign_ups = get_event_sign_ups(
+            user=requester, event__is_published=True
+        ).select_related("event")
+        signed_up_events = [
+            event_sign_up.event for event_sign_up in user_published_event_sign_ups
+        ]
+
+        data = [event_to_json(event, requester) for event in signed_up_events]
+
+        return Response(data, status=status.HTTP_200_OK)
+
+
+class PublishedEventsView(APIView):
+    @check_access(Role.RESIDENT, Role.ORGANIZER, Role.ADMIN)
+    def get(self, request, requester: User):
+        same_organization_published_events = (
+            get_events(creator__organization=requester.organization, is_published=True)
+            .prefetch_related(
+                "eventsignup_set",
+                Prefetch(
+                    "eventcategory_set",
+                    queryset=EventCategory.objects.select_related("category"),
+                ),
+            )
+            .select_related("creator")
+        )
+
+        data = [
+            event_to_json(event, requester)
+            for event in same_organization_published_events
+        ]
+
+        return Response(data, status=status.HTTP_200_OK)
 
 
 class SingleEventView(APIView):
-    @check_access([Role.RESIDENT, Role.ORGANIZER, Role.ADMIN])
-    def get(self, request, requester: User, event_id: int):
+    @check_access(Role.RESIDENT, Role.ORGANIZER, Role.ADMIN)
+    @check_user_event_same_organization
+    @check_event_viewer
+    def get(self, request, requester: User, event: Event):
+        sign_ups = get_event_sign_ups(event=event).select_related("user__organization")
+
+        data = {
+            EVENT: event_to_json(event, requester),
+            SIGN_UPS: [event_sign_up_to_json(sign_up) for sign_up in sign_ups],
+        }
+
+        return Response(data, status=status.HTTP_200_OK)
+
+    @check_access(Role.ORGANIZER, Role.ADMIN)
+    @check_user_event_same_organization
+    @check_event_modifier
+    def put(self, request, requester: User, event: Event):
+        serializer = EventSerializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+        validated_data = serializer.validated_data
+
         try:
-            event = get_event_by_id(event_id)
-            sign_ups = get_event_sign_ups(event)
-            data = {
-                EVENT: event_to_json(event, requester),
-                SIGN_UPS: [sign_up_to_json(s) for s in sign_ups]
-            }
-            return Response(data, status=status.HTTP_200_OK)
+            updated_event = update_event(
+                current_event=event,
+                title=validated_data.get("title", ""),
+                organized_by=validated_data.get("organized_by", ""),
+                venue_name=validated_data.get("venue_name", ""),
+                description=validated_data.get("description", ""),
+                capacity=validated_data.get("capacity", None),
+                start_date_time=parse_ms_timestamp_to_datetime(
+                    validated_data.get("start_date_time", 0)
+                ),
+                end_date_time=parse_ms_timestamp_to_datetime(
+                    validated_data.get("end_date_time", 0)
+                ),
+                image=validated_data.get("image", ""),
+                is_published=validated_data.get("is_published", False),
+                is_sign_up_allowed=validated_data.get("is_sign_up_allowed", False),
+                is_sign_up_approval_required=validated_data.get(
+                    "is_sign_up_approval_required", False
+                ),
+                categories=validated_data.get("categories", []),
+            )
         except Exception as e:
-            logger.info(e)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise BadRequest(e)
 
+        data = event_to_json(updated_event, requester)
 
-    @check_access([Role.ORGANIZER, Role.ADMIN])
-    @validate_event_edit_access
-    def put(self, request, requester: User, event_id: int):
-        try:
-            request_data = request.data
-            put_event_data_validate(request_data)
-            start_date = _convert_to_datetime(request_data[START_DATE])
-            end_date = _convert_to_datetime(request_data[END_DATE])
-            event = update_event(
-                id=event_id,
-                title=request_data[TITLE],
-                description=request_data[DESCRIPTION],
-                organiser=requester,
-                organised_by=request_data[ORGANISED_BY],
-                venue_name=request_data[VENUE_NAME],
-                capacity=request_data[CAPACITY],
-                start_date=start_date,
-                end_date=end_date,
-                categories=request_data[CATEGORIES],
-                image=request_data[IMAGE],
-                is_sign_up_allowed=request_data[IS_SIGN_UP_ALLOWED],
-                is_sign_up_approval_required=request_data[IS_SIGN_UP_APPROVAL_REQUIRED],
-                is_published=request_data[IS_PUBLISHED],           
-            )   
-            data = event_to_json(event, requester)
-            return Response(data, status=status.HTTP_200_OK)
-        except Exception as e:
-            logger.info(e)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(data, status=status.HTTP_200_OK)
 
+    @check_access(Role.ORGANIZER, Role.ADMIN)
+    @check_user_event_same_organization
+    @check_event_modifier
+    def delete(self, request, requester: User, event: Event):
+        event.delete()
+        delete_unused_event_category_types(organization=requester.organization)
 
-    @check_access([Role.ADMIN])
-    @validate_event_edit_access
-    def delete(self, request, requester: User, event_id: int):
-        try:
-            delete_event_by_id(event_id)
-            return Response(status=status.HTTP_200_OK)
-        except Exception as e:
-            logger.info(e)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
-def _convert_to_datetime(date_string: str) -> datetime:
-    return parser.parse(date_string)
-
-
-class CategoriesView(APIView):
-    @check_access([Role.RESIDENT, Role.ORGANIZER, Role.ADMIN])
-    def get(self, request, requester: User):
-        try:
-            categories = get_event_categories_by_organisation(requester.organisation)
-            data = [c.name for c in categories]
-            return Response(data, status=status.HTTP_200_OK)
-        except Exception as e:
-            logger.info(e)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
-class SingleCategoriesView(APIView):
-    @check_access([Role.ADMIN])
-    def delete(self, request, requester: User, category_id: int):
-        try:
-            category = get_category_by_id(category_id)
-            if category.organisation_id != requester.organisation_id:
-                raise Exception("User has no permission to modify this category")
-            delete_category_by_id(category_id)
-            return Response(status=status.HTTP_200_OK)
-        except Exception as e:
-            logger.info(e)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_204_NO_CONTENT)

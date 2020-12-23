@@ -21,7 +21,7 @@ function EventsCreationPage() {
     async (eventFormProps: EventFormProps) => {
       try {
         await createEvent(eventFormProps);
-        toast.success("A new event has been created successfully.");
+        toast.success("The new event has been created successfully.");
         history.push(previousPath);
       } catch (error) {
         resolveApiError(error);

@@ -1,16 +1,15 @@
 import { useCallback, useMemo, useState } from "react";
-import { CATEGORY } from "../../constants";
 import {
   VenueData,
   VenueFormProps,
   VenueViewProps,
   VenuePostData,
   VenuePutData,
+  VenueGetQueryParams,
 } from "../../types/venues";
-import { errorHandlerWrapper } from "../../utils/error-utils";
+import { errorHandlerWrapper, resolveApiError } from "../../utils/error-utils";
 import { parseQueryParamsToUrl } from "../../utils/parser-utils";
 import { useAxiosWithTokenRefresh } from "./auth-api";
-import { defaultArray } from "./default";
 
 function parseVenueFormProps(
   venueFormProps: VenueFormProps,
@@ -71,7 +70,7 @@ function parseVenueData(venueData: VenueData): VenueViewProps {
 
 export function useGetVenueCategories() {
   const [
-    { data: venueCategories = defaultArray, loading },
+    { data: venueCategories = [], loading },
     apiCall,
   ] = useAxiosWithTokenRefresh<string[]>(
     {
@@ -83,11 +82,14 @@ export function useGetVenueCategories() {
 
   const getVenueCategories = useCallback(async () => {
     try {
-      const { data: categories = [] } = await apiCall();
-      console.log("GET /venues/categories success:", categories);
-      return categories;
+      return await errorHandlerWrapper(async () => {
+        const { data: categories = [] } = await apiCall();
+        console.log("GET /venues/categories success:", categories);
+        return categories;
+      }, "GET /venues/categories error:")();
     } catch (error) {
-      console.log("GET /venues/categories error:", error, error?.response);
+      resolveApiError(error);
+
       return [];
     }
   }, [apiCall]);
@@ -105,17 +107,21 @@ export function useGetVenues() {
   );
 
   const getVenues = useCallback(
-    async (queryParams: { [CATEGORY]?: string } = {}) => {
+    async (queryParams?: VenueGetQueryParams) => {
       const url = parseQueryParamsToUrl("/venues/", queryParams);
       try {
-        const { data: venues = [] } = await apiCall({ url });
+        return await errorHandlerWrapper(async () => {
+          const { data: venues = [] } = await apiCall({ url });
 
-        console.log(`GET ${url} success:`, venues);
-        const parsedVenues = venues.map((venue) => parseVenueData(venue));
-        setVenues(parsedVenues);
-        return parsedVenues;
+          console.log(`GET ${url} success:`, venues);
+          const parsedVenues = venues.map((venue) => parseVenueData(venue));
+          setVenues(parsedVenues);
+          return parsedVenues;
+        }, `GET ${url} error:`)();
       } catch (error) {
-        console.log(`GET ${url} error:`, error, error?.response);
+        resolveApiError(error);
+
+        setVenues([]);
         return [];
       }
     },
@@ -196,6 +202,7 @@ export function useGetSingleVenue() {
         return parsedVenue;
       } catch (error) {
         console.log(`GET /venues/${venueId} error:`, error, error?.response);
+
         setVenue(undefined);
         return undefined;
       }

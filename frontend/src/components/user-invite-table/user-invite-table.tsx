@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useMemo } from "react";
 import { Popup, Segment, Button } from "semantic-ui-react";
 import { AutoSizer, Table, Column } from "react-virtualized";
-
 import PlaceholderWrapper from "../placeholder-wrapper";
 import SearchBar from "../search-bar";
 import { useVirtualizedTableState } from "../../custom-hooks";
@@ -18,7 +17,7 @@ import {
 } from "../../constants";
 import { UserInvitesContext } from "../../context-providers";
 
-const UserInvitesTableStateOptions: VirtualizedTableStateOptions = {
+const userInviteTableStateOptions: VirtualizedTableStateOptions = {
   defaultSortBy: CREATED_AT,
   defaultSortDirection: "DESC",
   searchIndex: ID,
@@ -26,7 +25,7 @@ const UserInvitesTableStateOptions: VirtualizedTableStateOptions = {
 };
 
 type UserInviteDisplayData = UserInviteData & {
-  createdAtString: string;
+  [CREATED_AT_STRING]: string;
 };
 
 function UserInviteTable() {
@@ -42,7 +41,7 @@ function UserInviteTable() {
     () =>
       userInvites.map((userInvite) => ({
         ...userInvite,
-        createdAtString: displayDateTime(userInvite.createdAt),
+        [CREATED_AT_STRING]: displayDateTime(userInvite.createdAt),
       })),
     [userInvites],
   );
@@ -56,7 +55,7 @@ function UserInviteTable() {
     onSearchValueChange,
   } = useVirtualizedTableState(
     userInviteDisplayData,
-    UserInvitesTableStateOptions,
+    userInviteTableStateOptions,
   );
 
   return (
@@ -72,7 +71,7 @@ function UserInviteTable() {
           <Popup
             content="Refresh"
             trigger={
-              <Button icon="refresh" color="blue" onClick={getAllUserInvites} />
+              <Button icon="redo" color="blue" onClick={getAllUserInvites} />
             }
             position="top center"
             on="hover"

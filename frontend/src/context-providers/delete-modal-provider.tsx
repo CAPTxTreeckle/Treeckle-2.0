@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Button, Header, Icon, Modal } from "semantic-ui-react";
 
 type DeleteModalContextType = {
   isModalOpen: boolean;
-  setModalOpen: (newValue: boolean) => void;
+  setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const DeleteModalContext = React.createContext<DeleteModalContextType>({
@@ -29,6 +29,22 @@ function DeleteModalProvider({
   deleteDescription = "Are you sure you want to delete?",
 }: Props) {
   const [isModalOpen, setModalOpen] = useState(false);
+  const [_isDeleting, setDeleting] = useState(false);
+  const isMounted = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
+  const _onDelete = useCallback(async () => {
+    setDeleting(true);
+    if (await onDelete?.()) {
+      isMounted.current && setModalOpen(false);
+    }
+    isMounted.current && setDeleting(false);
+  }, [onDelete]);
 
   return (
     <DeleteModalContext.Provider
@@ -64,8 +80,8 @@ function DeleteModalProvider({
             content="No"
           />
           <Button
-            onClick={async () => (await onDelete?.()) && setModalOpen(false)}
-            loading={isDeleting}
+            onClick={_onDelete}
+            loading={isDeleting || _isDeleting}
             basic
             color="green"
             inverted

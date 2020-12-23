@@ -1,3 +1,4 @@
+import { StrictLabelProps } from "semantic-ui-react";
 import {
   ACTION,
   ACTIONS,
@@ -14,6 +15,7 @@ import {
   VENUE_ID,
   VENUE_NAME,
   IDS,
+  USER_ID,
 } from "../constants";
 import { BaseData } from "./base";
 import { UserData } from "./users";
@@ -21,6 +23,14 @@ import { CustomVenueBookingFormFieldProps } from "./venues";
 
 export type CustomVenueBookingFormData = CustomVenueBookingFormFieldProps &
   CustomVenueBookingFormResponseProps;
+
+export type BookingGetQueryParams = {
+  [USER_ID]?: number;
+  [VENUE_NAME]?: string;
+  [START_DATE_TIME]?: number;
+  [END_DATE_TIME]?: number;
+  [STATUS]?: BookingStatus;
+};
 
 export type BookingPostData = {
   [TITLE]: string;
@@ -75,7 +85,29 @@ export enum BookingStatus {
   Cancelled = "CANCELLED",
 }
 
+export const BookingStatusDetails = new Map<
+  BookingStatus,
+  { color: StrictLabelProps["color"] }
+>([
+  [
+    BookingStatus.Approved,
+    {
+      color: "green",
+    },
+  ],
+  [BookingStatus.Cancelled, { color: "grey" }],
+  [BookingStatus.Pending, { color: "orange" }],
+  [
+    BookingStatus.Rejected,
+    {
+      color: "red",
+    },
+  ],
+]);
+
 export type BookingFormProps = {
   [TITLE]: string;
   [CUSTOM_VENUE_BOOKING_FORM_RESPONSES]?: CustomVenueBookingFormResponseProps[];
 };
+
+export type BookingViewProps = BookingData;

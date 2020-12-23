@@ -34,9 +34,9 @@ function VenueFormGalleryItem({ id, venueFormProps }: Props) {
 
   const actionButtons = useMemo(
     () => [
-      <Button key={0} content="Edit" onClick={onEdit} color="black" />,
+      <Button key="edit" content="Edit" onClick={onEdit} color="black" />,
       <Button
-        key={1}
+        key="delete"
         content="Delete"
         onClick={onDelete}
         color="red"

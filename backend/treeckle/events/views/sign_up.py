@@ -1,101 +1,76 @@
-from enum import Enum
-import fastjsonschema
-import logging
-
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from events.middlewares import validate_event_edit_access
-from events.logic.sign_up import (
-    approve_sign_up,
-    attend_sign_up,
-    create_sign_up,
-    delete_sign_up,
-    sign_up_to_json,
-)
-from treeckle.models.user import Role, User
-from treeckle.strings.json_keys import (
-    ACTION,
-    ACTIONS,
-    NUMBER,
-    OBJECT,
-    PROPERTIES,
-    REQUIRED,
-    USER_ID,
-    STRING,
-    TYPE,
-)
+from treeckle.common.exceptions import BadRequest
 from users.permission_middlewares import check_access
+from users.models import Role, User
+from events.middlewares import check_user_event_same_organization, check_event_modifier
+from events.logic.sign_up import (
+    event_sign_up_to_json,
+    create_event_sign_up,
+    delete_event_sign_up,
+    update_event_sign_ups,
+    attend_event_sign_up,
+)
+from events.models import Event
+from events.serializers import PatchEventSignUpSerializer
 
 
-logger = logging.getLogger("main")
-
-class OwnSignUpView(APIView):
-    @check_access([Role.RESIDENT, Role.ORGANIZER, Role.ADMIN])
-    def post(self, request, requester: User, event_id: int):
+class SelfSignUpView(APIView):
+    @check_access(Role.RESIDENT, Role.ORGANIZER, Role.ADMIN)
+    @check_user_event_same_organization
+    def post(self, request, requester: User, event: Event):
         try:
-            sign_up = create_sign_up(user_id=requester.id, event_id=event_id)
-            data = sign_up_to_json(sign_up)
-            return Response(data, status=status.HTTP_200_OK)
+            new_event_sign_up = create_event_sign_up(event=event, user=requester)
         except Exception as e:
-            logger.info(e)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise BadRequest(e)
 
-    
-    @check_access([Role.RESIDENT, Role.ORGANIZER, Role.ADMIN])
-    def patch(self, request, requester: User, event_id: int):
+        data = event_sign_up_to_json(new_event_sign_up)
+
+        return Response(data, status=status.HTTP_201_CREATED)
+
+    @check_access(Role.RESIDENT, Role.ORGANIZER, Role.ADMIN)
+    @check_user_event_same_organization
+    def patch(self, request, requester: User, event: Event):
         try:
-            sign_up = attend_sign_up(user_id=requester.id, event_id=event_id)
-            data = sign_up_to_json(sign_up)
-            return Response(data, status=status.HTTP_200_OK)
+            attended_event_sign_up = attend_event_sign_up(event=event, user=requester)
         except Exception as e:
-            logger.info(e)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise BadRequest(e)
 
+        data = event_sign_up_to_json(attended_event_sign_up)
 
-    @check_access([Role.RESIDENT, Role.ORGANIZER, Role.ADMIN])
-    def delete(self, request, requester: User, event_id: int):
-        try:
-            delete_sign_up(user_id=requester.id, event_id=event_id)
-            return Response(status=status.HTTP_200_OK)
-        except Exception as e:
-            logger.info(e)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(data, status=status.HTTP_200_OK)
 
+    @check_access(Role.RESIDENT, Role.ORGANIZER, Role.ADMIN)
+    @check_user_event_same_organization
+    def delete(self, request, requester: User, event: Event):
+        delete_event_sign_up(event=event, user=requester)
 
-class SignUpAction(str, Enum):
-    ATTEND = "ATTEND"
-    CONFIRM = "CONFIRM"
-    REJECT = "REJECT"
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
-
-sign_up_action_data_validate = fastjsonschema.compile({
-    TYPE: OBJECT,
-    PROPERTIES: {
-        ACTION: {TYPE: STRING},
-        USER_ID: {TYPE: NUMBER},
-    },
-    REQUIRED: [ACTION, USER_ID]
-})
 
 class SignUpView(APIView):
-    @check_access([Role.ORGANIZER, Role.ADMIN])
-    @validate_event_edit_access
-    def patch(self, request, requester: User, event_id: int):
+    @check_access(Role.ORGANIZER, Role.ADMIN)
+    @check_user_event_same_organization
+    @check_event_modifier
+    def patch(self, request, requester: User, event: Event):
+        serializer = PatchEventSignUpSerializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+
+        actions = serializer.validated_data.get("actions", [])
+
         try:
-            actions = request.data[ACTIONS]
-            for data in actions:
-                sign_up_action_data_validate(data)
-                action = data[ACTION]
-                user_id = data[USER_ID]
-                if action == SignUpAction.ATTEND:
-                    attend_sign_up(user_id=user_id, event_id=event_id)
-                elif action == SignUpAction.CONFIRM:
-                    approve_sign_up(user_id=user_id, event_id=event_id)
-                elif action == SignUpAction.REJECT:
-                    delete_sign_up(user_id=user_id, event_id=event_id)
-            return Response(status=status.HTTP_200_OK)
+            updated_event_sign_ups = update_event_sign_ups(
+                actions=actions, event=event, organization=requester.organization
+            )
         except Exception as e:
-            logger.info(e)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise BadRequest(e)
+
+        data = [
+            event_sign_up_to_json(event_sign_up)
+            for event_sign_up in updated_event_sign_ups
+        ]
+
+        return Response(data, status=status.HTTP_200_OK)

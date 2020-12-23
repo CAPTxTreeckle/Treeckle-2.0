@@ -109,7 +109,7 @@ function EventDetailsForm({
     getEventCategories,
   } = useGetEventCategories();
 
-  const isUnmounted = useRef(false);
+  const isMounted = useRef(true);
   const [isSubmitting, setSubmitting] = useState(false);
   const { isSignUpAllowed, onAllowSignUp } = useAllowSignUp(
     defaultValues.isSignUpAllowed,
@@ -117,10 +117,13 @@ function EventDetailsForm({
   );
 
   useEffect(() => {
-    getEventCategories();
     return () => {
-      isUnmounted.current = true;
+      isMounted.current = false;
     };
+  }, []);
+
+  useEffect(() => {
+    getEventCategories();
   }, [getEventCategories]);
 
   const _onSubmit = useCallback(
@@ -128,9 +131,7 @@ function EventDetailsForm({
       setSubmitting(true);
       await onSubmit?.(deepTrim(formData));
 
-      if (!isUnmounted.current) {
-        setSubmitting(false);
-      }
+      isMounted.current && setSubmitting(false);
     },
     [onSubmit],
   );

@@ -1,8 +1,11 @@
-from django.contrib import admin
-from django.urls import path, include, re_path
-from bookings.views import GetBookingsDetails, AllBookings
+from django.urls import path
+
+from .views import TotalBookingCountView, PendingBookingCountView, BookingsView
 
 urlpatterns = [
-    re_path(r'^(?:/(?P<offset>^[0-9]+$))?(?:/(?P<limit>^[0-9]+$))?/$', GetBookingsDetails.as_view()),
-    re_path(r'^/all(?:/(?P<offset>^[0-9]+$))?(?:/(?P<limit>^[0-9]+$))?(?:/(?P<status>^[0-3]$))?(?:/(?P<start>^[0-9]+$))?(?:/(?P<end>^[0-9]+$))?(?:/(?P<venue>^[0-9]+$))?/$', AllBookings.as_view())
+    path("", BookingsView.as_view(), name="bookings"),
+    path("totalcount", TotalBookingCountView.as_view(), name="total_booking_count"),
+    path(
+        "pendingcount", PendingBookingCountView.as_view(), name="pending_booking_count"
+    ),
 ]
