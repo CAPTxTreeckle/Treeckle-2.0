@@ -1,4 +1,3 @@
-import React from "react";
 import { Button, Divider, Image } from "semantic-ui-react";
 import "./image-preview-controller.scss";
 

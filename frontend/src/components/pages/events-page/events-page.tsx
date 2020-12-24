@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo } from "react";
+import { useCallback, useContext, useMemo } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { Button, Icon, Segment } from "semantic-ui-react";
 import { Role } from "../../../types/users";

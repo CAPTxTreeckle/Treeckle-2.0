@@ -1,8 +1,8 @@
-import React from "react";
+import { ReactNode } from "react";
 import { createMedia } from "@artsy/fresnel";
 
 type Props = {
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 const appMedia = createMedia({

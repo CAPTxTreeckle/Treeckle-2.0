@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { Grid, Segment, Image } from "semantic-ui-react";
 import defaultAvatarImage from "../../../assets/avatar.png";
 import { UserContext } from "../../../context-providers";

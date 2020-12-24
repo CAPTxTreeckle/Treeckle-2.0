@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import { createContext, ReactNode, useCallback, useState } from "react";
 import { toast } from "react-toastify";
 import {
   useDeleteUserInvites,
@@ -18,7 +18,7 @@ type UserInvitesContextType = {
   deleteUserInvites: (emails: string[]) => Promise<string[]>;
 };
 
-export const UserInvitesContext = React.createContext<UserInvitesContextType>({
+export const UserInvitesContext = createContext<UserInvitesContextType>({
   userInvites: [],
   isLoading: false,
   getAllUserInvites: () => {
@@ -33,7 +33,7 @@ export const UserInvitesContext = React.createContext<UserInvitesContextType>({
 });
 
 type Props = {
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 function UserInvitesProvider({ children }: Props) {

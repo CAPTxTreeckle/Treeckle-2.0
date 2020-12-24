@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo } from "react";
+import { useCallback, useContext, useMemo } from "react";
 import { useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Button } from "semantic-ui-react";

@@ -1,14 +1,20 @@
-import React, { useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useState,
+} from "react";
 import { Modal, ModalProps, TransitionablePortal } from "semantic-ui-react";
 
 type GlobalModalContextType = {
   isModalOpen: boolean;
-  setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setModalOpen: Dispatch<SetStateAction<boolean>>;
   modalProps: ModalProps;
-  setModalProps: React.Dispatch<React.SetStateAction<ModalProps>>;
+  setModalProps: Dispatch<SetStateAction<ModalProps>>;
 };
 
-export const GlobalModalContext = React.createContext<GlobalModalContextType>({
+export const GlobalModalContext = createContext<GlobalModalContextType>({
   isModalOpen: false,
   setModalOpen: () => {
     throw new Error("setModalOpen not defined.");
@@ -20,7 +26,7 @@ export const GlobalModalContext = React.createContext<GlobalModalContextType>({
 });
 
 type Props = {
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 function GlobalModalProvider({ children }: Props) {

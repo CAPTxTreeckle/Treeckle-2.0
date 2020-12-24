@@ -24,7 +24,7 @@ services:
     build:
       context: ./frontend
       args:
-        REACT_APP_API_URL: https://v2.treeckle.com/api
+        REACT_APP_API_URL: http://159.65.142.221/api
         REACT_APP_GOOGLE_CLIENT_ID: 858509158388-d943lj9isgh7oaumkoj65kqvq1ehgt14.apps.googleusercontent.com
     networks:
       - frontend

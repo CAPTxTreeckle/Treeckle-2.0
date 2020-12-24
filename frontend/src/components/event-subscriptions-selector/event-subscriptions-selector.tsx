@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { Label } from "semantic-ui-react";
 import { EventSubscriptionsContext } from "../../context-providers";
 import { SubscriptionActionType } from "../../types/events";

@@ -1,4 +1,3 @@
-import React from "react";
 import TabItem from "../tab-item";
 import { DASHBOARD_PATH } from "../../../routes/paths";
 

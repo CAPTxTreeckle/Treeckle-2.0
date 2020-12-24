@@ -1,4 +1,10 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
+import {
+  useState,
+  useMemo,
+  useCallback,
+  useEffect,
+  SyntheticEvent,
+} from "react";
 import { DateRange, stringOrDate, View } from "react-big-calendar";
 import {
   isWithinInterval,
@@ -164,7 +170,7 @@ export default function useBookingCreationCalendarState(
   const onSelectEvent = useCallback(
     (
       { start }: CalendarBooking,
-      e: React.SyntheticEvent<HTMLElement, Event>,
+      e: SyntheticEvent<HTMLElement, Event>,
       forceJumpToEvent = false,
     ) => {
       if (forceJumpToEvent || view !== "day" || !isSameDay(start, dateView)) {

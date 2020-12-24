@@ -1,4 +1,3 @@
-import React from "react";
 import { BookingsProvider } from "../../context-providers";
 import BookingAdminTable from "../booking-admin-table";
 

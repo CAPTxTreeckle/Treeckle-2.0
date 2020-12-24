@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo } from "react";
+import { useCallback, useContext, useMemo, MouseEvent } from "react";
 import { Button, Icon, Label } from "semantic-ui-react";
 import { SingleEventContext, UserContext } from "../../context-providers";
 import { SignUpStatus } from "../../types/events";
@@ -19,7 +19,7 @@ function EventSignUpButton() {
   const { isSignUpAllowed } = { ...eventFormProps };
 
   const onSignUpForEvent = useCallback(
-    (e: React.MouseEvent<HTMLElement>) => {
+    (e: MouseEvent<HTMLElement>) => {
       e.stopPropagation();
       signUpForEvent();
     },
@@ -27,7 +27,7 @@ function EventSignUpButton() {
   );
 
   const onWithdrawFromEvent = useCallback(
-    (e: React.MouseEvent<HTMLElement>) => {
+    (e: MouseEvent<HTMLElement>) => {
       e.stopPropagation();
       withdrawFromEvent();
     },

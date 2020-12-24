@@ -6,7 +6,7 @@
   <img src="./assets/treeckle-title-bottom-transparent.png" alt="Treeckle" width="400"/>
 </p>
 
-Website: <https://v2.treeckle.com/>
+Website: <https://treeckle.com/>
 
 _Currently in development._
 

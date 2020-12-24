@@ -44,9 +44,9 @@ services:
       - backend
     restart: always
     environment:
-      - VIRTUAL_HOST=v2.treeckle.com
+      - VIRTUAL_HOST=159.65.142.221
       - VIRTUAL_PORT=80
-      - LETSENCRYPT_HOST=v2.treeckle.com
+      - LETSENCRYPT_HOST=159.65.142.221
       - LETSENCRYPT_EMAIL=treeckle@googlegroups.com
 
   ## can only be accessed within frontend network

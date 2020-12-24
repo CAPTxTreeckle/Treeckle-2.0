@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { Button, Icon } from "semantic-ui-react";
 import { useLastLocation } from "react-router-last-location";

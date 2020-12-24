@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useGetSingleEvent } from "../../../custom-hooks/api";
 import PlaceholderWrapper from "../../placeholder-wrapper";

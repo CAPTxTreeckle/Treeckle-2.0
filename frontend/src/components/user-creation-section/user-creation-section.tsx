@@ -1,4 +1,3 @@
-import React from "react";
 import { UserCreationProvider } from "../../context-providers";
 import UserCreationInputSection from "../user-creation-input-section";
 import UserCreationTable from "../user-creation-table";

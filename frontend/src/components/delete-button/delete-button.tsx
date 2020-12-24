@@ -1,4 +1,3 @@
-import React from "react";
 import { Popup, Button, StrictButtonProps } from "semantic-ui-react";
 
 type Props = {

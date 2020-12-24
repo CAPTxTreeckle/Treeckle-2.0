@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import { useHistory } from "react-router-dom";
 import { SingleEventProvider } from "../../context-providers";
 import { EVENTS_SINGLE_VIEW_PATH } from "../../routes/paths";

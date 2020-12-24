@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Accordion, MenuItem } from "semantic-ui-react";
 import { useLocation } from "react-router-dom";
 import TabItem from "../tab-item";

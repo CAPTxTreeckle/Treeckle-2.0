@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { Card, Grid, Header, Segment } from "semantic-ui-react";
 import { BookingCreationContext } from "../../context-providers";
 import { useGetVenueCategories } from "../../custom-hooks/api";

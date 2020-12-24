@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { Popup, Button, ModalContent } from "semantic-ui-react";
 import { GlobalModalContext } from "../../context-providers";
 import { BookingViewProps } from "../../types/bookings";

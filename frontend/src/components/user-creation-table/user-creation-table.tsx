@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import { useCallback, useContext, useMemo, useState } from "react";
 import { Table, Column, AutoSizer } from "react-virtualized";
 import { Button, List, ModalContent, Segment } from "semantic-ui-react";
 import { toast } from "react-toastify";

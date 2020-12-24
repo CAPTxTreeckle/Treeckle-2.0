@@ -1,4 +1,3 @@
-import React from "react";
 import { ExistingUsersProvider } from "../../context-providers";
 import UserTable from "../user-table";
 

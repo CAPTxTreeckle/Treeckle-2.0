@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import { ReactNode, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 
 type Props = {
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 export const scrollToTop = (behavior: "auto" | "smooth" = "auto") =>

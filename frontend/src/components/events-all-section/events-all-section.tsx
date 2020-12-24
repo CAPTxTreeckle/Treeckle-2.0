@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useGetPublishedEvents } from "../../custom-hooks/api";
 import EventGallery from "../event-gallery";
 import EventViewOnlyGalleryItem from "../event-view-only-gallery-item";

@@ -1,4 +1,4 @@
-import React, { useCallback, useContext } from "react";
+import { useCallback, useContext } from "react";
 import { Popup, Button, Icon } from "semantic-ui-react";
 import papaparse from "papaparse";
 import { toast } from "react-toastify";

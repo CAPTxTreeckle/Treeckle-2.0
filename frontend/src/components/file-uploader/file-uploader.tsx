@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { ReactNode, useMemo } from "react";
 import { useDropzone } from "react-dropzone";
 import { Header, Icon } from "semantic-ui-react";
 import "./file-uploader.scss";
@@ -8,7 +8,7 @@ type Props = {
   multiple?: boolean;
   onAcceptFiles: (files: File[]) => void;
   maxFileSize?: number;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
   title?: string;
   description?: string;
   disabled?: boolean;

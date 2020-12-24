@@ -1,4 +1,3 @@
-import React from "react";
 import { Form, Label, StrictFormFieldProps } from "semantic-ui-react";
 import get from "lodash.get";
 import { useFormContext } from "react-hook-form";

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { DraggableProvidedDragHandleProps } from "react-beautiful-dnd";
 import { Controller, useFormContext } from "react-hook-form";
 import { Card, Form, Icon, Popup, Select } from "semantic-ui-react";

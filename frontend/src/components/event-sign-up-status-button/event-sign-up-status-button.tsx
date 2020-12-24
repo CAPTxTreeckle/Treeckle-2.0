@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from "react";
+import { useContext, useMemo } from "react";
 import { Button } from "semantic-ui-react";
 import { SingleEventContext } from "../../context-providers";
 import { SignUpActionType, SignUpStatus } from "../../types/events";

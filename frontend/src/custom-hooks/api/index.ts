@@ -1,8 +1,4 @@
-export {
-  useGoogleAuth,
-  useOpenIdAuth,
-  useAxiosWithTokenRefresh,
-} from "./auth-api";
+export { useGoogleAuth, useOpenIdAuth } from "./auth-api";
 
 export {
   useGetVenues,

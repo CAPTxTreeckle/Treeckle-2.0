@@ -1,4 +1,3 @@
-import React from "react";
 import { Grid, Label } from "semantic-ui-react";
 import { BookingViewProps, BookingStatusDetails } from "../../types/bookings";
 import { FieldType } from "../../types/venues";

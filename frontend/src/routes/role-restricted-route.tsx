@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { Redirect, Route, RouteProps } from "react-router-dom";
 import { HOME_PATH } from "./paths";
 import { UserContext } from "../context-providers/user-provider";

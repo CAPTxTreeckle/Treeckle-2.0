@@ -1,10 +1,10 @@
-import React from "react";
+import { ReactNode } from "react";
 import { SortIndicator, SortDirectionType } from "react-virtualized";
 
 type Props = {
   dataKey: string;
   disableSort?: boolean;
-  label?: React.ReactNode;
+  label?: ReactNode;
   sortBy?: string;
   sortDirection?: SortDirectionType;
 };

@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from "react";
+import { useContext, useMemo } from "react";
 import { USER_ID } from "../../constants";
 import { BookingsProvider, UserContext } from "../../context-providers";
 import { BookingGetQueryParams } from "../../types/bookings";

@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo } from "react";
+import { useCallback, useContext, useMemo } from "react";
 import { Button } from "semantic-ui-react";
 import PopUpActionsWrapper from "../pop-up-actions-wrapper";
 import { BookingViewProps, BookingStatus } from "../../types/bookings";

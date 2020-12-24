@@ -1,4 +1,3 @@
-import React from "react";
 import TabItem from "../tab-item";
 import { EVENTS_PATH } from "../../../routes/paths";
 

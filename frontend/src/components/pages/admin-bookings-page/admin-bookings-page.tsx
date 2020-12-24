@@ -1,4 +1,3 @@
-import React from "react";
 import BookingAdminSection from "../../booking-admin-section";
 
 function AdminBookingsPage() {

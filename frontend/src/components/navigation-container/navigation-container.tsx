@@ -1,11 +1,11 @@
-import React, { useContext } from "react";
+import { ReactNode, useContext } from "react";
 import MobileNavigationBar from "./mobile-navigation-bar";
 import DesktopNavigationBar from "./desktop-navigation-bar";
 import { UserContext, Media } from "../../context-providers";
 import "./navigation-container.scss";
 
 type Props = {
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 function NavigationContainer({ children }: Props) {

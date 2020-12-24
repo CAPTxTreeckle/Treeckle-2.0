@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Dropdown } from "semantic-ui-react";
 import { PendingBookingCountContext } from "../../../context-providers";

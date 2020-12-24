@@ -1,4 +1,3 @@
-import React from "react";
 import QRCode from "qrcode.react";
 import { Media } from "../../context-providers";
 import treeckleLogo from "../../assets/treeckle-outline-min.png";

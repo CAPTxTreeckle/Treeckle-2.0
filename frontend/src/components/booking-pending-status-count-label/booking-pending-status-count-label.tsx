@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { Label, Icon } from "semantic-ui-react";
 import { PendingBookingCountContext } from "../../context-providers";
 
