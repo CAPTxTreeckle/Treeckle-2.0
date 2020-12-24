@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { Divider } from "semantic-ui-react";
 import {
   EventSubscriptionsContext,

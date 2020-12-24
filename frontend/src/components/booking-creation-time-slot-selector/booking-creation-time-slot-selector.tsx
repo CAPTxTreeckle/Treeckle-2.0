@@ -1,4 +1,4 @@
-import { CSSProperties, useContext, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { Calendar, View } from "react-big-calendar";
 import { Button, Label, Segment } from "semantic-ui-react";
 import {
@@ -24,7 +24,7 @@ import "./booking-creation-time-slot-selector.scss";
 
 const eventPropGetter = ({
   isNew,
-}: CalendarBooking): { className?: string; style?: CSSProperties } =>
+}: CalendarBooking): { className?: string; style?: React.CSSProperties } =>
   isNew ? { style: { backgroundColor: "#00b5ad" } } : {};
 
 const views: View[] = ["month", "week", "day"];

@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useCallback } from "react";
+import React, { useCallback } from "react";
 import { toast } from "react-toastify";
 import {
   useGetOrganizationListeners,
@@ -23,7 +23,7 @@ type BookingNotificationSubscriptionContextType = {
   deleteBookingNotificationSubscribers: (ids: number[]) => Promise<boolean>;
 };
 
-export const BookingNotificationSubscriptionContext = createContext<BookingNotificationSubscriptionContextType>(
+export const BookingNotificationSubscriptionContext = React.createContext<BookingNotificationSubscriptionContextType>(
   {
     bookingNotificationSubscribers: [],
     isLoading: false,
@@ -40,7 +40,7 @@ export const BookingNotificationSubscriptionContext = createContext<BookingNotif
 );
 
 type Props = {
-  children: ReactNode;
+  children: React.ReactNode;
 };
 
 function BookingNotificationSubscriptionProvider({ children }: Props) {

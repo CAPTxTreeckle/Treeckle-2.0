@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo } from "react";
+import React, { useContext, useEffect, useMemo } from "react";
 import { AutoSizer, Column, Table } from "react-virtualized";
 import { Button, Label, Popup, Segment } from "semantic-ui-react";
 import {

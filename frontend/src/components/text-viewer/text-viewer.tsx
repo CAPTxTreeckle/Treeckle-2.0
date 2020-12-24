@@ -1,9 +1,9 @@
+import React from "react";
 import Linkify from "linkifyjs/react";
-import { ReactNode } from "react";
 import "./text-viewer.scss";
 
 type Props = {
-  children: ReactNode;
+  children: React.ReactNode;
 };
 
 function TextViewer({ children }: Props) {

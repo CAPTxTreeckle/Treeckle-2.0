@@ -1,4 +1,4 @@
-import { createContext, ReactNode } from "react";
+import React from "react";
 import { useGetOwnEvents } from "../custom-hooks/api";
 import { EventViewProps } from "../types/events";
 
@@ -8,7 +8,7 @@ type OwnEventsContextType = {
   isLoading: boolean;
 };
 
-export const OwnEventsContext = createContext<OwnEventsContextType>({
+export const OwnEventsContext = React.createContext<OwnEventsContextType>({
   ownEvents: [],
   getOwnEvents: () => {
     throw new Error("getOwnEvents not defined.");
@@ -17,7 +17,7 @@ export const OwnEventsContext = createContext<OwnEventsContextType>({
 });
 
 type Props = {
-  children: ReactNode;
+  children: React.ReactNode;
 };
 
 function EventsProvider({ children }: Props) {

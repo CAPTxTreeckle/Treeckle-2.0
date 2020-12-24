@@ -1,9 +1,9 @@
-import { ReactNode } from "react";
+import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { MenuItem } from "semantic-ui-react";
 
 type Props = {
-  label: ReactNode;
+  label: React.ReactNode;
   redirectPath: string;
   onTabClick?: () => void;
 };

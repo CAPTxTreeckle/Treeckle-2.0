@@ -1,11 +1,4 @@
-import {
-  createContext,
-  Dispatch,
-  ReactNode,
-  SetStateAction,
-  useCallback,
-  useState,
-} from "react";
+import React, { useCallback, useState } from "react";
 import {
   Button,
   Divider,
@@ -15,7 +8,7 @@ import {
 } from "semantic-ui-react";
 
 type Props = {
-  children: ReactNode;
+  children: React.ReactNode;
   actionButtons: JSX.Element[];
   offsetRatio?: { widthRatio?: number; heightRatio?: number };
   vertical?: boolean;
@@ -24,12 +17,12 @@ type Props = {
 };
 
 type PopUpActionsWrapperContextType = {
-  extraContent: ReactNode;
-  setExtraContent: Dispatch<SetStateAction<ReactNode>>;
+  extraContent: React.ReactNode;
+  setExtraContent: React.Dispatch<React.SetStateAction<React.ReactNode>>;
   closePopUp: () => void;
 };
 
-export const PopUpActionsWrapperContext = createContext<PopUpActionsWrapperContextType>(
+export const PopUpActionsWrapperContext = React.createContext<PopUpActionsWrapperContextType>(
   {
     extraContent: null,
     setExtraContent: () => new Error("setExtraContent not defined."),
@@ -49,7 +42,7 @@ function PopUpActionsWrapper({
   inverted = false,
 }: Props) {
   const [isPopUpOpen, setPopUpOpen] = useState(false);
-  const [extraContent, setExtraContent] = useState<ReactNode>(null);
+  const [extraContent, setExtraContent] = useState<React.ReactNode>(null);
 
   const closePopUp = useCallback(() => {
     setExtraContent(null);

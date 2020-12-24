@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { yupResolver } from "@hookform/resolvers";
 import * as yup from "yup";
 import {
   Form,
@@ -9,7 +9,6 @@ import {
   Segment,
   StrictButtonProps,
 } from "semantic-ui-react";
-import Reference from "yup/lib/Reference";
 import {
   IS_SIGN_UP_ALLOWED,
   CATEGORIES,
@@ -58,7 +57,7 @@ const schema = yup.object().shape({
     .number()
     .integer()
     .min(
-      yup.ref(START_DATE_TIME) as Reference<number>,
+      yup.ref(START_DATE_TIME),
       "Event end date/time cannot be before start date/time",
     )
     .required("Please enter the event end date/time"),

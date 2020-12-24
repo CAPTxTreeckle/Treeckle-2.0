@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import React from "react";
 import { Menu, Container } from "semantic-ui-react";
 import LogoTab from "../logo-tab";
 import DashboardTab from "../dashboard-tab";
@@ -11,7 +11,7 @@ import { Role } from "../../../types/users";
 import RoleRestrictedWrapper from "../../role-restricted-wrapper";
 
 type Props = {
-  children: ReactNode;
+  children: React.ReactNode;
 };
 
 function DesktopNavigationBar({ children }: Props) {

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useLastLocation } from "react-router-last-location";
 import { Button, Icon } from "semantic-ui-react";

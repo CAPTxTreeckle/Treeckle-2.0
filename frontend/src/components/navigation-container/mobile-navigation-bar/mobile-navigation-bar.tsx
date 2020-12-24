@@ -1,4 +1,4 @@
-import { ReactNode, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Sidebar, Menu, Container } from "semantic-ui-react";
 import LogoTab from "../logo-tab";
 import DashboardTab from "../dashboard-tab";
@@ -12,7 +12,7 @@ import RoleRestrictedWrapper from "../../role-restricted-wrapper";
 import { PendingBookingCountContext } from "../../../context-providers";
 
 type Props = {
-  children: ReactNode;
+  children: React.ReactNode;
 };
 
 function MobileNavigationBar({ children }: Props) {

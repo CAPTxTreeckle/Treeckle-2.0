@@ -1,10 +1,4 @@
-import {
-  createContext,
-  ReactNode,
-  useCallback,
-  useContext,
-  useState,
-} from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { toast } from "react-toastify";
 import {
   BookingViewProps,
@@ -34,7 +28,7 @@ type BookingsContextType = {
   deleteBookings: (ids: number[]) => Promise<BookingViewProps[]>;
 };
 
-export const BookingsContext = createContext<BookingsContextType>({
+export const BookingsContext = React.createContext<BookingsContextType>({
   bookings: [],
   isLoading: false,
   getBookings: () => {
@@ -50,7 +44,7 @@ export const BookingsContext = createContext<BookingsContextType>({
 
 type Props = {
   defaultQueryParams?: BookingGetQueryParams;
-  children: ReactNode;
+  children: React.ReactNode;
 };
 
 function BookingsProvider({ children, defaultQueryParams }: Props) {

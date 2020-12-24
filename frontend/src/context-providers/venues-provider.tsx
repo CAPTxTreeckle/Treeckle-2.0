@@ -1,4 +1,4 @@
-import { createContext, ReactNode } from "react";
+import React from "react";
 import { useGetVenues } from "../custom-hooks/api";
 import { VenueViewProps } from "../types/venues";
 
@@ -8,7 +8,7 @@ type VenuesContextType = {
   isLoading: boolean;
 };
 
-export const VenuesContext = createContext<VenuesContextType>({
+export const VenuesContext = React.createContext<VenuesContextType>({
   venues: [],
   getVenues: () => {
     throw new Error("getVenues not defined.");
@@ -17,7 +17,7 @@ export const VenuesContext = createContext<VenuesContextType>({
 });
 
 type Props = {
-  children: ReactNode;
+  children: React.ReactNode;
 };
 
 function VenuesProvider({ children }: Props) {

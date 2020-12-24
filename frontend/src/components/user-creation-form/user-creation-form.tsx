@@ -1,5 +1,5 @@
-import { useCallback, useContext } from "react";
-import { yupResolver } from "@hookform/resolvers/yup";
+import React, { useCallback, useContext } from "react";
+import { yupResolver } from "@hookform/resolvers";
 import * as yup from "yup";
 import { FormProvider, useForm } from "react-hook-form";
 import { Form } from "semantic-ui-react";

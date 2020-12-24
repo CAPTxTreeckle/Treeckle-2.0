@@ -1,10 +1,4 @@
-import {
-  createContext,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import BookingCreationCategorySelector from "../components/booking-creation-category-selector";
 import BookingCreationCustomForm from "../components/booking-creation-custom-form";
@@ -73,7 +67,7 @@ type BookingCreationContextType = {
   hasCreatedBookings: boolean;
 };
 
-export const BookingCreationContext = createContext<BookingCreationContextType>(
+export const BookingCreationContext = React.createContext<BookingCreationContextType>(
   {
     currentCreationStep: BookingCreationStep.Category,
     goToNextStep: () => {
@@ -91,7 +85,7 @@ export const BookingCreationContext = createContext<BookingCreationContextType>(
 );
 
 type Props = {
-  children: ReactNode;
+  children: React.ReactNode;
 };
 
 function BookingCreationProvider({ children }: Props) {

@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { Popup, Segment, Button } from "semantic-ui-react";
 import { AutoSizer, Table, Column } from "react-virtualized";
 import PlaceholderWrapper from "../placeholder-wrapper";

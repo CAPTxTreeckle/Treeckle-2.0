@@ -1,11 +1,11 @@
-import { ReactNode, useContext } from "react";
+import React, { useContext } from "react";
 import { UserContext } from "../../context-providers/user-provider";
 import { Role } from "../../types/users";
 
 type Props = {
-  children: ReactNode;
+  children: React.ReactNode;
   roles: Role[];
-  defaultRender?: ReactNode;
+  defaultRender?: React.ReactNode;
 };
 
 function RoleRestrictedWrapper({

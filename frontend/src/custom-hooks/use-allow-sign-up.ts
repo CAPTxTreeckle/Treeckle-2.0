@@ -1,4 +1,4 @@
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CheckboxProps } from "semantic-ui-react";
 import { IS_SIGN_UP_APPROVAL_REQUIRED } from "../constants";
 
@@ -13,7 +13,10 @@ export default function useAllowSignUp(
   }, [defaultIsSignUpAllowed]);
 
   const onAllowSignUp = useCallback(
-    (e: FormEvent<HTMLInputElement>, { checked = false }: CheckboxProps) => {
+    (
+      e: React.FormEvent<HTMLInputElement>,
+      { checked = false }: CheckboxProps,
+    ) => {
       if (!checked) {
         setValue(IS_SIGN_UP_APPROVAL_REQUIRED, false);
       }

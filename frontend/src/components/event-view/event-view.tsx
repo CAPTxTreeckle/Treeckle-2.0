@@ -1,4 +1,4 @@
-import { useContext, useMemo } from "react";
+import React, { useContext, useMemo } from "react";
 import isEqual from "lodash.isequal";
 import { SingleEventProvider, UserContext } from "../../context-providers";
 import { EventViewProps } from "../../types/events";

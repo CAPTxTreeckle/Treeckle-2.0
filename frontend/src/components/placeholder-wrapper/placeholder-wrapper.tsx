@@ -1,9 +1,9 @@
-import { ReactNode } from "react";
+import React from "react";
 import { Segment, Loader, LoaderProps } from "semantic-ui-react";
 import "./placeholder-wrapper.scss";
 
 type Props = {
-  children?: ReactNode;
+  children?: React.ReactNode;
   isLoading?: boolean;
   loadingMessage?: string;
   showDefaultMessage?: boolean;

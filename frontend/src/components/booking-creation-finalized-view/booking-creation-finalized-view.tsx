@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { Segment, Button, Grid } from "semantic-ui-react";
 import { BookingCreationContext } from "../../context-providers";
 import { FieldType } from "../../types/venues";

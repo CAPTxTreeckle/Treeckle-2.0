@@ -1,21 +1,12 @@
-import {
-  createContext,
-  Dispatch,
-  ReactNode,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Button, Header, Icon, Modal } from "semantic-ui-react";
 
 type DeleteModalContextType = {
   isModalOpen: boolean;
-  setModalOpen: Dispatch<SetStateAction<boolean>>;
+  setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export const DeleteModalContext = createContext<DeleteModalContextType>({
+export const DeleteModalContext = React.createContext<DeleteModalContextType>({
   isModalOpen: false,
   setModalOpen: () => {
     throw new Error("setModalOpen not defined.");
@@ -23,7 +14,7 @@ export const DeleteModalContext = createContext<DeleteModalContextType>({
 });
 
 type Props = {
-  children: ReactNode;
+  children: React.ReactNode;
   isDeleting?: boolean;
   onDelete?: () => Promise<boolean> | boolean;
   deleteTitle?: string;

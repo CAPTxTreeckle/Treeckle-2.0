@@ -1,3 +1,4 @@
+import React from "react";
 import { Grid } from "semantic-ui-react";
 import { EventViewProps } from "../../types/events";
 

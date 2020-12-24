@@ -1,4 +1,4 @@
-import { useCallback, useContext, useMemo, useState } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import { Icon, Label, StrictLabelProps } from "semantic-ui-react";
 import { EventSubscriptionsContext } from "../../context-providers";
 import { SubscriptionActionType } from "../../types/events";

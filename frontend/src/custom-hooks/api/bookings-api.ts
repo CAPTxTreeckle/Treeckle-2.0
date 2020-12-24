@@ -1,6 +1,6 @@
 import useAxios from "axios-hooks";
 import { useCallback, useMemo, useState } from "react";
-import { useAxiosWithTokenRefresh } from "./auth-api";
+import { useAxiosWithTokenRefresh } from ".";
 import {
   BookingData,
   BookingDeleteData,

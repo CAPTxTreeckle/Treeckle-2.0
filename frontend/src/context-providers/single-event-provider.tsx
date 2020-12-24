@@ -1,11 +1,4 @@
-import {
-  createContext,
-  ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
   useGetSingleEvent,
@@ -32,7 +25,7 @@ type SingleEventType = {
   willUpdateUserIds: Set<number>;
 };
 
-export const SingleEventContext = createContext<SingleEventType>({
+export const SingleEventContext = React.createContext<SingleEventType>({
   getSingleEvent: () => {
     throw new Error("getSingleEvent is not defined.");
   },
@@ -49,7 +42,7 @@ export const SingleEventContext = createContext<SingleEventType>({
 });
 
 type Props = {
-  children: ReactNode;
+  children: React.ReactNode;
   eventViewProps: EventViewProps;
 };
 

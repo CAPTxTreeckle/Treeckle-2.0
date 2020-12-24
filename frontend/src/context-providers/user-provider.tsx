@@ -1,10 +1,4 @@
-import {
-  createContext,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useLocalStorage } from "@rehooks/local-storage";
 import isEqual from "lodash.isequal";
 import { Role } from "../types/users";
@@ -24,14 +18,14 @@ type UserContextType = User & {
   updateUser: (user: User | null) => void;
 };
 
-export const UserContext = createContext<UserContextType>({
+export const UserContext = React.createContext<UserContextType>({
   updateUser: () => {
     throw new Error("updateUser is not defined.");
   },
 });
 
 type Props = {
-  children: ReactNode;
+  children: React.ReactNode;
 };
 
 function UserProvider({ children }: Props) {

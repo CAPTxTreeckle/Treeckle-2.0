@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import Cropper from "react-easy-crop";
 import {
   Button,

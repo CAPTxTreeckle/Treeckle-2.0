@@ -1,10 +1,4 @@
-import {
-  createContext,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   useGetSubscribedEvents,
   useGetEventCategorySubscriptions,
@@ -29,7 +23,7 @@ type EventSubscriptionsContextType = {
   nonSubscribedCategories: string[];
 };
 
-export const EventSubscriptionsContext = createContext<EventSubscriptionsContextType>(
+export const EventSubscriptionsContext = React.createContext<EventSubscriptionsContextType>(
   {
     subscribedEvents: [],
     getEventCategorySubscriptions: () => {
@@ -46,7 +40,7 @@ export const EventSubscriptionsContext = createContext<EventSubscriptionsContext
 );
 
 type Props = {
-  children: ReactNode;
+  children: React.ReactNode;
 };
 
 function EventSubscriptionsProvider({ children }: Props) {

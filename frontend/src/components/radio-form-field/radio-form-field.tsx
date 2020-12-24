@@ -1,4 +1,4 @@
-import { FormEvent } from "react";
+import React from "react";
 import { Controller } from "react-hook-form";
 import { CheckboxProps, Form } from "semantic-ui-react";
 
@@ -11,7 +11,7 @@ type Props = {
   readOnly?: boolean;
   disabled?: boolean;
   onChangeEffect?: (
-    e: FormEvent<HTMLInputElement>,
+    e: React.FormEvent<HTMLInputElement>,
     data: CheckboxProps,
   ) => void;
   hidden?: boolean;

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { useImageUploadCropperState } from "../../custom-hooks";
 import FileUploader from "../file-uploader/file-uploader";
 import ImageCropper from "../image-cropper/image-cropper";

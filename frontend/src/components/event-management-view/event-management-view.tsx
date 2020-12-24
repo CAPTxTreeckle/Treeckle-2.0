@@ -1,4 +1,4 @@
-import { useCallback, useContext, useMemo, useState } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import { Grid, Icon, Label, Popup, Table } from "semantic-ui-react";
 import { SingleEventContext } from "../../context-providers";
 import { EVENTS_QR_CODE_PATH } from "../../routes/paths";

@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { StrictButtonProps } from "semantic-ui-react";
 import { DeleteModalContext } from "../../context-providers";
 import DeleteButton from "../delete-button";

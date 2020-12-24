@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useCallback, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 import { UserData, UserPatchData } from "../types/users";
 import {
@@ -16,22 +16,24 @@ type ExistingUsersContextType = {
   deleteExistingUsers: (emails: string[]) => Promise<string[]>;
 };
 
-export const ExistingUsersContext = createContext<ExistingUsersContextType>({
-  existingUsers: [],
-  isLoading: false,
-  getAllExistingUsers: () => {
-    throw new Error("getAllExistingUsers not defined.");
+export const ExistingUsersContext = React.createContext<ExistingUsersContextType>(
+  {
+    existingUsers: [],
+    isLoading: false,
+    getAllExistingUsers: () => {
+      throw new Error("getAllExistingUsers not defined.");
+    },
+    updateExistingUsers: () => {
+      throw new Error("updateExistingUsers not defined.");
+    },
+    deleteExistingUsers: () => {
+      throw new Error("deleteExistingUsers not defined.");
+    },
   },
-  updateExistingUsers: () => {
-    throw new Error("updateExistingUsers not defined.");
-  },
-  deleteExistingUsers: () => {
-    throw new Error("deleteExistingUsers not defined.");
-  },
-});
+);
 
 type Props = {
-  children: ReactNode;
+  children: React.ReactNode;
 };
 
 function ExistingUsersProvider({ children }: Props) {

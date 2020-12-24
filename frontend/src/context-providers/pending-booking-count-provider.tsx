@@ -1,10 +1,4 @@
-import {
-  createContext,
-  ReactNode,
-  useCallback,
-  useContext,
-  useState,
-} from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { useGetPendingBookingCount } from "../custom-hooks/api";
 import { Role } from "../types/users";
 import { UserContext } from "./user-provider";
@@ -21,7 +15,7 @@ type PendingBookingCountContextType = {
   ) => Promise<number>;
 };
 
-export const PendingBookingCountContext = createContext<PendingBookingCountContextType>(
+export const PendingBookingCountContext = React.createContext<PendingBookingCountContextType>(
   {
     pendingBookingCount: 0,
     isLoading: false,
@@ -32,7 +26,7 @@ export const PendingBookingCountContext = createContext<PendingBookingCountConte
 );
 
 type Props = {
-  children: ReactNode;
+  children: React.ReactNode;
 };
 
 function PendingBookingCountProvider({ children }: Props) {

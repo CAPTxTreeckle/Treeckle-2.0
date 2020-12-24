@@ -1,3 +1,4 @@
+import React from "react";
 import { Segment, Message, Icon } from "semantic-ui-react";
 import { BookingNotificationSubscriptionProvider } from "../../context-providers";
 import BookingNotificationSubscriptionTable from "../booking-notification-subscription-table";

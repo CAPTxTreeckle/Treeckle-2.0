@@ -1,3 +1,4 @@
+import React from "react";
 import { Image, MenuItem } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { DASHBOARD_PATH } from "../../../routes/paths";

@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { Card, Icon, Image, Message } from "semantic-ui-react";
 import defaultEventPoster from "../../assets/default-event-poster.png";
 import { displayDateTime } from "../../utils/parser-utils";

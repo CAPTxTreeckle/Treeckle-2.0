@@ -1,7 +1,7 @@
+import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { DropdownProps, Form } from "semantic-ui-react";
 import get from "lodash.get";
-import { SyntheticEvent } from "react";
 import { useOptionsState } from "../../custom-hooks";
 import { sanitizeArray } from "../../utils/parser-utils";
 
@@ -20,7 +20,7 @@ type Props = {
   search?: boolean;
   clearable?: boolean;
   onChangeEffect?: (
-    e: SyntheticEvent<HTMLElement, Event>,
+    e: React.SyntheticEvent<HTMLElement, Event>,
     data: DropdownProps,
   ) => void;
   hidden?: boolean;

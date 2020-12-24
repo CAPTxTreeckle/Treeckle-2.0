@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { OwnEventsContext, OwnEventsProvider } from "../../context-providers";
 import EventEditableGalleryItem from "../event-editable-gallery-item";
 import EventGallery from "../event-gallery";
