@@ -4,6 +4,7 @@ import {
   Icon,
   Menu,
   Modal,
+  Popup,
   TransitionablePortal,
 } from "semantic-ui-react";
 import QrReader from "react-qr-reader";
@@ -66,13 +67,20 @@ function QrCodeScannerButton() {
 
   return (
     <Menu.Item>
-      <Icon
-        name="qrcode"
-        link
-        fitted
-        size="large"
-        onClick={() => setQrScannerOpened(true)}
+      <Popup
+        trigger={
+          <Icon
+            name="qrcode"
+            link
+            fitted
+            size="large"
+            onClick={() => setQrScannerOpened(true)}
+          />
+        }
+        content="Open QR code scanner"
+        position="bottom center"
       />
+
       <TransitionablePortal
         open={isQrScannerOpened}
         transition={{ animation: "fade down" }}

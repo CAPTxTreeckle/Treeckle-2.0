@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useRef,
 } from "react";
-import { yupResolver } from "@hookform/resolvers";
+import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { Button, Form, Segment, Ref } from "semantic-ui-react";

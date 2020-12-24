@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers";
+import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import {
   Form,
@@ -174,12 +174,16 @@ function EventDetailsForm({
                 inputName={ORGANIZED_BY}
               />
 
-              <FormField label="Venue" inputName={VENUE_NAME} />
+              <FormField
+                label="Venue"
+                placeholder="SRs, Dining Hall, Lounges, etc"
+                inputName={VENUE_NAME}
+              />
 
               <DropdownSelectorFormField
                 inputName={CATEGORIES}
                 label="Categories"
-                placeholder="Insert any relevant categories for this event"
+                placeholder="Insert/add any relevant categories for this event"
                 search
                 allowAdditions
                 defaultOptions={existingCategories}
