@@ -113,7 +113,7 @@ function BookingAdminTable() {
               noRowsRenderer={() => (
                 <PlaceholderWrapper
                   showDefaultMessage
-                  defaultMessage="You currently do not have any bookings"
+                  defaultMessage="There are currently no booking requests"
                   placeholder
                   isLoading={isLoading}
                   loadingMessage="Retrieving booking requests"

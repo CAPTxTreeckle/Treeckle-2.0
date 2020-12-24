@@ -52,6 +52,5 @@ module.exports = {
     "global-require": "off",
     "no-console": "off",
     "consistent-return": "off",
-    "import/no-cycle": "off",
   },
 };
