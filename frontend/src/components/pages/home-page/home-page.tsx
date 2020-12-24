@@ -14,6 +14,7 @@ import { useInView } from "react-intersection-observer";
 import { useCountUp } from "use-count-up";
 import { useShowScroller } from "../../../custom-hooks";
 import treeckleLogo from "../../../assets/treeckle-outline-min.png";
+import treeckleVideo from "../../../assets/utown-video.mp4";
 import { Media, UserContext } from "../../../context-providers";
 import SignInButton from "../../sign-in-button";
 import { useGetTotalBookingCount } from "../../../custom-hooks/api";
@@ -64,13 +65,7 @@ function HomePage() {
           </div>
         </Transition>
         <Media className="home-video-container" greaterThanOrEqual="tablet">
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            src={require("../../../assets/utown-video.mp4")}
-          />
+          <video autoPlay loop muted playsInline src={treeckleVideo} />
         </Media>
       </div>
 
