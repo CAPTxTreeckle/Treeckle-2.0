@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { useQuery } from "../../../custom-hooks";
 import { UserContext } from "../../../context-providers";
 import { HOME_PATH } from "../../../routes/paths";
-import { useOpenIdAuth } from "../../../custom-hooks/api";
+import { useOpenIdAuth } from "../../../custom-hooks/api/auth-api";
 import PlaceholderWrapper from "../../placeholder-wrapper";
 
 function OpenIdPage() {
