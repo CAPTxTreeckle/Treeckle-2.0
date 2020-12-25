@@ -13,6 +13,6 @@ export { default as EventsCreationPage } from "./events-creation-page";
 export { default as EventsEditPage } from "./events-edit-page";
 export { default as EventsSingleViewPage } from "./events-single-view-page";
 export { default as EventsQrCodePage } from "./events-qr-code-page";
-export { default as OpenIdPage } from "./openid-page";
+export { default as OpenIdPage } from "./open-id-page";
 export { default as ProfilePage } from "./profile-page";
 export { default as HomePage } from "./home-page";

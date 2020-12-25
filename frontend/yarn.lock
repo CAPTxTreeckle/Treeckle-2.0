@@ -9662,6 +9662,11 @@ postcss@^7, postcss@^7.0.0, postcss@^7.0.1, postcss@^7.0.14, postcss@^7.0.17, po
     source-map "^0.6.1"
     supports-color "^6.1.0"
 
+precompress@^6.3.2:
+  version "6.3.2"
+  resolved "https://registry.yarnpkg.com/precompress/-/precompress-6.3.2.tgz#0a8db919ba6c5339fa7bfbee405b4a78a0c4d185"
+  integrity sha512-uc85tGAA83LVR91Av9MxJLxMoLezyrJOtSEGffTDL8v3yp2gRnWDdO7KS7xtvrwEuMSN+nZt9C5umYiJ/g0RZw==
+
 prelude-ls@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.1.2.tgz#21932a549f5e52ffd9a827f570e04be62a97da54"

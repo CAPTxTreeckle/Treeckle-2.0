@@ -16,10 +16,10 @@ RUN REACT_APP_API_URL=${REACT_APP_API_URL} REACT_APP_GOOGLE_CLIENT_ID=${REACT_AP
 
 
 ## prepare nginx
-FROM nginx:1.19.6-alpine
+FROM fholzer/nginx-brotli
 
-## copy custom nginx config to override default config
-COPY ./nginx/nginx.conf /etc/nginx/conf.d/default.conf
+## copy custom nginx config to override existing config
+COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
 
 ## serve react build in nginx
 COPY --from=build /app/build /usr/share/nginx/html
