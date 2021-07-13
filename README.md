@@ -1,4 +1,4 @@
-# Treeckle 2.0
+# Treeckle 2.0 (Archived)
 
 [![Build Status](https://travis-ci.com/CAPTxTreeckle/Treeckle-2.0.svg?branch=main)](https://travis-ci.com/CAPTxTreeckle/Treeckle-2.0)
 
@@ -7,8 +7,6 @@
 </p>
 
 Website: <https://v2.treeckle.com/>
-
-_Currently in development._
 
 Treeckle is a student life app for the Residential Colleges of NUS, intended to be a platform for the efficient booking of facilties, and the creation and management of events.
 
